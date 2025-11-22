@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rrm/device_controller.dart';
@@ -57,7 +55,7 @@ class LoginController extends GetxController {
             Customcontainer(
               height: hp(5),
               onTap: () {
-                exit(0);
+                Get.back();
               },
               context: context,
               width: double.infinity,

@@ -35,7 +35,7 @@ class Homepage extends StatelessWidget {
                   Get.toNamed(routetaggingpage);
                 },
                 context: context,
-                logo: 'asset/images/home_logo_1.png',
+                logo: 'assets/images/home_logo_1.png',
                 rowwidth: wp(10),
                 name: "CATTLE \nTAGGING",
               ),
@@ -44,7 +44,7 @@ class Homepage extends StatelessWidget {
                 onTap: () {
                   Get.toNamed(routeclaimpage);
                 },
-                logo: 'asset/images/home_logo_2.png',
+                logo: 'assets/images/home_logo_2.png',
                 rowwidth: wp(15),
                 name: 'CATTLE \nCLAIM',
                 context: context,
@@ -58,7 +58,7 @@ class Homepage extends StatelessWidget {
                   );
                   // print("retagging  :::: ${controller.retagging}");
                 },
-                logo: 'asset/images/home_logo_3.png',
+                logo: 'assets/images/home_logo_3.png',
                 rowwidth: wp(7),
                 name: "CATTLE \nRETAGGING",
                 context: context,

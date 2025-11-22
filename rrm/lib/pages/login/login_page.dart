@@ -23,9 +23,6 @@ class LoginPage extends StatelessWidget {
       },
 
       builder: (controller) {
-        // Future.delayed(Duration(milliseconds: 300));
-        // showDialogWithFields(context: context, controller: controller);
-
         return Scaffold(
           backgroundColor: AppColors.PRIMARY_COLOR,
           body: SingleChildScrollView(
@@ -44,7 +41,7 @@ class LoginPage extends StatelessWidget {
                     children: [
                       SizedBox(height: hp(9)),
                       Image.asset(
-                        'asset/images/login_logo.png',
+                        'assets/images/login_logo.png',
                         height: hp(20),
                       ),
                       SizedBox(height: hp(7)),
@@ -187,7 +184,7 @@ class LoginPage extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(bottom: hp(10)),
                     child: Image.asset(
-                      'asset/images/DCI.png',
+                      'assets/images/DCI.png',
                       scale: dp(context, 2.5),
                     ),
                   ),

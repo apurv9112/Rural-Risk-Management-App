@@ -83,7 +83,7 @@ class KycScreen extends StatelessWidget {
                             fit: BoxFit.cover,
                           )
                         : SizedBox(),
-                    image: "asset/kyc/addhar_front.png",
+                    image: "assets/kyc/addhar_front.png",
 
                     onTap: () {
                       custombuttomsheet(
@@ -108,7 +108,7 @@ class KycScreen extends StatelessWidget {
                             fit: BoxFit.cover,
                           )
                         : SizedBox(),
-                    image: "asset/kyc/addhar_back.png",
+                    image: "assets/kyc/addhar_back.png",
                     onTap: () {
                       custombuttomsheet(
                         context: context,
@@ -132,7 +132,7 @@ class KycScreen extends StatelessWidget {
                             fit: BoxFit.cover,
                           )
                         : SizedBox(),
-                    image: "asset/kyc/pan_card.jpg",
+                    image: "assets/kyc/pan_card.jpg",
 
                     onTap: () {
                       custombuttomsheet(
@@ -157,7 +157,7 @@ class KycScreen extends StatelessWidget {
                             fit: BoxFit.cover,
                           )
                         : SizedBox(),
-                    image: "asset/kyc/passbook.jpeg",
+                    image: "assets/kyc/passbook.jpeg",
                     onTap: () {
                       custombuttomsheet(
                         context: context,
@@ -181,7 +181,7 @@ class KycScreen extends StatelessWidget {
                             fit: BoxFit.cover,
                           )
                         : SizedBox(),
-                    image: "asset/kyc/passbook.jpeg",
+                    image: "assets/kyc/passbook.jpeg",
 
                     onTap: () {
                       custombuttomsheet(

@@ -19,10 +19,10 @@ iscattleimage({required BuildContext context, required controller}) {
             : SizedBox(),
 
         image: controller.ischangepage == null
-            ? "asset/Tagging_Sample/100779925870a.jpg"
+            ? "assets/Tagging_Sample/100779925870a.jpg"
             : controller.retagging != null
-            ? "asset/Tagging_Sample/100779925870a.jpg"
-            : "asset/Claim_Sample/340124808390a.jpg",
+            ? "assets/Tagging_Sample/100779925870a.jpg"
+            : "assets/Claim_Sample/340124808390a.jpg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 1);
         },
@@ -39,10 +39,10 @@ iscattleimage({required BuildContext context, required controller}) {
             ? Image.file(controller.selectedheadpose.value!, fit: BoxFit.cover)
             : SizedBox(),
         image: controller.ischangepage == null
-            ? "asset/Tagging_Sample/100779925870b.jpg"
+            ? "assets/Tagging_Sample/100779925870b.jpg"
             : controller.retagging != null
-            ? "asset/Tagging_Sample/100779925870b.jpg"
-            : "asset/Claim_Sample/340124808390b.jpg",
+            ? "assets/Tagging_Sample/100779925870b.jpg"
+            : "assets/Claim_Sample/340124808390b.jpg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 2);
         },
@@ -63,10 +63,10 @@ iscattleimage({required BuildContext context, required controller}) {
               )
             : SizedBox(),
         image: controller.ischangepage == null
-            ? "asset/Tagging_Sample/100779925870c.jpg"
+            ? "assets/Tagging_Sample/100779925870c.jpg"
             : controller.retagging != null
-            ? "asset/Tagging_Sample/100779925870c.jpg"
-            : "asset/Claim_Sample/340124808390c.jpg",
+            ? "assets/Tagging_Sample/100779925870c.jpg"
+            : "assets/Claim_Sample/340124808390c.jpg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 3);
         },
@@ -87,10 +87,10 @@ iscattleimage({required BuildContext context, required controller}) {
               )
             : SizedBox(),
         image: controller.ischangepage == null
-            ? "asset/Tagging_Sample/100779925870d.jpg"
+            ? "assets/Tagging_Sample/100779925870d.jpg"
             : controller.retagging != null
-            ? "asset/Tagging_Sample/100779925870d.jpg"
-            : "asset/Claim_Sample/340124808390d.jpg",
+            ? "assets/Tagging_Sample/100779925870d.jpg"
+            : "assets/Claim_Sample/340124808390d.jpg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 4);
         },
@@ -107,10 +107,10 @@ iscattleimage({required BuildContext context, required controller}) {
             ? Image.file(controller.selectedbackpose.value!, fit: BoxFit.cover)
             : SizedBox(),
         image: controller.ischangepage == null
-            ? "asset/Tagging_Sample/100779925870e.jpg"
+            ? "assets/Tagging_Sample/100779925870e.jpg"
             : controller.retagging != null
-            ? "asset/Tagging_Sample/100779925870e.jpg"
-            : "asset/Claim_Sample/340124808390e.jpg",
+            ? "assets/Tagging_Sample/100779925870e.jpg"
+            : "assets/Claim_Sample/340124808390e.jpg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 5);
         },
@@ -174,10 +174,10 @@ iscattleimage({required BuildContext context, required controller}) {
                   : SizedBox(),
 
               image: controller.ischangepage == null
-                  ? "asset/Tagging_Sample/100779925870a.jpg"
+                  ? "assets/Tagging_Sample/100779925870a.jpg"
                   : controller.retagging != null
-                  ? "asset/Tagging_Sample/100779925870a.jpg"
-                  : "asset/Claim_Sample/340124808390a.jpg",
+                  ? "assets/Tagging_Sample/100779925870a.jpg"
+                  : "assets/Claim_Sample/340124808390a.jpg",
               onTap: () {
                 buttomsheet(
                   context: context,
@@ -207,10 +207,10 @@ iscattleimage({required BuildContext context, required controller}) {
                   : SizedBox(),
 
               image: controller.ischangepage == null
-                  ? "asset/Tagging_Sample/100779925870a.jpg"
+                  ? "assets/Tagging_Sample/100779925870a.jpg"
                   : controller.retagging != null
-                  ? "asset/Tagging_Sample/100779925870a.jpg"
-                  : "asset/Claim_Sample/340124808390a.jpg",
+                  ? "assets/Tagging_Sample/100779925870a.jpg"
+                  : "assets/Claim_Sample/340124808390a.jpg",
               onTap: () {
                 buttomsheet(
                   context: context,
