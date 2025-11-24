@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:rrm/controller.dart';
 
 class DatadisplayController extends GetxController {
-  String? retagging = "retagging";
+  String? retaggingdata = "retaggingdata";
+  String? taggingdata = "taggingdata";
+  String? claimdata = "claimdata";
   AppController appController = Get.find();
   GlobalKey<FormState> formKey = GlobalKey();
   TextEditingController searchcontroller = TextEditingController();

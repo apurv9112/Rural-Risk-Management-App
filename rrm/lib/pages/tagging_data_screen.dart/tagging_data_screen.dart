@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
@@ -880,14 +881,27 @@ class TaggingDataScreen extends StatelessWidget {
                     SizedBox(width: wp(3)),
                     Customcontainer(
                       onTap: () {
-                        Get.toNamed(
-                          routekycpage,
-                          arguments: {
-                            "tagging": Get.arguments["tagging"],
-                            "ischangepage": controller.ischangepage,
-                            "retagging": controller.retagging,
-                          },
+                        Get.dialog(
+                          Center(
+                            child: LoadingAnimationWidget.staggeredDotsWave(
+                              color: Colors.white,
+                              size: 60,
+                            ),
+                          ),
+                          barrierDismissible: false,
                         );
+
+                        Future.delayed(Duration(seconds: 3), () {
+                          Get.back(); // close loading dialog
+                          Get.toNamed(
+                            routekycpage,
+                            arguments: {
+                              "tagging": Get.arguments["tagging"],
+                              "ischangepage": controller.ischangepage,
+                              "retagging": controller.retagging,
+                            },
+                          );
+                        });
                       },
                       context: context,
                       width: wp(44),

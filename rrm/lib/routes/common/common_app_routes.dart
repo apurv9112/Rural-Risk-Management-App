@@ -5,6 +5,8 @@ import 'package:rrm/pages/claim/claim_binding.dart';
 import 'package:rrm/pages/claim/claim_sceen.dart';
 import 'package:rrm/pages/data_display/data_display_binding.dart';
 import 'package:rrm/pages/data_display/data_display_screen.dart';
+import 'package:rrm/pages/farmer_details/farmer_details_binding.dart';
+import 'package:rrm/pages/farmer_details/farmer_details_page.dart';
 import 'package:rrm/pages/home/home_binding.dart';
 import 'package:rrm/pages/home/home_page.dart';
 import 'package:rrm/pages/kyc/kyc_binding.dart';
@@ -68,6 +70,11 @@ class CommonRoutes {
       name: routeDatadisplaypage,
       page: () => const Datadisplaypage(),
       binding: DatadisplayBinding(),
+    ),
+    GetPage(
+      name: routefarmerdetailspage,
+      page: () => const FarmerDetailsScreen(),
+      binding: FarmerDetailsBinding(),
     ),
   ];
 }

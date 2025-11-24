@@ -8,8 +8,13 @@ import 'package:rrm/utils/validation_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'controller.dart';
 import 'utils/colors.dart';
+// ignore: depend_on_referenced_packages
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await getTemporaryDirectory();
   getIt.registerLazySingleton<FormValidations>(() => FormValidations());
   getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
   Get.put(DeviceController());
@@ -29,8 +34,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: AppColors.WHITE,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // initialRoute: routeRootpage,
-      initialRoute: routehomepage,
+      initialRoute: routeRootpage,
+      // initialRoute: routehomepage,
+      // initialRoute: routefarmerdetailspage,
       // initialRoute: routecattlepage,
       getPages: AppRoutes.routes,
     );

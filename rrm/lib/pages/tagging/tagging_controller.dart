@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
 
 class TaggingController extends GetxController {
@@ -126,6 +127,18 @@ class TaggingController extends GetxController {
     //   update();
     //   print("$listshow");
     // }
+    Get.dialog(
+      Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    Future.delayed(Duration(seconds: 5), () {
+      Get.back(); // close loading dialog
+    });
     listshow = false;
     update();
   }

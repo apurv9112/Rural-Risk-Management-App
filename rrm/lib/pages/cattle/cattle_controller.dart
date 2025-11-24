@@ -3,9 +3,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CattleController extends GetxController {
-  bool? process = false;
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
   bool? taggingdate = false;
@@ -446,11 +446,23 @@ class CattleController extends GetxController {
         selectedsideposeleft.value != null ||
         selectedsideposeright.value != null ||
         selectedbackpose.value != null) {
+      Get.dialog(
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Delay for 5 seconds
+
       Future.delayed(Duration(seconds: 5), () {
-        process = false;
-        Get.offAllNamed("/homepage");
+        Get.offAllNamed("/routefarmerdetailspage");
         update();
       });
+
       update();
     }
     update();
@@ -464,11 +476,23 @@ class CattleController extends GetxController {
         selectedbackpose.value != null ||
         selectedearcut.value != null ||
         selectedearbackside.value != null) {
+      Get.dialog(
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Delay for 5 seconds
+
       Future.delayed(Duration(seconds: 5), () {
-        process = false;
-        Get.offAllNamed("/homepage");
+        Get.offAllNamed("/routefarmerdetailspage");
         update();
       });
+
       update();
     }
     update();

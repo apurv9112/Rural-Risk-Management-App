@@ -34,7 +34,7 @@ class LoginPage extends StatelessWidget {
             child: Form(
               key: controller.formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -121,9 +121,6 @@ class LoginPage extends StatelessWidget {
                               onchange: (p0) {
                                 controller.update();
                               },
-                              onEditingComplete: () {
-                                controller.update();
-                              },
                             )
                           : CustomTextField(
                               key: Key('mobile_no'),
@@ -139,9 +136,6 @@ class LoginPage extends StatelessWidget {
                                 errorText: "Mobile is required.",
                               ),
                               onchange: (p0) {
-                                controller.update();
-                              },
-                              onEditingComplete: () {
                                 controller.update();
                               },
                             ),
@@ -162,9 +156,6 @@ class LoginPage extends StatelessWidget {
                         onchange: (p0) {
                           controller.update();
                         },
-                        onEditingComplete: () {
-                          controller.update();
-                        },
                       ),
                       SizedBox(height: hp(4)),
                       Customcontainer(
@@ -179,8 +170,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  SizedBox(height: hp(16)),
+                  SizedBox(height: hp(20)),
                   Padding(
                     padding: EdgeInsets.only(bottom: hp(10)),
                     child: Image.asset(

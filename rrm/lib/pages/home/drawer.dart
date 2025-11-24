@@ -52,6 +52,7 @@ customdrawer({required BuildContext context}) {
           onTap: () {
             Get.toNamed(routeDatadisplaypage);
           },
+          // arguments: "taggingdata"
           context: context,
           logo: 'assets/images/home_logo_1.png',
           rowwidth: wp(5),
@@ -62,7 +63,7 @@ customdrawer({required BuildContext context}) {
           padding: EdgeInsets.symmetric(horizontal: wp(3)),
           margin: EdgeInsets.symmetric(horizontal: wp(4)),
           onTap: () {
-            Get.toNamed(routeDatadisplaypage);
+            Get.toNamed(routeDatadisplaypage, arguments: "claimdata");
           },
           logo: 'assets/images/home_logo_2.png',
           rowwidth: wp(6),
@@ -74,8 +75,7 @@ customdrawer({required BuildContext context}) {
           padding: EdgeInsets.symmetric(horizontal: wp(2)),
           margin: EdgeInsets.symmetric(horizontal: wp(3.5)),
           onTap: () {
-            Get.toNamed(routeDatadisplaypage);
-            // print("retagging  :::: ${controller.retagging}");
+            Get.toNamed(routeDatadisplaypage, arguments: "retaggingdata");
           },
           logo: 'assets/images/home_logo_3.png',
           rowwidth: wp(1.5),

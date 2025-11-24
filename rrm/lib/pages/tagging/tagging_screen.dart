@@ -90,31 +90,18 @@ class TaggingScreen extends StatelessWidget {
                           onchange: (p0) => controller.distcontroller,
                         ),
                         SizedBox(height: hp(3)),
-                        GestureDetector(
+
+                        Customcontainer(
+                          context: context,
+                          text: "Search",
+                          singlefontSize: dp(context, 25),
                           onTap: () {
                             if (controller.formKey.currentState!.validate()) {
                               controller.search();
                             }
                           },
-                          child: Container(
-                            height: hp(7),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: AppColors.WHITE,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Search',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.PRIMARY_COLOR,
-                                  fontSize: dp(context, 20),
-                                ),
-                              ),
-                            ),
-                          ),
                         ),
+
                         SizedBox(height: hp(4)),
                         controller.listshow == false
                             ? Container(

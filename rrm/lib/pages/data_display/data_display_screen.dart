@@ -15,10 +15,20 @@ class Datadisplaypage extends StatelessWidget {
     return GetBuilder<DatadisplayController>(
       init: DatadisplayController(),
       builder: (controller) {
+        final args = Get.arguments;
+        print("args ;;;; $args");
+        controller.retaggingdata = args != null ? "retaggingdata" : null;
+        // controller.taggingdata = args != null ? "taggingdata" : null;
+        controller.claimdata = args != null ? "claimdata" : null;
         return Scaffold(
           backgroundColor: AppColors.PRIMARY_COLOR,
           appBar: CustomAppBarAction(
-            title: 'Tagging Data',
+            title: controller.claimdata == null
+                ? 'Tagging Data'
+                : controller.retaggingdata != null
+                ? 'Claim Data'
+                : 'Retagging Data',
+
             iconleft: Icons.arrow_back_outlined,
             lefticononTap: () {
               Get.back();

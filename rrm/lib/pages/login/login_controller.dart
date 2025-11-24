@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/device_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
@@ -18,11 +19,24 @@ class LoginController extends GetxController {
   bool isemail = true;
   bool isemailerror = true;
 
-  // Validation logic
-
   void submitLogin() {
-    showSnackBar("Login in Successfully", SNACK.SUCCESS);
-    Get.offAllNamed(routehomepage);
+    // Show loading dialog
+    Get.dialog(
+      Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
+        ),
+      ),
+      barrierDismissible: false,
+    );
+
+    // Delay for 5 seconds
+    Future.delayed(Duration(seconds: 5), () {
+      Get.back(); // close loading dialog
+      showSnackBar("Login Successfully", SNACK.SUCCESS);
+      Get.offAllNamed(routehomepage);
+    });
   }
 
   void showDeviceDialog({required BuildContext context}) {

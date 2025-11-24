@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 
 class KycController extends GetxController {
@@ -98,10 +99,24 @@ class KycController extends GetxController {
     if (selectedAadharfront.value != null ||
         selectedAadharback.value != null ||
         selectedbankdetails1.value != null) {
-      Get.toNamed(
-        routecattlepage,
-        arguments: {"retagging": retagging, "ischangepage": ischangepage},
+      Get.dialog(
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierDismissible: false,
       );
+      // Delay for 3 seconds
+      Future.delayed(Duration(seconds: 3), () {
+        Get.back(); // close loading dialog
+        Get.toNamed(
+          routecattlepage,
+          arguments: {"retagging": retagging, "ischangepage": ischangepage},
+        );
+      });
+
       update();
     }
     update();
