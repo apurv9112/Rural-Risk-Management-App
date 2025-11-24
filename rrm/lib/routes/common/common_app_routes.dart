@@ -3,6 +3,8 @@ import 'package:rrm/pages/cattle/cattle_binding.dart';
 import 'package:rrm/pages/cattle/cattle_screen.dart';
 import 'package:rrm/pages/claim/claim_binding.dart';
 import 'package:rrm/pages/claim/claim_sceen.dart';
+import 'package:rrm/pages/data_display/data_display_binding.dart';
+import 'package:rrm/pages/data_display/data_display_screen.dart';
 import 'package:rrm/pages/home/home_binding.dart';
 import 'package:rrm/pages/home/home_page.dart';
 import 'package:rrm/pages/kyc/kyc_binding.dart';
@@ -61,6 +63,11 @@ class CommonRoutes {
       name: routeclaimpage,
       page: () => const ClaimScreen(),
       binding: ClaimBinding(),
+    ),
+    GetPage(
+      name: routeDatadisplaypage,
+      page: () => const Datadisplaypage(),
+      binding: DatadisplayBinding(),
     ),
   ];
 }

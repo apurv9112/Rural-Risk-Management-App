@@ -79,6 +79,9 @@ customcontainer({
   required void Function()? onTap,
   EdgeInsetsGeometry? padding,
   EdgeInsetsGeometry? margin,
+  double? fontSize,
+  double? imgheight,
+  double? imgwidth,
 }) {
   return GestureDetector(
     onTap: onTap,
@@ -92,12 +95,16 @@ customcontainer({
       margin: margin ?? EdgeInsets.symmetric(horizontal: wp(6)),
       child: Row(
         children: [
-          Image.asset(logo, height: hp(15), width: wp(20)),
+          Image.asset(
+            logo,
+            height: imgheight ?? hp(15),
+            width: imgwidth ?? wp(20),
+          ),
           SizedBox(width: rowwidth),
           Text(
             name,
             style: TextStyle(
-              fontSize: dp(context, 30),
+              fontSize: fontSize ?? dp(context, 30),
               color: AppColors.PRIMARY_COLOR,
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w500,

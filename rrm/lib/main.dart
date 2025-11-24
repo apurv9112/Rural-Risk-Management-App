@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: AppColors.WHITE,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: routeRootpage,
-      // initialRoute: routehomepage,
+      // initialRoute: routeRootpage,
+      initialRoute: routehomepage,
       // initialRoute: routecattlepage,
       getPages: AppRoutes.routes,
     );

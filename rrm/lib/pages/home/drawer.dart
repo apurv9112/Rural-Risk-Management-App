@@ -50,23 +50,23 @@ customdrawer({required BuildContext context}) {
           padding: EdgeInsets.symmetric(horizontal: wp(3)),
           margin: EdgeInsets.symmetric(horizontal: wp(4)),
           onTap: () {
-            Get.toNamed(routetaggingpage);
+            Get.toNamed(routeDatadisplaypage);
           },
           context: context,
           logo: 'assets/images/home_logo_1.png',
           rowwidth: wp(5),
-          name: "CATTLE \nTAGGING",
+          name: "TAGGING \nDATA",
         ),
         SizedBox(height: hp(3)),
         customcontainer(
           padding: EdgeInsets.symmetric(horizontal: wp(3)),
           margin: EdgeInsets.symmetric(horizontal: wp(4)),
           onTap: () {
-            Get.toNamed(routeclaimpage);
+            Get.toNamed(routeDatadisplaypage);
           },
           logo: 'assets/images/home_logo_2.png',
           rowwidth: wp(6),
-          name: 'CATTLE \nCLAIM',
+          name: 'CLAIM \nDATA',
           context: context,
         ),
         SizedBox(height: hp(3)),
@@ -74,12 +74,12 @@ customdrawer({required BuildContext context}) {
           padding: EdgeInsets.symmetric(horizontal: wp(2)),
           margin: EdgeInsets.symmetric(horizontal: wp(3.5)),
           onTap: () {
-            Get.toNamed(routeclaimpage);
+            Get.toNamed(routeDatadisplaypage);
             // print("retagging  :::: ${controller.retagging}");
           },
           logo: 'assets/images/home_logo_3.png',
           rowwidth: wp(1.5),
-          name: "CATTLE \nRETAGGING",
+          name: "RETAGGING\nDATA",
           context: context,
         ),
         SizedBox(height: hp(24)),

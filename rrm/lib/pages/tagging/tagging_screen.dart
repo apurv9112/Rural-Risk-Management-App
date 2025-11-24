@@ -227,7 +227,7 @@ class TaggingScreen extends StatelessWidget {
                                           // print(controller.textList[i]);
                                         },
                                         child: Container(
-                                          height: hp(15),
+                                          height: hp(16),
                                           // width: wp(80),
                                           width: double.infinity,
                                           padding: EdgeInsets.only(
