@@ -27,7 +27,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
                   .toList(),
               onChanged: (value) {
                 controller.selectedSpeciesValue = value.toString();
-                print("aaaa ::: ${controller.selectedSpeciesValue}");
+                // print("aaaa ::: ${controller.selectedSpeciesValue}");
                 controller.update();
               },
             ),

@@ -22,10 +22,10 @@ class Cattlescreen extends StatelessWidget {
       builder: (controller) {
         final args = Get.arguments;
         controller.ischangepage = args != null ? args["ischangepage"] : null;
-        print("controller.ischangepage  ::: ${controller.ischangepage}");
+        // print("controller.ischangepage  ::: ${controller.ischangepage}");
 
         controller.retagging = args != null ? args["retagging"] : null;
-        print("controller.retagging  ::: ${controller.retagging}");
+        // print("controller.retagging  ::: ${controller.retagging}");
 
         controller.tagnumbercontroller.text = "55862215522";
         controller.newtaggingdatecontroller.text = "55862215522";
@@ -33,7 +33,7 @@ class Cattlescreen extends StatelessWidget {
           'yyyy-MM-dd',
         ).format(controller.selectedDate.value!);
 
-        print("date ::: ${controller.taggingdatecontroller.text}");
+        // print("date ::: ${controller.taggingdatecontroller.text}");
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
@@ -75,9 +75,9 @@ class Cattlescreen extends StatelessWidget {
                           onChanged: (value) {
                             controller.selectedspeciesnotavailable = value
                                 .toString();
-                            print(
-                              "aaaa ::: ${controller.selectedspeciesnotavailable}",
-                            );
+                            // print(
+                            //   "aaaa ::: ${controller.selectedspeciesnotavailable}",
+                            // );
                             controller.update();
                           },
                         )

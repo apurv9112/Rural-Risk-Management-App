@@ -23,7 +23,7 @@ class FarmerDetailsController extends GetxController {
 
       await Share.shareXFiles([XFile(filePath)], text: "Farmer Details");
     } catch (e) {
-      print("Screenshot error: $e");
+      // print("Screenshot error: $e");
     }
   }
 }

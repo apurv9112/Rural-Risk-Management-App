@@ -16,7 +16,7 @@ class Datadisplaypage extends StatelessWidget {
       init: DatadisplayController(),
       builder: (controller) {
         final args = Get.arguments;
-        print("args ;;;; $args");
+        // print("args ;;;; $args");
         controller.retaggingdata = args != null ? "retaggingdata" : null;
         // controller.taggingdata = args != null ? "taggingdata" : null;
         controller.claimdata = args != null ? "claimdata" : null;
@@ -74,7 +74,7 @@ class Datadisplaypage extends StatelessWidget {
                                 //   routetaggingdatapage,
                                 //   arguments: {"tagging": controller.textList[i]},
                                 // );
-                                print(controller.textList[i]);
+                                // print(controller.textList[i]);
                               },
                               child: Container(
                                 height: hp(16),

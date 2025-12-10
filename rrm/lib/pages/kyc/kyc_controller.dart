@@ -56,9 +56,9 @@ class KycController extends GetxController {
           : isimage == 10
           ? selectedOther4.value = File(pickedFile.path)
           : null;
-      print("controllerimage::::$isimage");
-      print("controllerimage::::${selectedAadharfront.value}");
-      print("controllerimage11111111::::${selectedAadharback.value}");
+      // print("controllerimage::::$isimage");
+      // print("controllerimage::::${selectedAadharfront.value}");
+      // print("controllerimage11111111::::${selectedAadharback.value}");
     }
     update();
   }
@@ -90,7 +90,7 @@ class KycController extends GetxController {
           : isimage == 10
           ? selectedOther4.value = File(result.files.single.path!)
           : null;
-      print("controllerimage::::$isimage");
+      // print("controllerimage::::$isimage");
     }
     update();
   }

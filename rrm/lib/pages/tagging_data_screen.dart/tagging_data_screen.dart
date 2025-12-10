@@ -21,7 +21,7 @@ class TaggingDataScreen extends StatelessWidget {
       init: TaggingdataController(),
       builder: (controller) {
         final args = Get.arguments;
-        print("args ;;;; $args");
+        // print("args ;;;; $args");
         controller.retagging = args != null ? args["retagging"] : null;
         controller.data = args != null ? args["tagging"] : null;
         controller.ischangepage = args != null ? args["isclaim"] : null;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rrm/routes/common/common_app_pages.dart';
 
 class CattleController extends GetxController {
   bool? cowreadOnly = false;
@@ -331,7 +332,7 @@ class CattleController extends GetxController {
           : isimage == 12
           ? selectedearbackside.value = File(pickedFile.path)
           : null;
-      print("controllerimage::::$isimage");
+      // print("controllerimage::::$isimage");
     }
     update();
   }
@@ -367,7 +368,7 @@ class CattleController extends GetxController {
           : isimage == 12
           ? selectedearbackside.value = File(result.files.single.path!)
           : null;
-      print("controllerimage::::$isimage");
+      // print("controllerimage::::$isimage");
     }
     update();
   }
@@ -389,7 +390,7 @@ class CattleController extends GetxController {
           : null;
     }
 
-    print("Selected video for isimage $isimage: ${pickedVideo?.path}");
+    // print("Selected video for isimage $isimage: ${pickedVideo?.path}");
 
     update();
   }
@@ -459,8 +460,7 @@ class CattleController extends GetxController {
       // Delay for 5 seconds
 
       Future.delayed(Duration(seconds: 5), () {
-        Get.offAllNamed("/routefarmerdetailspage");
-        update();
+        Get.toNamed(routefarmerdetailspage);
       });
 
       update();
@@ -489,8 +489,7 @@ class CattleController extends GetxController {
       // Delay for 5 seconds
 
       Future.delayed(Duration(seconds: 5), () {
-        Get.offAllNamed("/routefarmerdetailspage");
-        update();
+        Get.toNamed(routefarmerdetailspage);
       });
 
       update();

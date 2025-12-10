@@ -313,8 +313,8 @@ class KycScreen extends StatelessWidget {
                   Customcontainer(
                     onTap: () {
                       controller.savekyc();
-                      print("retagging   ::: ${controller.retagging}");
-                      print("ischangepage   ::: ${controller.ischangepage}");
+                      // print("retagging   ::: ${controller.retagging}");
+                      // print("ischangepage   ::: ${controller.ischangepage}");
                     },
                     context: context,
                     text: "Save & Next",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/pages/claim/claim_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
@@ -17,7 +18,7 @@ class ClaimScreen extends StatelessWidget {
       init: ClaimController(),
       builder: (controller) {
         final args = Get.arguments;
-        print("args ;;;; $args");
+        // print("args ;;;; $args");
         controller.retagging = args != null ? args["retagging"] : null;
         return Scaffold(
           resizeToAvoidBottomInset: true,
@@ -181,13 +182,26 @@ class ClaimScreen extends StatelessWidget {
                     SizedBox(height: hp(3)),
                     Customcontainer(
                       onTap: () {
-                        Get.toNamed(
-                          routetaggingdatapage,
-                          arguments: {
-                            "isclaim": controller.claim,
-                            "retagging": controller.retagging,
-                          },
+                        Get.dialog(
+                          Center(
+                            child: LoadingAnimationWidget.staggeredDotsWave(
+                              color: Colors.white,
+                              size: 60,
+                            ),
+                          ),
+                          barrierDismissible: false,
                         );
+
+                        Future.delayed(Duration(seconds: 3), () {
+                          Get.back(); // close loading dialog
+                          Get.toNamed(
+                            routetaggingdatapage,
+                            arguments: {
+                              "isclaim": controller.claim,
+                              "retagging": controller.retagging,
+                            },
+                          );
+                        });
                       },
                       context: context,
                       width: double.infinity,

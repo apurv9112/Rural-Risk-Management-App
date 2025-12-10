@@ -98,7 +98,7 @@ class TaggingdataController extends GetxController {
         'yyyy-MM-dd',
       ).format(picked);
       controller.update();
-      print("Formatted date: ${controller.dateofdeathcontroller.text}");
+      // print("Formatted date: ${controller.dateofdeathcontroller.text}");
     }
   }
 
@@ -131,7 +131,7 @@ class TaggingdataController extends GetxController {
       selectedTime.value = picked;
       timeofdeathcontroller.text = picked.format(context);
       update();
-      print("Selected Time: ${picked.format(context)}");
+      // print("Selected Time: ${picked.format(context)}");
     }
   }
 
@@ -152,8 +152,8 @@ class TaggingdataController extends GetxController {
           : isimage == 3
           ? selectedOther3.value = File(pickedFile.path)
           : null;
-      print("controllerimage::::$isimage");
-      print("object  ::  ${selectedOther1.value}");
+      // print("controllerimage::::$isimage");
+      // print("object  ::  ${selectedOther1.value}");
     }
     update();
   }
@@ -171,7 +171,7 @@ class TaggingdataController extends GetxController {
           : isimage == 3
           ? selectedOther3.value = File(result.files.single.path!)
           : null;
-      print("controllerimage::::$isimage");
+      // print("controllerimage::::$isimage");
     }
     update();
   }
