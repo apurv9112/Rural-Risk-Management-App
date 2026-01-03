@@ -134,7 +134,7 @@ iscattleimage({required BuildContext context, required controller}) {
               )
             : SizedBox(),
         onTap: () {
-          buttomsheet(context: context, controller: controller, isimage: 1);
+          buttomsheet(context: context, controller: controller, isvideo: 1);
         },
       ),
       SizedBox(height: hp(1)),
@@ -152,7 +152,7 @@ iscattleimage({required BuildContext context, required controller}) {
               )
             : SizedBox(),
         onTap: () {
-          buttomsheet(context: context, controller: controller, isimage: 2);
+          buttomsheet(context: context, controller: controller, isvideo: 2);
         },
       ),
       SizedBox(height: hp(1)),

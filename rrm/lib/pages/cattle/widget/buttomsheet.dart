@@ -29,10 +29,10 @@ buttomsheet({
             children: [
               Customcontainer(
                 onTap: () {
-                  controller.isvideo != null
+                  isvideo != null
                       ? controller.pickVideoFromCamera()
                       : controller.pickFromCamera();
-                  controller.isvideo != null
+                  isvideo != null
                       ? controller.isvideo = isvideo
                       : controller.isimage = isimage;
                   Get.back();
@@ -44,10 +44,10 @@ buttomsheet({
               SizedBox(width: wp(5)),
               Customcontainer(
                 onTap: () {
-                  controller.isvideo != null
+                  isvideo != null
                       ? controller.pickVideoFromGallery()
                       : controller.picFromGallery();
-                  controller.isvideo != null
+                  isvideo != null
                       ? controller.isvideo = isvideo
                       : controller.isimage = isimage;
                   Get.back();
