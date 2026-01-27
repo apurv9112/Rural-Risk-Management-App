@@ -1,8 +1,14 @@
-import 'package:get/state_manager.dart';
-// import 'package:flutter_getx_concept/models/cart_item.model.dart';
+import 'package:get/get.dart';
 
-class AppController extends GetxController{
+class AppController extends GetxController {
+  RxString token = ''.obs;
 
-  // RxList<CartItemModel> cartItems = RxList<CartItemModel>([]);
+  void setToken(String value) {
+    token.value = value;
+  }
 
+  void clearToken() {
+    token.value = '';
+  }
 }
+

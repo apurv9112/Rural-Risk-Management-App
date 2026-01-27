@@ -17,6 +17,7 @@ void main() async {
   await getTemporaryDirectory();
   getIt.registerLazySingleton<FormValidations>(() => FormValidations());
   getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
+  Get.put(AppController());
   Get.put(DeviceController());
   runApp(MyApp());
 }
@@ -26,14 +27,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(AppController());
-
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(1.0), // 👈 App text size fixed
+            textScaler: TextScaler.linear(1.0),
           ),
           child: child!,
         );

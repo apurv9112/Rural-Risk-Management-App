@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
-import 'package:rrm/dependency_injection.dart';
 import 'package:rrm/pages/login/login_controller.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customcontainer.dart';
 import 'package:rrm/widgets/text_field.dart';
+import 'package:rrm/dependency_injection.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -14,13 +14,6 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<LoginController>(
-      init: LoginController(),
-      initState: (state) {
-        Future.delayed(Duration(milliseconds: 200), () {
-          // ignore: use_build_context_synchronously
-          Get.find<LoginController>().showDeviceDialog(context: context);
-        });
-      },
 
       builder: (controller) {
         return Scaffold(
@@ -61,7 +54,6 @@ class LoginPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(height: hp(0.5)),
                           GestureDetector(
                             onTap: () {
                               controller.isemail = false;
@@ -83,10 +75,9 @@ class LoginPage extends StatelessWidget {
                           SizedBox(
                             width: wp(45),
                             child: Divider(
-                              color: controller.isemail == true
+                              color: controller.isemail
                                   ? AppColors.WHITE
                                   : Colors.transparent,
-                              radius: BorderRadius.circular(dp(context, 12)),
                               thickness: dp(context, 2),
                             ),
                           ),
@@ -94,19 +85,17 @@ class LoginPage extends StatelessWidget {
                           SizedBox(
                             width: wp(45),
                             child: Divider(
-                              color: controller.isemail == false
+                              color: !controller.isemail
                                   ? AppColors.WHITE
                                   : Colors.transparent,
-                              radius: BorderRadius.circular(dp(context, 12)),
                               thickness: dp(context, 2),
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: hp(2)),
-                      controller.isemail == true
+                      controller.isemail
                           ? CustomTextField(
-                              key: const Key('email_field'),
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               controller: controller.emailcontroller,
@@ -118,12 +107,8 @@ class LoginPage extends StatelessWidget {
                                 isRequired: true,
                                 errorText: "Email is required.",
                               ),
-                              onchange: (p0) {
-                                controller.update();
-                              },
                             )
                           : CustomTextField(
-                              key: Key('mobile_no'),
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
                               controller: controller.mobilecontroller,
@@ -135,13 +120,9 @@ class LoginPage extends StatelessWidget {
                                 isRequired: true,
                                 errorText: "Mobile is required.",
                               ),
-                              onchange: (p0) {
-                                controller.update();
-                              },
                             ),
                       SizedBox(height: hp(2)),
                       CustomTextField(
-                        key: Key('password_field'),
                         keyboardType: TextInputType.visiblePassword,
                         controller: controller.passwordcontroller,
                         textInputAction: TextInputAction.done,
@@ -153,20 +134,13 @@ class LoginPage extends StatelessWidget {
                           isRequired: true,
                           errorText: "Password is required.",
                         ),
-                        onchange: (p0) {
-                          controller.update();
-                        },
                       ),
                       SizedBox(height: hp(4)),
                       Customcontainer(
                         context: context,
                         text: "Login",
                         singlefontSize: dp(context, 25),
-                        onTap: () {
-                          if (controller.formKey.currentState!.validate()) {
-                            controller.submitLogin();
-                          }
-                        },
+                        onTap: controller.submitLogin,
                       ),
                     ],
                   ),

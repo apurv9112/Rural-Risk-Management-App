@@ -1,11 +1,18 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
+import 'package:rrm/services/tagging_service.dart';
+import 'package:rrm/utils/enum_utils.dart';
+import 'package:rrm/widgets/snackbar_widget.dart';
 
 class TaggingController extends GetxController {
-  AppController appController = Get.find();
-  GlobalKey<FormState> formKey = GlobalKey();
+  final AppController appController = Get.find();
+
+  final TaggingService _taggingService = TaggingService();
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   TextEditingController mobilecontroller = TextEditingController();
   TextEditingController loanaccoutnumbercontroller = TextEditingController();
   TextEditingController nameofcattleownercontroller = TextEditingController();
@@ -15,131 +22,95 @@ class TaggingController extends GetxController {
 
   bool listshow = true;
   bool manualtagging = false;
+  bool isLoading = false;
 
-  // List<String> textList = [
-  //   "Patel Apurv Anantbhai",
-  //   "Patel Harsh Vikrambhai",
-  //   "Patel Apurv Anantbhai",
-  //   "Patel Harsh Vikrambhai",
-  //   "Patel Apurv Anantbhai",
-  //   "Patel Harsh Vikrambhai",
-  //   "Patel Apurv Anantbhai",
-  //   "Patel Harsh Vikrambhai",
-  // ];
+  List<dynamic> taggings = [];
 
-  List<Map<String, String>> textList = [
-    {
-      "name": "Patel Apurv Anantbhai",
-      "mobile": "7572855882",
-      "village": "Gabat",
-      "taluko": "Bayad",
-      "Insurance": "TATA AIG",
-    },
-    {
-      "name": "Patel Harsh Vikrambhai",
-      "mobile": "9876543210",
-      "village": "Hathipura",
-      "taluko": "Bayad",
-      "Insurance": "New India",
-    },
-    {
-      "name": "Patel Apurv Anantbhai",
-      "mobile": "7572855882",
-      "village": "Gabat",
-      "taluko": "Bayad",
-      "Insurance": "TATA AIG",
-    },
-    {
-      "name": "Patel Harsh Vikrambhai",
-      "mobile": "9876543210",
-      "village": "Hathipura",
-      "taluko": "Bayad",
-      "Insurance": "New India",
-    },
-    {
-      "name": "Patel Apurv Anantbhai",
-      "mobile": "7572855882",
-      "village": "Gabat",
-      "taluko": "Bayad",
-      "Insurance": "TATA AIG",
-    },
-    {
-      "name": "Patel Harsh Vikrambhai",
-      "mobile": "9876543210",
-      "village": "Hathipura",
-      "taluko": "Bayad",
-      "Insurance": "New India",
-    },
-    {
-      "name": "Patel Apurv Anantbhai",
-      "mobile": "7572855882",
-      "village": "Gabat",
-      "taluko": "Bayad",
-      "Insurance": "TATA AIG",
-    },
-    {
-      "name": "Patel Harsh Vikrambhai",
-      "mobile": "9876543210",
-      "village": "Hathipura",
-      "taluko": "Bayad",
-      "Insurance": "New India",
-    },
-    {
-      "name": "Patel Apurv Anantbhai",
-      "mobile": "7572855882",
-      "village": "Gabat",
-      "taluko": "Bayad",
-      "Insurance": "TATA AIG",
-    },
-    {
-      "name": "Patel Harsh Vikrambhai",
-      "mobile": "9876543210",
-      "village": "Hathipura",
-      "taluko": "Bayad",
-      "Insurance": "New India",
-    },
-    {
-      "name": "Patel Apurv Anantbhai",
-      "mobile": "7572855882",
-      "village": "Gabat",
-      "taluko": "Bayad",
-      "Insurance": "TATA AIG",
-    },
-    {
-      "name": "Patel Harsh Vikrambhai",
-      "mobile": "9876543210",
-      "village": "Hathipura",
-      "taluko": "Bayad",
-      "Insurance": "New India",
-    },
-  ];
+  Future<void> search() async {
+    if (isLoading) return;
 
-  // tagging page search
+    try {
+      final String token = appController.token.value;
 
-  void search() {
-    // if (mobilecontroller.text.isNotEmpty ||
-    //     loanaccoutnumbercontroller.text.isNotEmpty ||
-    //     nameofcattleownercontroller.text.isNotEmpty ||
-    //     villagecontroller.text.isNotEmpty ||
-    //     talukacontroller.text.isNotEmpty ||
-    //     distcontroller.text.isNotEmpty) {
-    //   listshow = false;
-    //   update();
-    //   print("$listshow");
-    // }
-    Get.dialog(
-      Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: Colors.white,
-          size: 60,
-        ),
-      ),
-      barrierDismissible: false,
-    );
-    Future.delayed(Duration(seconds: 5), () {
-      Get.back(); // close loading dialog
-    });
-    listshow = false;
-    update();
+      if (token.isEmpty) {
+        showSnackBar(
+          "Session expired. Please log in again.",
+          SNACK.FAILED,
+        );
+        debugPrint("Tagging search blocked: missing token");
+        return;
+      }
+
+      debugPrint("Tagging search token length: ${token.length}");
+
+      isLoading = true;
+      update();
+
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      final Map<String, dynamic> payload = {
+        "page": 1,
+        "limit": 10,
+        "mobileNo": mobilecontroller.text.trim(),
+        "loanAccountNo": loanaccoutnumbercontroller.text.trim(),
+        "ownerName": nameofcattleownercontroller.text.trim(),
+        "village": villagecontroller.text.trim(),
+        "taluko": talukacontroller.text.trim(),
+        "district": distcontroller.text.trim(),
+      };
+
+      payload.removeWhere(
+        (_, value) => value is String && value.isEmpty,
+      );
+
+      final response = await _taggingService.searchTagging(
+        token: token,
+        body: payload,
+      );
+
+      debugPrint(
+        "Tagging search response: status=${response.statusCode}, body=${response.body}",
+      );
+
+      final decoded = jsonDecode(response.body);
+
+      final bool isOkStatus = response.statusCode >= 200 && response.statusCode < 300;
+      if (isOkStatus && decoded["status"] == "success") {
+        taggings = decoded["data"]["taggings"] ?? [];
+        listshow = false;
+      } else {
+        final msg = decoded["message"] ?? "Search failed";
+        if (response.statusCode == 401) {
+          appController.clearToken();
+          showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
+        } else {
+          showSnackBar(msg, SNACK.FAILED);
+        }
+        return;
+      }
+    } catch (e) {
+      debugPrint("Tagging search error: $e");
+      if (!(Get.isDialogOpen ?? false)) {
+        showSnackBar("Unable to search right now. Check connection and retry.", SNACK.FAILED);
+      }
+    } finally {
+      isLoading = false;
+      if (Get.isDialogOpen ?? false) Get.back();
+      update();
+    }
+  }
+
+  @override
+  void onClose() {
+    mobilecontroller.dispose();
+    loanaccoutnumbercontroller.dispose();
+    nameofcattleownercontroller.dispose();
+    villagecontroller.dispose();
+    talukacontroller.dispose();
+    distcontroller.dispose();
+    super.onClose();
   }
 }

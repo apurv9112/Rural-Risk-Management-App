@@ -121,7 +121,7 @@ class TaggingScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${controller.textList.length}",
+                                      "${controller.taggings.length}",
                                       style: TextStyle(
                                         fontSize: dp(context, 17),
                                         fontWeight: FontWeight.w500,
@@ -198,7 +198,7 @@ class TaggingScreen extends StatelessWidget {
                             ? ListView.builder(
                                 shrinkWrap: true,
                                 physics: BouncingScrollPhysics(),
-                                itemCount: controller.textList.length,
+                                itemCount: controller.taggings.length,
                                 itemBuilder: (context, i) {
                                   return Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -208,10 +208,10 @@ class TaggingScreen extends StatelessWidget {
                                           Get.toNamed(
                                             routetaggingdatapage,
                                             arguments: {
-                                              "tagging": controller.textList[i],
+                                              "tagging": controller.taggings[i],
                                             },
                                           );
-                                          // print(controller.textList[i]);
+                                          // print(controller.taggings[i]);
                                         },
                                         child: Container(
                                           height: hp(16),
@@ -259,27 +259,27 @@ class TaggingScreen extends StatelessWidget {
                                                   SizedBox(height: hp(0.5)),
                                                   Text(
                                                     controller
-                                                        .textList[i]["name"]!,
+                                                        .taggings[i]["ownerName"]!,
                                                   ),
                                                   SizedBox(height: hp(0.5)),
                                                   Text(
                                                     controller
-                                                        .textList[i]["mobile"]!,
+                                                        .taggings[i]["mobileNo"]!,
                                                   ),
                                                   SizedBox(height: hp(0.5)),
                                                   Text(
                                                     controller
-                                                        .textList[i]["village"]!,
+                                                        .taggings[i]["village"]!,
                                                   ),
                                                   SizedBox(height: hp(0.5)),
                                                   Text(
                                                     controller
-                                                        .textList[i]["taluko"]!,
+                                                        .taggings[i]["taluko"]!,
                                                   ),
                                                   SizedBox(height: hp(0.5)),
                                                   Text(
                                                     controller
-                                                        .textList[i]["Insurance"]!,
+                                                        .taggings[i]["insuranceCompanyName"]!,
                                                   ),
                                                 ],
                                               ),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -5,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rrm/controller.dart';
+import 'package:rrm/utils/enum_utils.dart';
+import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
+import 'package:rrm/services/kyc_service.dart';
 
 class KycController extends GetxController {
   TextEditingController namecontroller = TextEditingController();
@@ -14,6 +19,12 @@ class KycController extends GetxController {
   String? claimcattle = "claimcattle";
   String? ischangepage = "ischangepage";
   String? retagging = "retagging";
+  String ownerName = '';
+  String mobileNo = '';
+  final AppController appController = Get.find();
+  final KycService _kycService = KycService();
+
+  bool isSubmitting = false;
 
   // kyc screen
 
@@ -30,6 +41,28 @@ class KycController extends GetxController {
   Rx<File?> selectedOther4 = Rx<File?>(null);
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void onInit() {
+    super.onInit();
+    final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
+
+    debugPrint("KYC Controller - Raw Get.arguments: ${Get.arguments}");
+    debugPrint("KYC Controller - args['tagging']: ${args['tagging']}");
+
+    data = args["tagging"];
+    ischangepage = args["ischangepage"];
+    retagging = args["retagging"];
+
+    final tagging = data as Map<String, dynamic>?;
+    ownerName = (tagging?["ownerName"] ?? '').toString();
+    mobileNo = (tagging?["mobileNo"] ?? '').toString();
+
+    namecontroller.text = ownerName;
+    mobilecontroller.text = mobileNo;
+
+    debugPrint("KYC Controller - ownerName: '$ownerName', mobileNo: '$mobileNo'");
+  }
 
   //image  picker
   void pickFromCamera() async {
@@ -95,30 +128,124 @@ class KycController extends GetxController {
     update();
   }
 
-  void savekyc() {
-    if (selectedAadharfront.value != null ||
-        selectedAadharback.value != null ||
-        selectedbankdetails1.value != null) {
-      Get.dialog(
-        Center(
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: Colors.white,
-            size: 60,
-          ),
-        ),
-        barrierDismissible: false,
-      );
-      // Delay for 3 seconds
-      Future.delayed(Duration(seconds: 3), () {
-        Get.back(); // close loading dialog
-        Get.toNamed(
-          routecattlepage,
-          arguments: {"retagging": retagging, "ischangepage": ischangepage},
-        );
-      });
+  Future<void> savekyc() async {
+    if (isSubmitting) return;
 
+    if (data == null || data["id"] == null) {
+      showSnackBar("Tagging data not found.", SNACK.FAILED);
+      return;
+    }
+
+    if (selectedAadharfront.value == null &&
+        selectedAadharback.value == null &&
+        selectedbankdetails1.value == null &&
+        selectedbankdetails2.value == null &&
+        selectedPanfront.value == null &&
+        selectedOther1.value == null &&
+        selectedOther2.value == null &&
+        selectedOther3.value == null &&
+        selectedOther4.value == null &&
+        selectedOther5.value == null) {
+      showSnackBar("Please add at least one KYC document.", SNACK.FAILED);
+      return;
+    }
+
+    final token = appController.token.value;
+    if (token.isEmpty) {
+      showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
+      return;
+    }
+
+    isSubmitting = true;
+    update();
+
+    Get.dialog(
+      Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
+        ),
+      ),
+      barrierDismissible: false,
+    );
+
+    try {
+      final payload = <String, dynamic>{};
+
+      void addFile(String key, File? file) {
+        if (file == null) return;
+        final bytes = file.readAsBytesSync();
+        payload[key] = base64Encode(bytes);
+      }
+
+      addFile("aadharFront", selectedAadharfront.value);
+      addFile("aadharBack", selectedAadharback.value);
+      addFile("panFront", selectedPanfront.value);
+      addFile("bankDetailsPhoto1", selectedbankdetails1.value);
+      addFile("bankDetailsPhoto2", selectedbankdetails2.value);
+      addFile("otherImage1", selectedOther1.value);
+      addFile("otherImage2", selectedOther2.value);
+      addFile("otherImage3", selectedOther3.value);
+      addFile("otherImage4", selectedOther4.value ?? selectedOther5.value);
+
+      debugPrint("KYC PATCH taggingId: ${data["id"]}");
+      debugPrint("Token (first 50 chars): ${token.length > 50 ? token.substring(0, 50) : token}...");
+      
+      // Decode JWT payload to check userType
+      try {
+        final parts = token.split('.');
+        if (parts.length == 3) {
+          String payload = parts[1];
+          // Add padding if needed for base64
+          while (payload.length % 4 != 0) {
+            payload += '=';
+          }
+          final decoded = utf8.decode(base64Decode(payload));
+          debugPrint("JWT Payload: $decoded");
+        }
+      } catch (e) {
+        debugPrint("Failed to decode JWT: $e");
+      }
+
+      debugPrint("Sending PATCH request...");
+      final resp = await _kycService.updateKyc(
+        token: token,
+        taggingId: data["id"].toString(),
+        payload: payload,
+      );
+
+      debugPrint("KYC PATCH response status: ${resp.statusCode}");
+      debugPrint("KYC PATCH response body: ${resp.body}");
+
+      final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
+
+      if (resp.statusCode >= 200 && resp.statusCode < 300 &&
+          decoded["status"] == "success") {
+        showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
+        if (Get.isDialogOpen ?? false) Get.back(); // ensure loader is closed before navigation
+
+        Get.offNamed(
+          routecattlepage,
+          arguments: {
+            "tagging": data,
+            "retagging": retagging,
+            "ischangepage": ischangepage,
+          },
+        );
+      } else {
+        showSnackBar(
+          decoded["message"] ?? "Failed to update KYC.",
+          SNACK.FAILED,
+        );
+      }
+    } catch (e, stackTrace) {
+      debugPrint("KYC update error: $e");
+      debugPrint("Stack trace: $stackTrace");
+      showSnackBar("Unable to update KYC: ${e.toString()}", SNACK.FAILED);
+    } finally {
+      isSubmitting = false;
+      if (Get.isDialogOpen ?? false) Get.back();
       update();
     }
-    update();
   }
 }
