@@ -1,12 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
+import 'package:rrm/services/cattle_service.dart';
+import 'package:rrm/utils/enum_utils.dart';
+import 'package:rrm/widgets/snackbar_widget.dart';
 
 class CattleController extends GetxController {
+  final CattleService _cattleService = CattleService();
+
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
   bool? taggingdate = false;
@@ -17,10 +24,18 @@ class CattleController extends GetxController {
   TextEditingController buffalocountcontroller = TextEditingController();
   TextEditingController milklittercontroller = TextEditingController();
   TextEditingController buffalomoneycontroller = TextEditingController();
+  final AppController appController = Get.find();
+  bool isSubmitting = false;
   GlobalKey<FormState> formKey = GlobalKey();
 
   @override
   void onInit() {
+    // Capture navigation arguments once to avoid nulls on rebuilds
+    final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
+    data = args["tagging"];
+    ischangepage = args["ischangepage"];
+    retagging = args["retagging"];
+
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
     super.onInit();
   }
@@ -442,58 +457,122 @@ class CattleController extends GetxController {
   }
 
   void savecattle() {
-    if (selectedeartag.value != null ||
-        selectedheadpose.value != null ||
-        selectedsideposeleft.value != null ||
-        selectedsideposeright.value != null ||
-        selectedbackpose.value != null) {
-      Get.dialog(
-        Center(
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: Colors.white,
-            size: 60,
-          ),
-        ),
-        barrierDismissible: false,
-      );
-
-      // Delay for 5 seconds
-
-      Future.delayed(Duration(seconds: 5), () {
-        Get.toNamed(routefarmerdetailspage);
-      });
-
-      update();
-    }
-    update();
+    _submitCattle(isClaimFlow: false);
   }
 
   void saveclaim() {
-    if (selectedeartag.value != null ||
-        selectedheadpose.value != null ||
-        selectedsideposeleft.value != null ||
-        selectedsideposeright.value != null ||
-        selectedbackpose.value != null ||
-        selectedearcut.value != null ||
-        selectedearbackside.value != null) {
-      Get.dialog(
-        Center(
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: Colors.white,
-            size: 60,
-          ),
+    _submitCattle(isClaimFlow: true);
+  }
+
+  Future<void> _submitCattle({required bool isClaimFlow}) async {
+    if (isSubmitting) return;
+
+    final token = appController.token.value;
+    if (token.isEmpty) {
+      showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
+      return;
+    }
+
+    final taggingId = data is Map<String, dynamic> ? data['id'] : null;
+    if (taggingId == null) {
+      showSnackBar("Tagging data not found.", SNACK.FAILED);
+      return;
+    }
+
+    if (selectedeartag.value == null &&
+        selectedheadpose.value == null &&
+        selectedsideposeleft.value == null &&
+        selectedsideposeright.value == null &&
+        selectedbackpose.value == null &&
+        (!isClaimFlow || (selectedearcut.value == null && selectedearbackside.value == null))) {
+      showSnackBar("Please add at least one cattle photo.", SNACK.FAILED);
+      return;
+    }
+
+    isSubmitting = true;
+    update();
+
+    Get.dialog(
+      Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
         ),
-        barrierDismissible: false,
+      ),
+      barrierDismissible: false,
+    );
+
+    final payload = <String, dynamic>{
+      "taggingId": taggingId,
+      "tagNumber": tagnumbercontroller.text.trim().isNotEmpty
+          ? tagnumbercontroller.text.trim()
+          : null,
+      "taggingDate": taggingdatecontroller.text.trim().isNotEmpty
+          ? taggingdatecontroller.text.trim()
+          : null,
+      "species": selectedSpeciesValue,
+      "breed": selectedbreedValue,
+      "bodyColor": selectedbodycolorValue,
+      "rightHorn": selectedrighthornValue,
+      "leftHorn": selectedlefthornValue,
+      "switchOfTail": selectedtailcolorValue,
+      "cattleAge": selectedAgeValue,
+      "idMark": selectedidmarkValue,
+      "milkPerDayLtr": _toNullableDouble(milklittercontroller.text),
+      "lactation": _toNullableDouble(buffalocountcontroller.text),
+      "sumInsured": _toNullableDouble(buffalomoneycontroller.text),
+      "marketValue": _toNullableDouble(buffalomoneycontroller.text),
+    }..removeWhere((_, value) => value == null || (value is String && value.isEmpty));
+
+    try {
+      final resp = await _cattleService.submitCattle(
+        token: token,
+        payload: payload,
       );
 
-      // Delay for 5 seconds
+      final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
 
-      Future.delayed(Duration(seconds: 5), () {
-        Get.toNamed(routefarmerdetailspage);
-      });
+      if (resp.statusCode >= 200 && resp.statusCode < 300 && decoded['status'] == 'success') {
+        showSnackBar("Cattle saved successfully.", SNACK.SUCCESS);
+        final bool isTaggingFlow = ischangepage == null && retagging == null;
 
+        if (isTaggingFlow) {
+          // Go back to cattle capture for next animal in tagging flow
+          Get.offNamed(
+            routecattlepage,
+            arguments: {
+              "tagging": data,
+              "ischangepage": ischangepage,
+              "retagging": retagging,
+            },
+          );
+        } else {
+          // Claims/retagging continue to farmer details summary
+          Get.offNamed(
+            routefarmerdetailspage,
+            arguments: {
+              "tagging": data,
+              "ischangepage": ischangepage,
+              "retagging": retagging,
+            },
+          );
+        }
+      } else {
+        showSnackBar(decoded['message'] ?? 'Failed to save cattle.', SNACK.FAILED);
+      }
+    } catch (e) {
+      showSnackBar("Unable to save cattle: ${e.toString()}", SNACK.FAILED);
+    } finally {
+      isSubmitting = false;
+      if (Get.isDialogOpen ?? false) Get.back();
       update();
     }
-    update();
+  }
+
+  double? _toNullableDouble(String? value) {
+    if (value == null) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+    return double.tryParse(trimmed);
   }
 }

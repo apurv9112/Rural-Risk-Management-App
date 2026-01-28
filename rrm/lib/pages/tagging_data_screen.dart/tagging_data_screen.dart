@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +12,7 @@ import 'package:rrm/widgets/custom_camera_button.dart';
 import 'package:rrm/widgets/customappbar.dart';
 import 'package:rrm/widgets/customcontainer.dart';
 import 'package:rrm/widgets/text_field.dart';
-import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class TaggingDataScreen extends StatelessWidget {
   const TaggingDataScreen({super.key});
@@ -20,12 +22,36 @@ class TaggingDataScreen extends StatelessWidget {
     return GetBuilder<TaggingdataController>(
       init: TaggingdataController(),
       builder: (controller) {
-        final args = Get.arguments;
-        // print("args ;;;; $args");
-        controller.retagging = args != null ? args["retagging"] : null;
-        controller.data = args != null ? args["tagging"] : null;
-        controller.ischangepage = args != null ? args["isclaim"] : null;
-        controller.manualtagging = args != null ? args["manualtagging"] : null;
+        final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
+        controller.data = args["tagging"];
+        controller.retagging = args["retagging"];
+        controller.ischangepage = args["isclaim"];
+        controller.manualtagging = args["manualtagging"];
+
+        final tagging = controller.data as Map<String, dynamic>?;
+        if (tagging == null) {
+          return const Scaffold(
+            body: Center(
+              child: Text("No tagging data provided."),
+            ),
+          );
+        }
+
+        // preload text fields safely
+        controller.namecontroller.text = (tagging["ownerName"] ?? '').toString();
+        controller.mobilenumbercontroller.text = (tagging["mobileNo"] ?? '').toString();
+        controller.addresscontroller.text = (tagging["address"] ?? '').toString();
+        controller.villegcontroller.text = (tagging["village"] ?? '').toString();
+        controller.talukcontroller.text = (tagging["taluko"] ?? '').toString();
+        controller.districcontroller.text = (tagging["district"] ?? '').toString();
+        controller.banknamecontroller.text = (tagging["bankName"] ?? '').toString();
+        controller.branchcontroller.text = (tagging["branchOfBank"] ?? '').toString();
+        controller.loanacnocontroller.text = (tagging["loanAccountNo"] ?? '').toString();
+        controller.insurancecontroller.text = (tagging["insuranceCompanyName"] ?? '').toString();
+        controller.buffalocountcontroller.text = (tagging["numberOfBuffalo"] ?? '').toString();
+        controller.cowcountcontroller.text = (tagging["numberOfCow"] ?? '').toString();
+        controller.buffalomoneycontroller.text = (tagging["sumInsuredBuffalo"] ?? '').toString();
+        controller.cowmoneycontroller.text = (tagging["sumInsuredCow"] ?? '').toString();
         controller.dateofdeathcontroller.text = DateFormat(
           'yyyy-MM-dd',
         ).format(controller.selectedDate.value!);
@@ -33,23 +59,6 @@ class TaggingDataScreen extends StatelessWidget {
         controller.timeofdeathcontroller.text = controller.retagging != null
             ? "5504845226"
             : controller.selectedTime.value!.format(context);
-
-        controller.namecontroller.text = controller.ischangepage == null
-            ? controller.data.toString()
-            : "Apuv Patel";
-        controller.mobilenumbercontroller.text = "7572855882";
-        controller.addresscontroller.text = "Plot no 30 Giriraj Greens";
-        controller.villegcontroller.text = "Gabat";
-        controller.talukcontroller.text = "Bayad";
-        controller.districcontroller.text = "Aravalli";
-        controller.banknamecontroller.text = "BOB";
-        controller.branchcontroller.text = "Bayad";
-        controller.loanacnocontroller.text = "515155514877";
-        controller.insurancecontroller.text = "54458542111";
-        controller.buffalocountcontroller.text = "4";
-        controller.cowcountcontroller.text = "2";
-        controller.buffalomoneycontroller.text = "40000";
-        controller.cowmoneycontroller.text = "20000";
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
@@ -89,9 +98,9 @@ class TaggingDataScreen extends StatelessWidget {
                         readOnly: controller.manualtagging ?? true,
                         suffixIcon: GestureDetector(
                           onTap: () {
-                            UrlLauncher.launch(
-                              'tel:+${controller.mobilenumbercontroller}',
-                            );
+                            final number = controller.mobilenumbercontroller.text.trim();
+                            if (number.isEmpty) return;
+                            url_launcher.launchUrl(Uri.parse('tel:+$number'));
                           },
                           child: Icon(
                             Icons.call_sharp,
@@ -896,7 +905,7 @@ class TaggingDataScreen extends StatelessWidget {
                           Get.toNamed(
                             routekycpage,
                             arguments: {
-                              "tagging": Get.arguments["tagging"],
+                              "tagging": controller.data,
                               "ischangepage": controller.ischangepage,
                               "retagging": controller.retagging,
                             },

@@ -127,6 +127,8 @@ class TaggingdataController extends GetxController {
       },
     );
 
+    if (!context.mounted) return;
+
     if (picked != null) {
       selectedTime.value = picked;
       timeofdeathcontroller.text = picked.format(context);
