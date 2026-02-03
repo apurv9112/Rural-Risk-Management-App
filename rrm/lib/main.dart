@@ -10,14 +10,32 @@ import 'controller.dart';
 import 'utils/colors.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
+import 'package:get_storage/get_storage.dart';
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   await getTemporaryDirectory();
+//   getIt.registerLazySingleton<FormValidations>(() => FormValidations());
+//   getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
+//   Get.put(AppController());
+//   Get.put(DeviceController());
+//   runApp(MyApp());
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await GetStorage.init(); // ⭐ REQUIRED
+
   await getTemporaryDirectory();
+
   getIt.registerLazySingleton<FormValidations>(() => FormValidations());
   getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
+
+  Get.put(AppController());
   Get.put(DeviceController());
+
   runApp(MyApp());
 }
 
@@ -26,15 +44,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(AppController());
-
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(1.0), // 👈 App text size fixed
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.0)),
           child: child!,
         );
       },

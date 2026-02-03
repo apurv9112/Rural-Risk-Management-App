@@ -15,17 +15,15 @@ class KycScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<KycController>(
-      init: KycController(),
       builder: (controller) {
-        final args = Get.arguments;
-        controller.ischangepage = args != null ? args["ischangepage"] : null;
-        controller.retagging = args != null ? args["retagging"] : null;
-        controller.data = Get.arguments;
+        final ownerName = controller.ownerName;
+        final mobileNo = controller.mobileNo;
 
-        controller.namecontroller.text = controller.data != ""
-            ? "Apurv Patel"
-            : controller.data.toString();
-        controller.mobilecontroller.text = "7572855882";
+        if (ownerName.isEmpty && mobileNo.isEmpty) {
+          return const Scaffold(
+            body: Center(child: Text("No tagging data provided.")),
+          );
+        }
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,

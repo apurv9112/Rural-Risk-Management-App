@@ -18,22 +18,18 @@ class Cattlescreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CattleController>(
-      init: CattleController(),
       builder: (controller) {
-        final args = Get.arguments;
-        controller.ischangepage = args != null ? args["ischangepage"] : null;
-        // print("controller.ischangepage  ::: ${controller.ischangepage}");
-
-        controller.retagging = args != null ? args["retagging"] : null;
-        // print("controller.retagging  ::: ${controller.retagging}");
+        final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
+        controller.ischangepage ??= args["ischangepage"];
+        controller.retagging ??= args["retagging"];
+        controller.data ??= args["tagging"];
 
         controller.tagnumbercontroller.text = "55862215522";
         controller.newtaggingdatecontroller.text = "55862215522";
         controller.taggingdatecontroller.text = DateFormat(
-          'yyyy-MM-dd',
+          'yyyy-MM-dd', 
         ).format(controller.selectedDate.value!);
 
-        // print("date ::: ${controller.taggingdatecontroller.text}");
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,

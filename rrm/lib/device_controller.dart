@@ -3,6 +3,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 class DeviceController extends GetxController {
   var deviceId = ''.obs;
+  var deviceModel = ''.obs;
+  var deviceOS = ''.obs;
 
   @override
   void onInit() {
@@ -16,13 +18,31 @@ class DeviceController extends GetxController {
     try {
       if (GetPlatform.isAndroid) {
         final androidInfo = await deviceInfo.androidInfo;
-        deviceId.value = androidInfo.id ?? "Unknown Device ID";
+        final androidId = androidInfo.id;
+        deviceId.value = androidId.isNotEmpty ? androidId : "Unknown Device ID";
+
+        final androidModel = "${androidInfo.brand} ${androidInfo.model}".trim();
+        deviceModel.value =
+            androidModel.isNotEmpty ? androidModel : "Unknown Device";
+
+        final androidVersion = "Android ${androidInfo.version.release}".trim();
+        deviceOS.value =
+            androidVersion.isNotEmpty ? androidVersion : "Android";
       } else if (GetPlatform.isIOS) {
         final iosInfo = await deviceInfo.iosInfo;
-        deviceId.value = iosInfo.identifierForVendor ?? "Unknown Device ID";
+        final iosId = iosInfo.identifierForVendor ?? '';
+        deviceId.value = iosId.isNotEmpty ? iosId : "Unknown Device ID";
+
+        final iosModel = iosInfo.utsname.machine.toString().trim();
+        deviceModel.value = iosModel.isNotEmpty ? iosModel : "Unknown Device";
+
+        final iosVersion = "iOS ${iosInfo.systemVersion}".trim();
+        deviceOS.value = iosVersion.isNotEmpty ? iosVersion : "iOS";
       }
     } catch (e) {
       deviceId.value = "Error getting ID";
+      deviceModel.value = "Unknown Device";
+      deviceOS.value = "Unknown OS";
     }
   }
 }
