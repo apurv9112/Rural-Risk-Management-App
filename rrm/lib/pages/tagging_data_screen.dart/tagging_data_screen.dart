@@ -23,35 +23,36 @@ class TaggingDataScreen extends StatelessWidget {
       init: TaggingdataController(),
       builder: (controller) {
         final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
-        controller.data = args["tagging"];
+        // Prefer tagging, then retagging, then claim as data source
+        controller.data = args["tagging"] ?? args["retagging"] ?? args["claim"];
         controller.retagging = args["retagging"];
         controller.ischangepage = args["isclaim"];
         controller.manualtagging = args["manualtagging"];
 
-        final tagging = controller.data as Map<String, dynamic>?;
-        if (tagging == null) {
+        final dataMap = controller.data as Map<String, dynamic>?;
+        if (dataMap == null) {
           return const Scaffold(
             body: Center(
-              child: Text("No tagging data provided."),
+              child: Text("No lead data provided."),
             ),
           );
         }
 
         // preload text fields safely
-        controller.namecontroller.text = (tagging["ownerName"] ?? '').toString();
-        controller.mobilenumbercontroller.text = (tagging["mobileNo"] ?? '').toString();
-        controller.addresscontroller.text = (tagging["address"] ?? '').toString();
-        controller.villegcontroller.text = (tagging["village"] ?? '').toString();
-        controller.talukcontroller.text = (tagging["taluko"] ?? '').toString();
-        controller.districcontroller.text = (tagging["district"] ?? '').toString();
-        controller.banknamecontroller.text = (tagging["bankName"] ?? '').toString();
-        controller.branchcontroller.text = (tagging["branchOfBank"] ?? '').toString();
-        controller.loanacnocontroller.text = (tagging["loanAccountNo"] ?? '').toString();
-        controller.insurancecontroller.text = (tagging["insuranceCompanyName"] ?? '').toString();
-        controller.buffalocountcontroller.text = (tagging["numberOfBuffalo"] ?? '').toString();
-        controller.cowcountcontroller.text = (tagging["numberOfCow"] ?? '').toString();
-        controller.buffalomoneycontroller.text = (tagging["sumInsuredBuffalo"] ?? '').toString();
-        controller.cowmoneycontroller.text = (tagging["sumInsuredCow"] ?? '').toString();
+        controller.namecontroller.text = (dataMap["ownerName"] ?? '').toString();
+        controller.mobilenumbercontroller.text = (dataMap["mobileNo"] ?? '').toString();
+        controller.addresscontroller.text = (dataMap["address"] ?? '').toString();
+        controller.villegcontroller.text = (dataMap["village"] ?? '').toString();
+        controller.talukcontroller.text = (dataMap["taluko"] ?? '').toString();
+        controller.districcontroller.text = (dataMap["district"] ?? '').toString();
+        controller.banknamecontroller.text = (dataMap["bankName"] ?? '').toString();
+        controller.branchcontroller.text = (dataMap["branchOfBank"] ?? '').toString();
+        controller.loanacnocontroller.text = (dataMap["loanAccountNo"] ?? '').toString();
+        controller.insurancecontroller.text = (dataMap["insuranceCompanyName"] ?? '').toString();
+        controller.buffalocountcontroller.text = (dataMap["numberOfBuffalo"] ?? '').toString();
+        controller.cowcountcontroller.text = (dataMap["numberOfCow"] ?? '').toString();
+        controller.buffalomoneycontroller.text = (dataMap["sumInsuredBuffalo"] ?? '').toString();
+        controller.cowmoneycontroller.text = (dataMap["sumInsuredCow"] ?? '').toString();
         controller.dateofdeathcontroller.text = DateFormat(
           'yyyy-MM-dd',
         ).format(controller.selectedDate.value!);
@@ -327,7 +328,8 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                             child: IconButton(
                               onPressed: () {
-                                controller.buffaloreadOnly == true;
+                                controller.buffaloreadOnly = !(controller.buffaloreadOnly ?? false);
+                                controller.update();
                               },
                               icon: Icon(
                                 Icons.edit,
@@ -414,7 +416,8 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                             child: IconButton(
                               onPressed: () {
-                                controller.cowreadOnly == true;
+                                controller.cowreadOnly = !(controller.cowreadOnly ?? false);
+                                controller.update();
                               },
                               icon: Icon(
                                 Icons.edit,

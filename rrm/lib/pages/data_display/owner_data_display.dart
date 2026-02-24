@@ -49,47 +49,47 @@ class OwnerDatadisplaypage extends StatelessWidget {
                     datarow(
                       context: context,
                       staticdata: "Name - ",
-                      listdata: dataList["name"]!,
+                      listdata: (dataList["ownerName"] ?? dataList["name"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Mobile - ",
-                      listdata: dataList["mobile"]!,
+                      listdata: (dataList["mobileNo"] ?? dataList["mobile"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Village - ",
-                      listdata: dataList["village"]!,
+                      listdata: (dataList["village"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Taluko - ",
-                      listdata: dataList["taluko"]!,
+                      listdata: (dataList["taluko"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Dist - ",
-                      listdata: dataList["dist"]!,
+                      listdata: (dataList["district"] ?? dataList["dist"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Bank - ",
-                      listdata: dataList["bank"]!,
+                      listdata: (dataList["bankName"] ?? dataList["bank"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Branch - ",
-                      listdata: dataList["branch"]!,
+                      listdata: (dataList["branchOfBank"] ?? dataList["branch"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Loan A/C No - ",
-                      listdata: dataList["loan_a/c_no"]!,
+                      listdata: (dataList["loanAccountNo"] ?? dataList["loan_a/c_no"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Insurance - ",
-                      listdata: dataList["Insurance"]!,
+                      listdata: (dataList["insuranceCompanyName"] ?? dataList["Insurance"] ?? "").toString(),
                     ),
 
                     Row(
@@ -106,7 +106,7 @@ class OwnerDatadisplaypage extends StatelessWidget {
                         SizedBox(
                           width: wp(60),
                           child: Text(
-                            dataList["address"]!,
+                            (dataList["address"] ?? "").toString(),
                             style: TextStyle(
                               fontSize: dp(context, 18),
                               fontWeight: FontWeight.w300,

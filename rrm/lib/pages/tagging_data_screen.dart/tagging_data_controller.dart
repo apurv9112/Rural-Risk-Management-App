@@ -31,8 +31,8 @@ class TaggingdataController extends GetxController {
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
   dynamic data;
-  String? ischangepage = "ischangepage";
-  String? retagging = "retagging";
+  String? ischangepage;
+  String? retagging;
   bool? manualtagging = false;
   String? selectedReason;
 

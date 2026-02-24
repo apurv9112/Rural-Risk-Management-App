@@ -35,7 +35,7 @@ class Cattlescreen extends StatelessWidget {
           backgroundColor: AppColors.PRIMARY_COLOR,
           appBar: CustomAppBarAction(
             title: controller.ischangepage == null
-                ? 'CATTLE -1'
+                ? 'CATTLE ${controller.currentCattleIndex}/${controller.totalCattleCount}'
                 : controller.retagging != null
                 ? 'CATTLE RETAGGING'
                 : 'CATTLE CLAIM',
@@ -222,18 +222,23 @@ class Cattlescreen extends StatelessWidget {
                   Customcontainer(
                     onTap: () {
                       controller.update();
-                      controller.claimcattle != null
-                          ? controller.savecattle()
-                          : controller.retagging != null
-                          ? controller.saveclaim()
-                          : controller.savecattle();
+                      if (controller.ischangepage == null) {
+                        // Normal tagging flow
+                        controller.savecattle();
+                      } else if (controller.retagging != null) {
+                        // Retagging flow
+                        controller.savecattle();
+                      } else {
+                        // Claim flow
+                        controller.saveclaim();
+                      }
                     },
                     context: context,
-                    text: controller.claimcattle != null
+                    text: controller.ischangepage == null
                         ? "Save & Next Cattle"
                         : controller.retagging != null
-                        ? "Submit Claim"
-                        : "Submit Retagging",
+                        ? "Submit Retagging"
+                        : "Submit Claim",
                     singlefontSize: dp(context, 20),
                   ),
                   SizedBox(height: hp(3)),

@@ -8,9 +8,10 @@ class RetaggingService {
   final http.Client _client;
 
   Future<http.Response> listAssigned({required String token}) {
-    return _client.get(
-      Uri.parse("$baseUrl/leads?type=retagging"),
+    return _client.post(
+      Uri.parse("$baseUrl/retagging/search"),
       headers: _authHeaders(token),
+      body: jsonEncode({"status": "Pending", "page": 1, "limit": 50}),
     );
   }
 
@@ -22,10 +23,11 @@ class RetaggingService {
   }
 
   Future<http.Response> cancelLead({required String token, required String id, Map<String, dynamic>? body}) {
+    final payload = body ?? {"status": "Rejected"};
     return _client.patch(
-      Uri.parse("$baseUrl/retagging/cancellead/$id"),
+      Uri.parse("$baseUrl/retagging/$id"),
       headers: _authHeaders(token),
-      body: body == null ? null : jsonEncode(body),
+      body: jsonEncode(payload),
     );
   }
 
@@ -37,31 +39,35 @@ class RetaggingService {
     );
   }
 
-  Future<http.Response> completed({required String token, String status = "attended"}) {
-    return _client.get(
-      Uri.parse("$baseUrl/retagging/?status=$status"),
+  Future<http.Response> completed({required String token, String status = "Attended"}) {
+    return _client.post(
+      Uri.parse("$baseUrl/retagging/search"),
       headers: _authHeaders(token),
+      body: jsonEncode({"status": status, "page": 1, "limit": 50}),
     );
   }
 
   Future<http.Response> searchCompleted({required String token, required String searchString}) {
-    return _client.get(
-      Uri.parse("$baseUrl/retagging/search?searchString=$searchString"),
+    return _client.post(
+      Uri.parse("$baseUrl/retagging/search"),
       headers: _authHeaders(token),
+      body: jsonEncode({"searchString": searchString, "status": "Attended", "page": 1, "limit": 50}),
     );
   }
 
   Future<http.Response> downloadCertificate({required String token, required String id}) {
-    return _client.get(
-      Uri.parse("$baseUrl/retagging/retagging-certificate/$id"),
+    return _client.post(
+      Uri.parse("$baseUrl/retagging/export"),
       headers: _authHeaders(token),
+      body: jsonEncode({"ids": [id]}),
     );
   }
 
   Future<http.Response> downloadAllCertificates({required String token}) {
-    return _client.get(
-      Uri.parse("$baseUrl/retagging/retagging-certificate/all"),
+    return _client.post(
+      Uri.parse("$baseUrl/retagging/export"),
       headers: _authHeaders(token),
+      body: jsonEncode({"ids": []}),
     );
   }
 

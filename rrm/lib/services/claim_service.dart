@@ -9,7 +9,7 @@ class ClaimService {
 
   Future<http.Response> listAssigned({required String token}) {
     return _client.get(
-      Uri.parse("$baseUrl/leads?type=claim"),
+      Uri.parse("$baseUrl/field-worker/my-leads?leadType=claim"),
       headers: _authHeaders(token),
     );
   }
@@ -37,18 +37,22 @@ class ClaimService {
     );
   }
 
-  Future<http.Response> completed({required String token, String status = "attended"}) {
-    return _client.get(
-      Uri.parse("$baseUrl/claim/?status=$status"),
-      headers: _authHeaders(token),
-    );
+  Future<http.Response> completed({required String token, String status = "Attended"}) {
+    return _client
+        .get(
+          Uri.parse("$baseUrl/field-worker/my-leads?leadType=claim&status=$status"),
+          headers: _authHeaders(token),
+        )
+        .timeout(const Duration(seconds: 30));
   }
 
   Future<http.Response> searchCompleted({required String token, required String searchString}) {
-    return _client.get(
-      Uri.parse("$baseUrl/claim/search?searchString=$searchString"),
-      headers: _authHeaders(token),
-    );
+    return _client
+        .get(
+          Uri.parse("$baseUrl/field-worker/my-leads?leadType=claim&status=Attended"),
+          headers: _authHeaders(token),
+        )
+        .timeout(const Duration(seconds: 30));
   }
 
   Future<http.Response> downloadCertificate({required String token, required String id}) {

@@ -15,27 +15,22 @@ class Datadisplaypage extends StatelessWidget {
     return GetBuilder<DatadisplayController>(
       init: DatadisplayController(),
       builder: (controller) {
-        final args = Get.arguments;
-        // print("args ;;;; $args");
-        controller.retaggingdata = args != null ? "retaggingdata" : null;
-        // controller.taggingdata = args != null ? "taggingdata" : null;
-        controller.claimdata = args != null ? "claimdata" : null;
         return Scaffold(
           backgroundColor: AppColors.PRIMARY_COLOR,
           appBar: CustomAppBarAction(
-            title: controller.claimdata == null
-                ? 'Tagging Data'
-                : controller.retaggingdata != null
-                ? 'Claim Data'
-                : 'Retagging Data',
-
+            title: controller.pageTitle,
             iconleft: Icons.arrow_back_outlined,
             lefticononTap: () {
               Get.back();
             },
+            iconright: Icons.refresh_outlined,
+            righticononTap: () {
+              controller.searchcontroller.clear();
+              controller.fetchCompletedLeads();
+            },
           ),
           body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Form(
               key: controller.formKey,
               child: Padding(
@@ -44,101 +39,191 @@ class Datadisplaypage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomTextField(
-                      suffixIcon: Icon(Icons.search, color: AppColors.WHITE),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          controller.searchLeads(
+                            controller.searchcontroller.text,
+                          );
+                        },
+                        child: Icon(Icons.search, color: AppColors.WHITE),
+                      ),
                       controller: controller.searchcontroller,
-                      hint: 'Search Tagging Data',
-                      labeltext: 'Search Tagging Data',
-                      onchange: (p0) => controller.searchcontroller,
+                      hint: controller.searchHint,
+                      labeltext: controller.searchHint,
+                      onchange: (value) {
+                        if (value.isEmpty) {
+                          controller.filteredLeads = List.from(controller.completedLeads);
+                          controller.update();
+                        }
+                      },
                       textInputAction: TextInputAction.search,
-                    ),
-                    SizedBox(height: hp(2)),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: controller.textList.length,
-                      itemBuilder: (context, i) {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => OwnerDatadisplaypage(
-                                      dataList: controller.textList[i],
-                                    ),
-                                  ),
-                                );
-                                // Get.toNamed(
-                                //   routetaggingdatapage,
-                                //   arguments: {"tagging": controller.textList[i]},
-                                // );
-                                // print(controller.textList[i]);
-                              },
-                              child: Container(
-                                height: hp(16),
-                                // width: wp(80),
-                                width: double.infinity,
-                                padding: EdgeInsets.only(
-                                  right: wp(2),
-                                  left: wp(4),
-                                  top: hp(1),
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.DARK),
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.WHITE,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(width: wp(2)),
-                                    Center(
-                                      child: Text(
-                                        "${i + 1}",
-                                        style: TextStyle(
-                                          fontSize: dp(context, 18),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: wp(2.2)),
-                                    SizedBox(
-                                      height: hp(12),
-                                      child: VerticalDivider(
-                                        color: AppColors.LIGHT_GREY,
-                                      ),
-                                    ),
-                                    SizedBox(width: wp(2.2)),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: hp(0.5)),
-                                        Text(controller.textList[i]["name"]!),
-                                        SizedBox(height: hp(0.5)),
-                                        Text(controller.textList[i]["mobile"]!),
-                                        SizedBox(height: hp(0.5)),
-                                        Text(
-                                          controller.textList[i]["village"]!,
-                                        ),
-                                        SizedBox(height: hp(0.5)),
-                                        Text(controller.textList[i]["taluko"]!),
-                                        SizedBox(height: hp(0.5)),
-                                        Text(
-                                          controller.textList[i]["Insurance"]!,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: hp(1)),
-                          ],
-                        );
+                      onFieldSubmitted: (value) {
+                        controller.searchLeads(value);
                       },
                     ),
+                    SizedBox(height: hp(2)),
+                    // Download all button
+                    if (controller.filteredLeads.isNotEmpty)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () => controller.downloadAllCertificates(),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: wp(4),
+                              vertical: hp(1),
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.WHITE,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.DARK),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.download, color: AppColors.PRIMARY_COLOR, size: dp(context, 18)),
+                                SizedBox(width: wp(1)),
+                                Text(
+                                  "Download All",
+                                  style: TextStyle(
+                                    fontSize: dp(context, 14),
+                                    color: AppColors.PRIMARY_COLOR,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: hp(1)),
+                    if (controller.isLoading || controller.isSearching)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 40),
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
+                      )
+                    else if (controller.filteredLeads.isEmpty)
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: hp(10)),
+                          child: Text(
+                            "No data found",
+                            style: TextStyle(
+                              fontSize: dp(context, 18),
+                              color: AppColors.WHITE,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: controller.filteredLeads.length,
+                        itemBuilder: (context, i) {
+                          final lead = controller.filteredLeads[i] as Map<String, dynamic>;
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => OwnerDatadisplaypage(
+                                        dataList: lead,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: hp(16),
+                                  width: double.infinity,
+                                  padding: EdgeInsets.only(
+                                    right: wp(2),
+                                    left: wp(4),
+                                    top: hp(1),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.DARK),
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: AppColors.WHITE,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(width: wp(2)),
+                                      Center(
+                                        child: Text(
+                                          "${i + 1}",
+                                          style: TextStyle(
+                                            fontSize: dp(context, 18),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: wp(2.2)),
+                                      SizedBox(
+                                        height: hp(12),
+                                        child: VerticalDivider(
+                                          color: AppColors.LIGHT_GREY,
+                                        ),
+                                      ),
+                                      SizedBox(width: wp(2.2)),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SizedBox(height: hp(0.5)),
+                                            Text(
+                                              (lead["ownerName"] ?? lead["name"] ?? "").toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            SizedBox(height: hp(0.5)),
+                                            Text(
+                                              (lead["mobileNo"] ?? lead["mobile"] ?? "").toString(),
+                                            ),
+                                            SizedBox(height: hp(0.5)),
+                                            Text(
+                                              (lead["village"] ?? "").toString(),
+                                            ),
+                                            SizedBox(height: hp(0.5)),
+                                            Text(
+                                              (lead["taluko"] ?? "").toString(),
+                                            ),
+                                            SizedBox(height: hp(0.5)),
+                                            Text(
+                                              (lead["insuranceCompanyName"] ?? lead["Insurance"] ?? "").toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // Download certificate icon
+                                      GestureDetector(
+                                        onTap: () {
+                                          final id = (lead["_id"] ?? lead["id"] ?? "").toString();
+                                          if (id.isNotEmpty) {
+                                            controller.downloadCertificate(id);
+                                          }
+                                        },
+                                        child: Icon(
+                                          Icons.download_rounded,
+                                          color: AppColors.PRIMARY_COLOR,
+                                          size: dp(context, 24),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: hp(1)),
+                            ],
+                          );
+                        },
+                      ),
                   ],
                 ),
               ),

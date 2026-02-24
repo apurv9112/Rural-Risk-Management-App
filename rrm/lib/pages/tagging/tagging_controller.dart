@@ -26,6 +26,38 @@ class TaggingController extends GetxController {
 
   List<dynamic> taggings = [];
 
+  @override
+  void onInit() {
+    super.onInit();
+    _fetchInitialData();
+  }
+
+  /// Fetch all assigned taggings when the screen first opens.
+  Future<void> _fetchInitialData() async {
+    final String token = appController.token.value;
+    if (token.isEmpty) return;
+
+    isLoading = true;
+    update();
+
+    try {
+      final response = await _taggingService.listAssigned(token: token);
+      final decoded = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          decoded["status"] == "success") {
+        taggings = decoded["data"]?["leads"]?["tagging"] ?? decoded["data"]?["taggings"] ?? [];
+        listshow = false;
+      }
+    } catch (e) {
+      debugPrint("Initial tagging fetch error: $e");
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
   Future<void> search() async {
     if (isLoading) return;
 

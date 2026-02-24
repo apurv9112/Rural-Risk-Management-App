@@ -11,18 +11,20 @@ import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/kyc_service.dart';
+import 'package:rrm/services/tagging_service.dart';
 
 class KycController extends GetxController {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilecontroller = TextEditingController();
   dynamic data;
-  String? claimcattle = "claimcattle";
-  String? ischangepage = "ischangepage";
-  String? retagging = "retagging";
+  String? claimcattle;
+  String? ischangepage;
+  String? retagging;
   String ownerName = '';
   String mobileNo = '';
   final AppController appController = Get.find();
   final KycService _kycService = KycService();
+  final TaggingService _taggingService = TaggingService();
 
   bool isSubmitting = false;
 
@@ -188,55 +190,106 @@ class KycController extends GetxController {
       addFile("otherImage3", selectedOther3.value);
       addFile("otherImage4", selectedOther4.value ?? selectedOther5.value);
 
-      debugPrint("KYC PATCH taggingId: ${data["id"]}");
-      debugPrint("Token (first 50 chars): ${token.length > 50 ? token.substring(0, 50) : token}...");
-      
-      // Decode JWT payload to check userType
-      try {
-        final parts = token.split('.');
-        if (parts.length == 3) {
-          String payload = parts[1];
-          // Add padding if needed for base64
-          while (payload.length % 4 != 0) {
-            payload += '=';
-          }
-          final decoded = utf8.decode(base64Decode(payload));
-          debugPrint("JWT Payload: $decoded");
+      final bool isTaggingFlow = ischangepage == null && retagging == null;
+
+      if (isTaggingFlow) {
+        final ownerId = _resolveOwnerId(data);
+        if (ownerId == null || ownerId.isEmpty) {
+          showSnackBar("Owner ID not found for KYC upload.", SNACK.FAILED);
+          return;
         }
-      } catch (e) {
-        debugPrint("Failed to decode JWT: $e");
-      }
 
-      debugPrint("Sending PATCH request...");
-      final resp = await _kycService.updateKyc(
-        token: token,
-        taggingId: data["id"].toString(),
-        payload: payload,
-      );
+        final docResp = await _kycService.uploadOwnerDocuments(
+          token: token,
+          ownerId: ownerId,
+          payload: payload,
+        );
 
-      debugPrint("KYC PATCH response status: ${resp.statusCode}");
-      debugPrint("KYC PATCH response body: ${resp.body}");
+        final docDecoded = docResp.body.isNotEmpty ? jsonDecode(docResp.body) : {};
+        if (docResp.statusCode < 200 || docResp.statusCode >= 300 || docDecoded["status"] != "success") {
+          showSnackBar(docDecoded["message"] ?? "Failed to upload KYC documents.", SNACK.FAILED);
+          return;
+        }
 
-      final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
+        final leadPayload = _buildLeadUpdatePayload(data);
+        final leadResp = await _taggingService.updateLead(
+          token: token,
+          id: data["id"].toString(),
+          body: leadPayload,
+        );
 
-      if (resp.statusCode >= 200 && resp.statusCode < 300 &&
-          decoded["status"] == "success") {
+        final leadDecoded = leadResp.body.isNotEmpty ? jsonDecode(leadResp.body) : {};
+        if (leadResp.statusCode < 200 || leadResp.statusCode >= 300 || leadDecoded["status"] != "success") {
+          showSnackBar(leadDecoded["message"] ?? "Failed to update lead.", SNACK.FAILED);
+          return;
+        }
+
         showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
-        if (Get.isDialogOpen ?? false) Get.back(); // ensure loader is closed before navigation
+        if (Get.isDialogOpen ?? false) Get.back();
 
+        final totalCattleCount = _calculateTotalCattleCount(data);
         Get.offNamed(
           routecattlepage,
           arguments: {
             "tagging": data,
             "retagging": retagging,
             "ischangepage": ischangepage,
+            "completedCattleCount": 0,
+            "totalCattleCount": totalCattleCount,
+            "cattleIndex": 1,
           },
         );
       } else {
-        showSnackBar(
-          decoded["message"] ?? "Failed to update KYC.",
-          SNACK.FAILED,
+        debugPrint("KYC PATCH taggingId: ${data["id"]}");
+        debugPrint("Token (first 50 chars): ${token.length > 50 ? token.substring(0, 50) : token}...");
+
+        // Decode JWT payload to check userType
+        try {
+          final parts = token.split('.');
+          if (parts.length == 3) {
+            String payload = parts[1];
+            // Add padding if needed for base64
+            while (payload.length % 4 != 0) {
+              payload += '=';
+            }
+            final decoded = utf8.decode(base64Decode(payload));
+            debugPrint("JWT Payload: $decoded");
+          }
+        } catch (e) {
+          debugPrint("Failed to decode JWT: $e");
+        }
+
+        debugPrint("Sending PATCH request...");
+        final resp = await _kycService.updateKyc(
+          token: token,
+          taggingId: data["id"].toString(),
+          payload: payload,
         );
+
+        debugPrint("KYC PATCH response status: ${resp.statusCode}");
+        debugPrint("KYC PATCH response body: ${resp.body}");
+
+        final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
+
+        if (resp.statusCode >= 200 && resp.statusCode < 300 &&
+            decoded["status"] == "success") {
+          showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
+          if (Get.isDialogOpen ?? false) Get.back(); // ensure loader is closed before navigation
+
+          Get.offNamed(
+            routecattlepage,
+            arguments: {
+              "tagging": data,
+              "retagging": retagging,
+              "ischangepage": ischangepage,
+            },
+          );
+        } else {
+          showSnackBar(
+            decoded["message"] ?? "Failed to update KYC.",
+            SNACK.FAILED,
+          );
+        }
       }
     } catch (e, stackTrace) {
       debugPrint("KYC update error: $e");
@@ -247,5 +300,57 @@ class KycController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
       update();
     }
+  }
+
+  String? _resolveOwnerId(dynamic source) {
+    if (source is! Map<String, dynamic>) return null;
+    final direct = source["ownerId"] ?? source["owner_id"] ?? source["ownerID"];
+    if (direct != null) return direct.toString();
+    final owner = source["owner"];
+    if (owner is Map<String, dynamic>) {
+      return (owner["id"] ?? owner["_id"] ?? owner["ownerId"])?.toString();
+    }
+    return null;
+  }
+
+  Map<String, dynamic> _buildLeadUpdatePayload(dynamic source) {
+    if (source is! Map<String, dynamic>) return {};
+    final payload = <String, dynamic>{
+      "ownerName": source["ownerName"],
+      "mobileNo": source["mobileNo"],
+      "address": source["address"],
+      "village": source["village"],
+      "taluko": source["taluko"],
+      "district": source["district"],
+      "bankName": source["bankName"],
+      "branchOfBank": source["branchOfBank"],
+      "loanAccountNo": source["loanAccountNo"],
+      "insuranceCompanyName": source["insuranceCompanyName"],
+      "numberOfBuffalo": source["numberOfBuffalo"],
+      "numberOfCow": source["numberOfCow"],
+      "sumInsuredBuffalo": source["sumInsuredBuffalo"],
+      "sumInsuredCow": source["sumInsuredCow"],
+      "kycStatus": "Completed",
+    };
+    payload.removeWhere((_, value) => value == null || (value is String && value.isEmpty));
+    return payload;
+  }
+
+  int _calculateTotalCattleCount(dynamic source) {
+    if (source is! Map<String, dynamic>) return 1;
+    int parseInt(dynamic value) {
+      if (value == null) return 0;
+      if (value is int) return value;
+      if (value is double) return value.toInt();
+      return int.tryParse(value.toString()) ?? 0;
+    }
+
+    final buffalo = parseInt(source["numberOfBuffalo"]);
+    final cow = parseInt(source["numberOfCow"]);
+    final sheep = parseInt(source["numberOfSheep"]);
+    final goat = parseInt(source["numberOfGoat"]);
+    final totalFromLead = parseInt(source["totalCattle"]);
+    final total = totalFromLead > 0 ? totalFromLead : (buffalo + cow + sheep + goat);
+    return total > 0 ? total : 1;
   }
 }

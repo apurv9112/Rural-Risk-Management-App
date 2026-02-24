@@ -18,15 +18,18 @@ class CattleController extends GetxController {
   bool? buffaloreadOnly = false;
   bool? taggingdate = false;
   dynamic data;
-  String? ischangepage = "ischangepage";
-  String? claimcattle = "claimcattle13";
-  String? retagging = "retagging";
+  String? ischangepage;
+  String? claimcattle;
+  String? retagging;
   TextEditingController buffalocountcontroller = TextEditingController();
   TextEditingController milklittercontroller = TextEditingController();
   TextEditingController buffalomoneycontroller = TextEditingController();
   final AppController appController = Get.find();
   bool isSubmitting = false;
   GlobalKey<FormState> formKey = GlobalKey();
+  int totalCattleCount = 1;
+  int completedCattleCount = 0;
+  int currentCattleIndex = 1;
 
   @override
   void onInit() {
@@ -35,6 +38,11 @@ class CattleController extends GetxController {
     data = args["tagging"];
     ischangepage = args["ischangepage"];
     retagging = args["retagging"];
+
+    completedCattleCount = _parseInt(args["completedCattleCount"]) ?? 0;
+    totalCattleCount = _parseInt(args["totalCattleCount"]) ?? _calculateTotalCattleCount(data);
+    if (totalCattleCount < 1) totalCattleCount = 1;
+    currentCattleIndex = _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
 
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
     super.onInit();
@@ -537,15 +545,24 @@ class CattleController extends GetxController {
         final bool isTaggingFlow = ischangepage == null && retagging == null;
 
         if (isTaggingFlow) {
-          // Go back to cattle capture for next animal in tagging flow
-          Get.offNamed(
-            routecattlepage,
-            arguments: {
-              "tagging": data,
-              "ischangepage": ischangepage,
-              "retagging": retagging,
-            },
-          );
+          final nextCompleted = completedCattleCount + 1;
+          if (nextCompleted < totalCattleCount) {
+            // Go back to cattle capture for next animal in tagging flow
+            Get.offNamed(
+              routecattlepage,
+              arguments: {
+                "tagging": data,
+                "ischangepage": ischangepage,
+                "retagging": retagging,
+                "completedCattleCount": nextCompleted,
+                "totalCattleCount": totalCattleCount,
+                "cattleIndex": nextCompleted + 1,
+              },
+            );
+          } else {
+            showSnackBar("All cattle tagged for this lead.", SNACK.SUCCESS);
+            Get.offAllNamed(routetaggingpage);
+          }
         } else {
           // Claims/retagging continue to farmer details summary
           Get.offNamed(
@@ -574,5 +591,23 @@ class CattleController extends GetxController {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return null;
     return double.tryParse(trimmed);
+  }
+
+  int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    return int.tryParse(value.toString());
+  }
+
+  int _calculateTotalCattleCount(dynamic source) {
+    if (source is! Map<String, dynamic>) return 1;
+    final buffalo = _parseInt(source["numberOfBuffalo"]) ?? 0;
+    final cow = _parseInt(source["numberOfCow"]) ?? 0;
+    final sheep = _parseInt(source["numberOfSheep"]) ?? 0;
+    final goat = _parseInt(source["numberOfGoat"]) ?? 0;
+    final totalFromLead = _parseInt(source["totalCattle"]) ?? 0;
+    final total = totalFromLead > 0 ? totalFromLead : (buffalo + cow + sheep + goat);
+    return total > 0 ? total : 1;
   }
 }

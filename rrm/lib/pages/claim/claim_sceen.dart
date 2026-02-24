@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/pages/claim/claim_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
 import 'package:rrm/widgets/customcontainer.dart';
-import 'package:rrm/widgets/text_field.dart';
 
 class ClaimScreen extends StatelessWidget {
   const ClaimScreen({super.key});
@@ -17,206 +15,203 @@ class ClaimScreen extends StatelessWidget {
     return GetBuilder<ClaimController>(
       init: ClaimController(),
       builder: (controller) {
-        final args = Get.arguments;
-        // print("args ;;;; $args");
-        controller.retagging = args != null ? args["retagging"] : null;
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
           appBar: CustomAppBarAction(
-            title: controller.retagging != null
+            title: controller.isRetagging
                 ? 'Cattle Retagging'
                 : 'Cattle Claim',
             iconleft: Icons.arrow_back_outlined,
             lefticononTap: () {
               Get.back();
             },
+            iconright: Icons.refresh_outlined,
+            righticononTap: () {
+              controller.fetchLeads();
+            },
           ),
-          body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: hp(4), right: wp(4), left: wp(4)),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              itemCount: 5,
-              itemBuilder: (context, i) {
-                return Column(
-                  children: [
-                    CustomTextField(
-                      controller: controller.namecontroller,
-                      backgroundColor: AppColors.WHITE,
-                      inputtextcolor: AppColors.PRIMARY_COLOR,
-                      readOnly: true,
-                    ),
-                    SizedBox(height: hp(2)),
-                    Row(
-                      children: [
-                        Customcontainer(context: context, text: "M:"),
-                        SizedBox(width: wp(2.5)),
-                        Expanded(
-                          flex: 2,
-                          child: CustomTextField(
-                            controller: controller.mobilenumbercontroller,
-                            backgroundColor: AppColors.WHITE,
-                            inputtextcolor: AppColors.PRIMARY_COLOR,
-                            readOnly: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(2)),
-                    Row(
-                      children: [
-                        Customcontainer(context: context, text: "Add:"),
-                        SizedBox(width: wp(2.5)),
-                        Expanded(
-                          flex: 2,
-                          child: CustomTextField(
-                            controller: controller.addresscontroller,
-                            backgroundColor: AppColors.WHITE,
-                            inputtextcolor: AppColors.PRIMARY_COLOR,
-                            readOnly: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(2)),
-                    Row(
-                      children: [
-                        Customcontainer(context: context, text: "Vill:"),
-                        SizedBox(width: wp(2.5)),
-                        Expanded(
-                          flex: 2,
-                          child: CustomTextField(
-                            controller: controller.villegcontroller,
-                            backgroundColor: AppColors.WHITE,
-                            inputtextcolor: AppColors.PRIMARY_COLOR,
-                            readOnly: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(2)),
-                    Row(
-                      children: [
-                        Customcontainer(context: context, text: "Ta:"),
-                        SizedBox(width: wp(2.5)),
-                        Expanded(
-                          flex: 2,
-                          child: CustomTextField(
-                            controller: controller.talukcontroller,
-                            backgroundColor: AppColors.WHITE,
-                            inputtextcolor: AppColors.PRIMARY_COLOR,
-                            readOnly: true,
-                          ),
-                        ),
-                        SizedBox(width: wp(2.5)),
-                        Customcontainer(context: context, text: "Di:"),
-                        SizedBox(width: wp(2.5)),
-                        Expanded(
-                          flex: 2,
-                          child: CustomTextField(
-                            controller: controller.districcontroller,
-                            backgroundColor: AppColors.WHITE,
-                            inputtextcolor: AppColors.PRIMARY_COLOR,
-                            readOnly: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(2)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Customcontainer(
-                          context: context,
-                          text: "Species",
-                          height: hp(4.5),
-                          width: wp(30),
-                          padding: EdgeInsets.only(
-                            left: wp(2.5),
-                            right: wp(2.5),
-                          ),
-                        ),
-                        SizedBox(width: wp(2)),
-                        Customcontainer(
-                          width: wp(60),
-                          context: context,
-                          text: "Tag Number",
-                          height: hp(4.5),
-                          padding: EdgeInsets.only(
-                            left: wp(2.5),
-                            right: wp(2.5),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(2)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Customcontainer(
-                          context: context,
-                          text: "Buffalo",
-                          height: hp(4.5),
-                          width: wp(30),
-                          padding: EdgeInsets.only(
-                            left: wp(2.5),
-                            right: wp(2.5),
-                          ),
-                        ),
-                        SizedBox(width: wp(2)),
-                        Customcontainer(
-                          width: wp(60),
-                          context: context,
-                          text: "4123421554415",
-                          height: hp(4.5),
-                          padding: EdgeInsets.only(
-                            left: wp(2.5),
-                            right: wp(2.5),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: hp(3)),
-                    Customcontainer(
-                      onTap: () {
-                        Get.dialog(
-                          Center(
-                            child: LoadingAnimationWidget.staggeredDotsWave(
-                              color: Colors.white,
-                              size: 60,
+          body: controller.isLoading
+              ? const Center(child: CircularProgressIndicator(color: Colors.white))
+              : controller.leads.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.inbox_outlined, size: 64, color: AppColors.WHITE),
+                          SizedBox(height: hp(2)),
+                          Text(
+                            controller.isRetagging
+                                ? "No retagging leads assigned"
+                                : "No claim leads assigned",
+                            style: TextStyle(
+                              fontSize: dp(context, 18),
+                              color: AppColors.WHITE,
                             ),
                           ),
-                          barrierDismissible: false,
-                        );
+                          SizedBox(height: hp(2)),
+                          Customcontainer(
+                            context: context,
+                            text: "Refresh",
+                            singlefontSize: dp(context, 18),
+                            onTap: () => controller.fetchLeads(),
+                          ),
+                        ],
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.only(
+                        top: hp(4),
+                        right: wp(4),
+                        left: wp(4),
+                        bottom: hp(4),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: hp(5.5),
+                            width: double.infinity,
+                            padding: EdgeInsets.only(
+                              right: wp(2),
+                              left: wp(4),
+                              top: hp(0.5),
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.DARK),
+                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.WHITE,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${controller.leads.length}",
+                                  style: TextStyle(
+                                    fontSize: dp(context, 17),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: wp(2)),
+                                SizedBox(
+                                  height: hp(12),
+                                  child: VerticalDivider(
+                                    color: AppColors.LIGHT_GREY,
+                                  ),
+                                ),
+                                SizedBox(width: wp(2)),
+                                Text(
+                                  controller.isRetagging
+                                      ? 'Total Retagging Leads'
+                                      : 'Total Claim Leads',
+                                  style: TextStyle(
+                                    fontSize: dp(context, 17),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: hp(2)),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: controller.leads.length,
+                            itemBuilder: (context, i) {
+                              final lead = controller.leads[i] as Map<String, dynamic>;
+                              return Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final id = (lead["_id"] ?? lead["id"] ?? "").toString();
+                                      if (id.isEmpty) return;
 
-                        Future.delayed(Duration(seconds: 3), () {
-                          Get.back(); // close loading dialog
-                          Get.toNamed(
-                            routetaggingdatapage,
-                            arguments: {
-                              "isclaim": controller.claim,
-                              "retagging": controller.retagging,
+                                      final details = await controller.getLeadDetails(id);
+                                      if (details != null) {
+                                        Get.toNamed(
+                                          routetaggingdatapage,
+                                          arguments: {
+                                            "tagging": details,
+                                            "isclaim": controller.isRetagging ? null : controller.claim,
+                                            "retagging": controller.retagging,
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      height: hp(16),
+                                      width: double.infinity,
+                                      padding: EdgeInsets.only(
+                                        right: wp(2),
+                                        left: wp(4),
+                                        top: hp(1),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: AppColors.DARK),
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: AppColors.WHITE,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          SizedBox(width: wp(2)),
+                                          Center(
+                                            child: Text(
+                                              "${i + 1}",
+                                              style: TextStyle(
+                                                fontSize: dp(context, 18),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: wp(2.2)),
+                                          SizedBox(
+                                            height: hp(12),
+                                            child: VerticalDivider(
+                                              color: AppColors.LIGHT_GREY,
+                                            ),
+                                          ),
+                                          SizedBox(width: wp(2.2)),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(height: hp(0.5)),
+                                                Text(
+                                                  (lead["ownerName"] ?? "").toString(),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                                SizedBox(height: hp(0.5)),
+                                                Text(
+                                                  (lead["mobileNo"] ?? "").toString(),
+                                                ),
+                                                SizedBox(height: hp(0.5)),
+                                                Text(
+                                                  (lead["village"] ?? "").toString(),
+                                                ),
+                                                SizedBox(height: hp(0.5)),
+                                                Text(
+                                                  (lead["taluko"] ?? "").toString(),
+                                                ),
+                                                SizedBox(height: hp(0.5)),
+                                                Text(
+                                                  (lead["insuranceCompanyName"] ?? "").toString(),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: hp(1)),
+                                ],
+                              );
                             },
-                          );
-                        });
-                      },
-                      context: context,
-                      width: double.infinity,
-                      text: controller.retagging != null
-                          ? "Attend Retagging"
-                          : "Attend Claim",
-                      singlefontSize: dp(context, 25),
-                      padding: EdgeInsets.only(left: wp(2.5), right: wp(2.5)),
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: hp(8)),
-                  ],
-                );
-              },
-            ),
-          ),
         );
       },
     );
