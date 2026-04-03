@@ -23,7 +23,6 @@ class TaggingDataScreen extends StatelessWidget {
       init: TaggingdataController(),
       builder: (controller) {
         final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
-        // Prefer tagging, then retagging, then claim as data source
         controller.data = args["tagging"] ?? args["retagging"] ?? args["claim"];
         controller.retagging = args["retagging"];
         controller.ischangepage = args["isclaim"];
@@ -38,28 +37,7 @@ class TaggingDataScreen extends StatelessWidget {
           );
         }
 
-        // preload text fields safely
-        controller.namecontroller.text = (dataMap["ownerName"] ?? '').toString();
-        controller.mobilenumbercontroller.text = (dataMap["mobileNo"] ?? '').toString();
-        controller.addresscontroller.text = (dataMap["address"] ?? '').toString();
-        controller.villegcontroller.text = (dataMap["village"] ?? '').toString();
-        controller.talukcontroller.text = (dataMap["taluko"] ?? '').toString();
-        controller.districcontroller.text = (dataMap["district"] ?? '').toString();
-        controller.banknamecontroller.text = (dataMap["bankName"] ?? '').toString();
-        controller.branchcontroller.text = (dataMap["branchOfBank"] ?? '').toString();
-        controller.loanacnocontroller.text = (dataMap["loanAccountNo"] ?? '').toString();
-        controller.insurancecontroller.text = (dataMap["insuranceCompanyName"] ?? '').toString();
-        controller.buffalocountcontroller.text = (dataMap["numberOfBuffalo"] ?? '').toString();
-        controller.cowcountcontroller.text = (dataMap["numberOfCow"] ?? '').toString();
-        controller.buffalomoneycontroller.text = (dataMap["sumInsuredBuffalo"] ?? '').toString();
-        controller.cowmoneycontroller.text = (dataMap["sumInsuredCow"] ?? '').toString();
-        controller.dateofdeathcontroller.text = DateFormat(
-          'yyyy-MM-dd',
-        ).format(controller.selectedDate.value!);
-
-        controller.timeofdeathcontroller.text = controller.retagging != null
-            ? "5504845226"
-            : controller.selectedTime.value!.format(context);
+        controller.initFieldsFromData(dataMap, context);
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
@@ -892,7 +870,9 @@ class TaggingDataScreen extends StatelessWidget {
                     ),
                     SizedBox(width: wp(3)),
                     Customcontainer(
-                      onTap: () {
+                      onTap: () async {
+                        controller.syncDataFromControllers();
+
                         Get.dialog(
                           Center(
                             child: LoadingAnimationWidget.staggeredDotsWave(
@@ -903,17 +883,17 @@ class TaggingDataScreen extends StatelessWidget {
                           barrierDismissible: false,
                         );
 
-                        Future.delayed(Duration(seconds: 3), () {
-                          Get.back(); // close loading dialog
-                          Get.toNamed(
-                            routekycpage,
-                            arguments: {
-                              "tagging": controller.data,
-                              "ischangepage": controller.ischangepage,
-                              "retagging": controller.retagging,
-                            },
-                          );
-                        });
+                        await controller.saveLeadUpdates();
+
+                        if (Get.isDialogOpen ?? false) Get.back();
+                        Get.toNamed(
+                          routekycpage,
+                          arguments: {
+                            "tagging": controller.data,
+                            "ischangepage": controller.ischangepage,
+                            "retagging": controller.retagging,
+                          },
+                        );
                       },
                       context: context,
                       width: wp(44),
