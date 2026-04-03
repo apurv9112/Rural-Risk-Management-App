@@ -1,14 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:rrm/controller.dart';
+import 'package:rrm/services/tagging_service.dart';
 
 class TaggingdataController extends GetxController {
-  //tagging data screen
+  final AppController _appController = Get.find();
+  final TaggingService _taggingService = TaggingService();
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -26,8 +29,6 @@ class TaggingdataController extends GetxController {
   TextEditingController dateofdeathcontroller = TextEditingController();
   TextEditingController timeofdeathcontroller = TextEditingController();
 
-  /// temp exe
-
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
   dynamic data;
@@ -35,6 +36,83 @@ class TaggingdataController extends GetxController {
   String? retagging;
   bool? manualtagging = false;
   String? selectedReason;
+  bool _fieldsInitialized = false;
+
+  void initFieldsFromData(Map<String, dynamic> dataMap, BuildContext context) {
+    if (_fieldsInitialized) return;
+    _fieldsInitialized = true;
+
+    namecontroller.text = (dataMap["ownerName"] ?? '').toString();
+    mobilenumbercontroller.text = (dataMap["mobileNo"] ?? '').toString();
+    addresscontroller.text = (dataMap["address"] ?? '').toString();
+    villegcontroller.text = (dataMap["village"] ?? '').toString();
+    talukcontroller.text = (dataMap["taluko"] ?? '').toString();
+    districcontroller.text = (dataMap["district"] ?? '').toString();
+    banknamecontroller.text = (dataMap["bankName"] ?? '').toString();
+    branchcontroller.text = (dataMap["branchOfBank"] ?? '').toString();
+    loanacnocontroller.text = (dataMap["loanAccountNo"] ?? '').toString();
+    insurancecontroller.text = (dataMap["insuranceCompanyName"] ?? '').toString();
+    buffalocountcontroller.text = _formatNumber(dataMap["numberOfBuffalo"]);
+    cowcountcontroller.text = _formatNumber(dataMap["numberOfCow"]);
+    buffalomoneycontroller.text = _formatNumber(dataMap["sumInsuredBuffalo"]);
+    cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
+    dateofdeathcontroller.text = DateFormat('yyyy-MM-dd').format(selectedDate.value!);
+    timeofdeathcontroller.text = retagging != null
+        ? "5504845226"
+        : selectedTime.value!.format(context);
+  }
+
+  String _formatNumber(dynamic value) {
+    if (value == null) return '';
+    if (value is num && value == 0) return '';
+    return value.toString();
+  }
+
+  void syncDataFromControllers() {
+    if (data is Map<String, dynamic>) {
+      final map = data as Map<String, dynamic>;
+      final buffaloCount = int.tryParse(buffalocountcontroller.text.trim());
+      final cowCount = int.tryParse(cowcountcontroller.text.trim());
+      final buffaloSI = double.tryParse(buffalomoneycontroller.text.trim());
+      final cowSI = double.tryParse(cowmoneycontroller.text.trim());
+      if (buffaloCount != null) map["numberOfBuffalo"] = buffaloCount;
+      if (cowCount != null) map["numberOfCow"] = cowCount;
+      if (buffaloSI != null) map["sumInsuredBuffalo"] = buffaloSI;
+      if (cowSI != null) map["sumInsuredCow"] = cowSI;
+    }
+  }
+
+  Future<void> saveLeadUpdates() async {
+    if (data is! Map<String, dynamic>) return;
+    final map = data as Map<String, dynamic>;
+    final id = map["id"]?.toString();
+    if (id == null || id.isEmpty) return;
+
+    final token = _appController.token.value;
+    if (token.isEmpty) return;
+
+    syncDataFromControllers();
+
+    final body = <String, dynamic>{};
+    final buffaloCount = int.tryParse(buffalocountcontroller.text.trim());
+    final cowCount = int.tryParse(cowcountcontroller.text.trim());
+    final buffaloSI = double.tryParse(buffalomoneycontroller.text.trim());
+    final cowSI = double.tryParse(cowmoneycontroller.text.trim());
+
+    if (buffaloCount != null) body["numberOfBuffalo"] = buffaloCount;
+    if (cowCount != null) body["numberOfCow"] = cowCount;
+    if (buffaloSI != null) body["sumInsuredBuffalo"] = buffaloSI;
+    if (cowSI != null) body["sumInsuredCow"] = cowSI;
+
+    if (body.isEmpty) return;
+
+    try {
+      await _taggingService.updateLead(token: token, id: id, body: body);
+      debugPrint("Lead $id updated with: $body");
+    } catch (e) {
+      debugPrint("Failed to update lead: $e");
+    }
+  }
 
   final List<String> imageUrls = [
     'asset/Tagging_Sample/100779925870a.jpg',

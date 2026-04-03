@@ -27,7 +27,11 @@ iscattlespecifications({required BuildContext context, required controller}) {
                   .toList(),
               onChanged: (value) {
                 controller.selectedSpeciesValue = value.toString();
-                // print("aaaa ::: ${controller.selectedSpeciesValue}");
+                controller.selectedAgeValue = null;
+                controller.selectedbreedValue = null;
+                controller.selectedbodycolorValue = null;
+                controller.selectedrighthornValue = null;
+                controller.selectedlefthornValue = null;
                 controller.update();
               },
             ),
@@ -89,6 +93,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedAgeValue = value.toString();
               },
+              value: controller.selectedAgeValue,
             ),
           ),
         ],
@@ -155,6 +160,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedbreedValue = value.toString();
               },
+              value: controller.selectedbreedValue,
             ),
           ),
           SizedBox(width: wp(2)),
@@ -215,6 +221,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedbodycolorValue = value.toString();
               },
+              value: controller.selectedbodycolorValue,
             ),
           ),
         ],
@@ -281,6 +288,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedrighthornValue = value.toString();
               },
+              value: controller.selectedrighthornValue,
             ),
           ),
           SizedBox(width: wp(2)),
@@ -341,6 +349,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedlefthornValue = value.toString();
               },
+              value: controller.selectedlefthornValue,
             ),
           ),
         ],
@@ -366,6 +375,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedtailcolorValue = value.toString();
               },
+              value: controller.selectedtailcolorValue,
             ),
           ),
           SizedBox(width: wp(2)),
@@ -386,6 +396,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
               onChanged: (value) {
                 controller.selectedidmarkValue = value.toString();
               },
+              value: controller.selectedidmarkValue,
             ),
           ),
         ],
@@ -435,8 +446,9 @@ iscattlespecifications({required BuildContext context, required controller}) {
                   )
                   .toList(),
               onChanged: (value) {
-                controller.selectedidmarkValue = value.toString();
+                controller.selectedlactationValue = value.toString();
               },
+              value: controller.selectedlactationValue,
             ),
           ),
         ],

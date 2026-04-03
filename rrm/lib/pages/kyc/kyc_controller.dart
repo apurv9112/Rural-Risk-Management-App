@@ -193,25 +193,9 @@ class KycController extends GetxController {
       final bool isTaggingFlow = ischangepage == null && retagging == null;
 
       if (isTaggingFlow) {
-        final ownerId = _resolveOwnerId(data);
-        if (ownerId == null || ownerId.isEmpty) {
-          showSnackBar("Owner ID not found for KYC upload.", SNACK.FAILED);
-          return;
-        }
-
-        final docResp = await _kycService.uploadOwnerDocuments(
-          token: token,
-          ownerId: ownerId,
-          payload: payload,
-        );
-
-        final docDecoded = docResp.body.isNotEmpty ? jsonDecode(docResp.body) : {};
-        if (docResp.statusCode < 200 || docResp.statusCode >= 300 || docDecoded["status"] != "success") {
-          showSnackBar(docDecoded["message"] ?? "Failed to upload KYC documents.", SNACK.FAILED);
-          return;
-        }
-
-        final leadPayload = _buildLeadUpdatePayload(data);
+        final leadPayload = _buildLeadUpdatePayload(data)
+          ..addAll(payload)
+          ..["kycStatus"] = "Uploaded";
         final leadResp = await _taggingService.updateLead(
           token: token,
           id: data["id"].toString(),
@@ -300,17 +284,6 @@ class KycController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
       update();
     }
-  }
-
-  String? _resolveOwnerId(dynamic source) {
-    if (source is! Map<String, dynamic>) return null;
-    final direct = source["ownerId"] ?? source["owner_id"] ?? source["ownerID"];
-    if (direct != null) return direct.toString();
-    final owner = source["owner"];
-    if (owner is Map<String, dynamic>) {
-      return (owner["id"] ?? owner["_id"] ?? owner["ownerId"])?.toString();
-    }
-    return null;
   }
 
   Map<String, dynamic> _buildLeadUpdatePayload(dynamic source) {

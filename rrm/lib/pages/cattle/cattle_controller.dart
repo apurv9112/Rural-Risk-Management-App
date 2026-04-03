@@ -30,22 +30,47 @@ class CattleController extends GetxController {
   int totalCattleCount = 1;
   int completedCattleCount = 0;
   int currentCattleIndex = 1;
+  bool _isTagFieldsInitialized = false;
 
   @override
   void onInit() {
-    // Capture navigation arguments once to avoid nulls on rebuilds
-    final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
-    data = args["tagging"];
-    ischangepage = args["ischangepage"];
-    retagging = args["retagging"];
-
-    completedCattleCount = _parseInt(args["completedCattleCount"]) ?? 0;
-    totalCattleCount = _parseInt(args["totalCattleCount"]) ?? _calculateTotalCattleCount(data);
-    if (totalCattleCount < 1) totalCattleCount = 1;
-    currentCattleIndex = _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
-
+    final Map<String, dynamic> args =
+        (Get.arguments as Map<String, dynamic>?) ?? {};
+    syncFromArgs(args);
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
     super.onInit();
+  }
+
+  void syncFromArgs(Map<String, dynamic> args) {
+    data = args["tagging"] ?? data;
+    ischangepage = args["ischangepage"] ?? ischangepage;
+    retagging = args["retagging"] ?? retagging;
+
+    completedCattleCount =
+        _parseInt(args["completedCattleCount"]) ?? completedCattleCount;
+    totalCattleCount = _parseInt(args["totalCattleCount"]) ??
+        _calculateTotalCattleCount(data);
+    if (totalCattleCount < 1) totalCattleCount = 1;
+    currentCattleIndex =
+        _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
+    _initializeTagFields();
+  }
+
+  void _initializeTagFields() {
+    if (_isTagFieldsInitialized || data is! Map<String, dynamic>) return;
+    final lead = data as Map<String, dynamic>;
+
+    if (ischangepage == null && retagging == null) {
+      // Tagging flow: user enters new tag number for each cattle.
+      tagnumbercontroller.clear();
+      newtagnumbercontroller.clear();
+    } else {
+      // Retagging/claim flow: prefill from lead.
+      tagnumbercontroller.text =
+          (lead["tagNumber"] ?? lead["oldTagNumber"] ?? "").toString();
+      newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
+    }
+    _isTagFieldsInitialized = true;
   }
 
   // cattle page
@@ -56,7 +81,7 @@ class CattleController extends GetxController {
     'Under Value Cattle',
   ];
 
-  final List<String> speciesItems = ['Buffalo', 'Cow', 'Sheep', 'Goat'];
+  final List<String> speciesItems = ['Buffalo',              'Cow', 'Sheep', 'Goat'];
   final List<String> ageBuffaloCow = [
     '1',
     '2',
@@ -487,13 +512,21 @@ class CattleController extends GetxController {
       return;
     }
 
-    if (selectedeartag.value == null &&
-        selectedheadpose.value == null &&
-        selectedsideposeleft.value == null &&
-        selectedsideposeright.value == null &&
-        selectedbackpose.value == null &&
-        (!isClaimFlow || (selectedearcut.value == null && selectedearbackside.value == null))) {
-      showSnackBar("Please add at least one cattle photo.", SNACK.FAILED);
+    if (completedCattleCount >= totalCattleCount) {
+      showSnackBar("All cattle already saved for this lead.", SNACK.FAILED);
+      return;
+    }
+
+    final hasMandatoryImages = selectedeartag.value != null &&
+        selectedheadpose.value != null &&
+        selectedsideposeleft.value != null &&
+        selectedsideposeright.value != null &&
+        selectedbackpose.value != null;
+    if (!hasMandatoryImages) {
+      showSnackBar(
+        "Please add all 5 mandatory cattle photos (ear tag, head, left, right, back).",
+        SNACK.FAILED,
+      );
       return;
     }
 
@@ -511,7 +544,10 @@ class CattleController extends GetxController {
     );
 
     final payload = <String, dynamic>{
-      "taggingId": taggingId,
+      "leadId": taggingId.toString(),
+      "leadType": isClaimFlow ? "claim" : (retagging != null ? "retagging" : "tagging"),
+      "cattleIndex": completedCattleCount,
+      "totalCattle": totalCattleCount,
       "tagNumber": tagnumbercontroller.text.trim().isNotEmpty
           ? tagnumbercontroller.text.trim()
           : null,
@@ -523,13 +559,34 @@ class CattleController extends GetxController {
       "bodyColor": selectedbodycolorValue,
       "rightHorn": selectedrighthornValue,
       "leftHorn": selectedlefthornValue,
-      "switchOfTail": selectedtailcolorValue,
+      "tailColor": selectedtailcolorValue,
       "cattleAge": selectedAgeValue,
       "idMark": selectedidmarkValue,
-      "milkPerDayLtr": _toNullableDouble(milklittercontroller.text),
-      "lactation": _toNullableDouble(buffalocountcontroller.text),
-      "sumInsured": _toNullableDouble(buffalomoneycontroller.text),
-      "marketValue": _toNullableDouble(buffalomoneycontroller.text),
+      "milkPerDayLtr": _toNullableNumericString(milklittercontroller.text),
+      "lactation": _toNullableNumericString(buffalocountcontroller.text),
+      "sumInsured": _toNullableNumericString(buffalocountcontroller.text),
+      "marketValue": _toNullableNumericString(buffalomoneycontroller.text),
+      "earTagImage": selectedeartag.value != null
+          ? base64Encode(selectedeartag.value!.readAsBytesSync())
+          : null,
+      "headPoseImage": selectedheadpose.value != null
+          ? base64Encode(selectedheadpose.value!.readAsBytesSync())
+          : null,
+      "sidePoseLeftImage": selectedsideposeleft.value != null
+          ? base64Encode(selectedsideposeleft.value!.readAsBytesSync())
+          : null,
+      "sidePoseRightImage": selectedsideposeright.value != null
+          ? base64Encode(selectedsideposeright.value!.readAsBytesSync())
+          : null,
+      "backPoseImage": selectedbackpose.value != null
+          ? base64Encode(selectedbackpose.value!.readAsBytesSync())
+          : null,
+      "earCutPhoto": selectedearcut.value != null
+          ? base64Encode(selectedearcut.value!.readAsBytesSync())
+          : null,
+      "earBackSidePhoto": selectedearbackside.value != null
+          ? base64Encode(selectedearbackside.value!.readAsBytesSync())
+          : null,
     }..removeWhere((_, value) => value == null || (value is String && value.isEmpty));
 
     try {
@@ -546,19 +603,12 @@ class CattleController extends GetxController {
 
         if (isTaggingFlow) {
           final nextCompleted = completedCattleCount + 1;
+          completedCattleCount = nextCompleted;
           if (nextCompleted < totalCattleCount) {
-            // Go back to cattle capture for next animal in tagging flow
-            Get.offNamed(
-              routecattlepage,
-              arguments: {
-                "tagging": data,
-                "ischangepage": ischangepage,
-                "retagging": retagging,
-                "completedCattleCount": nextCompleted,
-                "totalCattleCount": totalCattleCount,
-                "cattleIndex": nextCompleted + 1,
-              },
-            );
+            // Keep user on same screen and move to next cattle step.
+            currentCattleIndex = nextCompleted + 1;
+            _resetCattleCaptureFormForNextStep();
+            update();
           } else {
             showSnackBar("All cattle tagged for this lead.", SNACK.SUCCESS);
             Get.offAllNamed(routetaggingpage);
@@ -586,11 +636,12 @@ class CattleController extends GetxController {
     }
   }
 
-  double? _toNullableDouble(String? value) {
+  String? _toNullableNumericString(String? value) {
     if (value == null) return null;
     final trimmed = value.trim();
     if (trimmed.isEmpty) return null;
-    return double.tryParse(trimmed);
+    final parsed = num.tryParse(trimmed);
+    return parsed?.toString();
   }
 
   int? _parseInt(dynamic value) {
@@ -609,5 +660,51 @@ class CattleController extends GetxController {
     final totalFromLead = _parseInt(source["totalCattle"]) ?? 0;
     final total = totalFromLead > 0 ? totalFromLead : (buffalo + cow + sheep + goat);
     return total > 0 ? total : 1;
+  }
+
+  void _resetCattleCaptureFormForNextStep() {
+    // Clear text inputs used for per-cattle capture.
+    milklittercontroller.clear();
+    buffalocountcontroller.clear();
+    buffalomoneycontroller.clear();
+    tagnumbercontroller.clear();
+    newtagnumbercontroller.clear();
+
+    // Keep tagging date to current date for convenience.
+    selectedDate.value = DateTime.now();
+    taggingdatecontroller.text = '';
+    newtaggingdatecontroller.text = '';
+
+    // Reset dropdown selections for next cattle.
+    selectedspeciesnotavailable = null;
+    selectedSpeciesValue = speciesItems.first;
+    selectedAgeValue = null;
+    selectedbreedValue = null;
+    selectedbodycolorValue = null;
+    selectedrighthornValue = null;
+    selectedlefthornValue = null;
+    selectedtailcolorValue = null;
+    selectedidmarkValue = null;
+    selectedmilkdayValue = null;
+    selectedlactationValue = null;
+
+    // Reset captured media.
+    selectedeartag.value = null;
+    selectedheadpose.value = null;
+    selectedsideposeleft.value = null;
+    selectedsideposeright.value = null;
+    selectedbackpose.value = null;
+    selectedOther5.value = null;
+    selectedOther1.value = null;
+    selectedOther2.value = null;
+    selectedOther3.value = null;
+    selectedOther4.value = null;
+    selectedearcut.value = null;
+    selectedearbackside.value = null;
+    cameravideopath1 = null;
+    cameravideopath2 = null;
+    videopath1 = null;
+    videopath2 = null;
+    galleryFiles.clear();
   }
 }

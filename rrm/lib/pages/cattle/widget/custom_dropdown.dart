@@ -13,8 +13,16 @@ customdropdown({
   void Function(String?)? onChanged,
   String? value,
 }) {
+  final availableValues = (items ?? [])
+      .map((e) => e.value)
+      .whereType<String>()
+      .toSet();
+  final safeValue = (value != null && availableValues.contains(value))
+      ? value
+      : null;
+
   return DropdownButtonFormField2<String>(
-    value: value,
+    value: safeValue,
     isExpanded: true,
     decoration: InputDecoration(
       filled: true,

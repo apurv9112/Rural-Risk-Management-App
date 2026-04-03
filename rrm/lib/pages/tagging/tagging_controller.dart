@@ -49,6 +49,17 @@ class TaggingController extends GetxController {
           decoded["status"] == "success") {
         taggings = decoded["data"]?["leads"]?["tagging"] ?? decoded["data"]?["taggings"] ?? [];
         listshow = false;
+
+        if (taggings.isNotEmpty) {
+          final first = taggings[0];
+          debugPrint("=== TAGGING API RESPONSE (first lead) ===");
+          debugPrint("sumInsuredCow: ${first['sumInsuredCow']}");
+          debugPrint("sumInsuredBuffalo: ${first['sumInsuredBuffalo']}");
+          debugPrint("numberOfCow: ${first['numberOfCow']}");
+          debugPrint("numberOfBuffalo: ${first['numberOfBuffalo']}");
+          debugPrint("All keys: ${first.keys.toList()}");
+          debugPrint("=========================================");
+        }
       }
     } catch (e) {
       debugPrint("Initial tagging fetch error: $e");
@@ -113,6 +124,17 @@ class TaggingController extends GetxController {
       if (isOkStatus && decoded["status"] == "success") {
         taggings = decoded["data"]["taggings"] ?? [];
         listshow = false;
+
+        if (taggings.isNotEmpty) {
+          final first = taggings[0];
+          debugPrint("=== TAGGING SEARCH RESPONSE (first lead) ===");
+          debugPrint("sumInsuredCow: ${first['sumInsuredCow']}");
+          debugPrint("sumInsuredBuffalo: ${first['sumInsuredBuffalo']}");
+          debugPrint("numberOfCow: ${first['numberOfCow']}");
+          debugPrint("numberOfBuffalo: ${first['numberOfBuffalo']}");
+          debugPrint("All keys: ${first.keys.toList()}");
+          debugPrint("=============================================");
+        }
       } else {
         final msg = decoded["message"] ?? "Search failed";
         if (response.statusCode == 401) {

@@ -13,7 +13,7 @@ class CattleService {
   }) {
     return _client
         .post(
-          Uri.parse("$baseUrl/cattle"),
+          Uri.parse("$baseUrl/field-worker/save-cattle"),
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $token",

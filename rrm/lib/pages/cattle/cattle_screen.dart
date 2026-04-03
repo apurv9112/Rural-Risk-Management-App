@@ -20,12 +20,10 @@ class Cattlescreen extends StatelessWidget {
     return GetBuilder<CattleController>(
       builder: (controller) {
         final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
-        controller.ischangepage ??= args["ischangepage"];
-        controller.retagging ??= args["retagging"];
-        controller.data ??= args["tagging"];
+        if (controller.data == null) {
+          controller.syncFromArgs(args);
+        }
 
-        controller.tagnumbercontroller.text = "55862215522";
-        controller.newtaggingdatecontroller.text = "55862215522";
         controller.taggingdatecontroller.text = DateFormat(
           'yyyy-MM-dd', 
         ).format(controller.selectedDate.value!);
@@ -98,7 +96,7 @@ class Cattlescreen extends StatelessWidget {
                           controller: controller.tagnumbercontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: true,
+                          readOnly: controller.ischangepage != null,
                         ),
                       ),
                     ],
@@ -121,7 +119,7 @@ class Cattlescreen extends StatelessWidget {
                                 controller: controller.newtagnumbercontroller,
                                 backgroundColor: AppColors.WHITE,
                                 inputtextcolor: AppColors.PRIMARY_COLOR,
-                                readOnly: true,
+                                readOnly: false,
                               ),
                             ),
                           ],
