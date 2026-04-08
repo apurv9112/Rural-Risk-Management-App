@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,6 +35,7 @@ class TaggingdataController extends GetxController {
   bool? manualtagging = false;
   String? selectedReason;
   bool _fieldsInitialized = false;
+  late final List<String> imageUrls;
 
   void initFieldsFromData(Map<String, dynamic> dataMap, BuildContext context) {
     if (_fieldsInitialized) return;
@@ -51,15 +50,19 @@ class TaggingdataController extends GetxController {
     banknamecontroller.text = (dataMap["bankName"] ?? '').toString();
     branchcontroller.text = (dataMap["branchOfBank"] ?? '').toString();
     loanacnocontroller.text = (dataMap["loanAccountNo"] ?? '').toString();
-    insurancecontroller.text = (dataMap["insuranceCompanyName"] ?? '').toString();
+    insurancecontroller.text = (dataMap["insuranceCompanyName"] ?? '')
+        .toString();
     buffalocountcontroller.text = _formatNumber(dataMap["numberOfBuffalo"]);
     cowcountcontroller.text = _formatNumber(dataMap["numberOfCow"]);
     buffalomoneycontroller.text = _formatNumber(dataMap["sumInsuredBuffalo"]);
     cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
-    dateofdeathcontroller.text = DateFormat('yyyy-MM-dd').format(selectedDate.value!);
+    dateofdeathcontroller.text = DateFormat(
+      'yyyy-MM-dd',
+    ).format(selectedDate.value!);
     timeofdeathcontroller.text = retagging != null
         ? "5504845226"
         : selectedTime.value!.format(context);
+    imageUrls = [(dataMap["imageUrls"] ?? '').toString()];
   }
 
   String _formatNumber(dynamic value) {
@@ -113,13 +116,6 @@ class TaggingdataController extends GetxController {
       debugPrint("Failed to update lead: $e");
     }
   }
-
-  final List<String> imageUrls = [
-    'asset/Tagging_Sample/100779925870a.jpg',
-    'asset/Tagging_Sample/100779925870b.jpg',
-    'asset/Tagging_Sample/100779925870c.jpg',
-    'asset/Tagging_Sample/100779925870d.jpg',
-  ];
 
   final List<String> taggingreasons = [
     "Not Purchased",

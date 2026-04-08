@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
-import 'package:super_tooltip/super_tooltip.dart';
 
 customRow({
   required BuildContext context,
@@ -14,6 +14,7 @@ customRow({
   bool? isvideoimag,
   bool? videoicon,
 }) {
+  final tooltipController = JustTheController();
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -45,13 +46,14 @@ customRow({
               ),
               SizedBox(),
               isvideoimag == false
-                  ? SuperTooltip(
-                      showBarrier: true,
-                      popupDirection: TooltipDirection.left,
-                      showDropBoxFilter: true,
-                      content: Image.asset(
-                        image ?? "asset/images/home_logo_1.png",
-                        scale: dp(context, 4),
+                  ? JustTheTooltip(
+                      controller: tooltipController,
+                      isModal: true, // background blur/block
+                      content: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          image ?? "asset/images/home_logo_1.png",
+                        ),
                       ),
                       child: Container(
                         padding: EdgeInsets.all(dp(context, 2)),

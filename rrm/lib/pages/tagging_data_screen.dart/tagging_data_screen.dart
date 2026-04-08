@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
@@ -22,7 +21,8 @@ class TaggingDataScreen extends StatelessWidget {
     return GetBuilder<TaggingdataController>(
       init: TaggingdataController(),
       builder: (controller) {
-        final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
+        final Map<String, dynamic> args =
+            (Get.arguments as Map<String, dynamic>?) ?? {};
         controller.data = args["tagging"] ?? args["retagging"] ?? args["claim"];
         controller.retagging = args["retagging"];
         controller.ischangepage = args["isclaim"];
@@ -31,12 +31,9 @@ class TaggingDataScreen extends StatelessWidget {
         final dataMap = controller.data as Map<String, dynamic>?;
         if (dataMap == null) {
           return const Scaffold(
-            body: Center(
-              child: Text("No lead data provided."),
-            ),
+            body: Center(child: Text("No lead data provided.")),
           );
         }
-
         controller.initFieldsFromData(dataMap, context);
         return Scaffold(
           resizeToAvoidBottomInset: true,
@@ -77,7 +74,10 @@ class TaggingDataScreen extends StatelessWidget {
                         readOnly: controller.manualtagging ?? true,
                         suffixIcon: GestureDetector(
                           onTap: () {
-                            final number = controller.mobilenumbercontroller.text.trim();
+                            final number = controller
+                                .mobilenumbercontroller
+                                .text
+                                .trim();
                             if (number.isEmpty) return;
                             url_launcher.launchUrl(Uri.parse('tel:+$number'));
                           },
@@ -306,7 +306,8 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                             child: IconButton(
                               onPressed: () {
-                                controller.buffaloreadOnly = !(controller.buffaloreadOnly ?? false);
+                                controller.buffaloreadOnly =
+                                    !(controller.buffaloreadOnly ?? false);
                                 controller.update();
                               },
                               icon: Icon(
@@ -394,7 +395,8 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                             child: IconButton(
                               onPressed: () {
-                                controller.cowreadOnly = !(controller.cowreadOnly ?? false);
+                                controller.cowreadOnly =
+                                    !(controller.cowreadOnly ?? false);
                                 controller.update();
                               },
                               icon: Icon(
@@ -470,9 +472,37 @@ class TaggingDataScreen extends StatelessWidget {
                                           width: wp(1),
                                         ),
                                       ),
-                                      child: Image.asset(
-                                        controller.imageUrls[index],
-                                        fit: BoxFit.fill,
+                                      child: Column(
+                                        children: [
+                                          Image.network(
+                                            controller.imageUrls[index],
+                                            fit: BoxFit.cover,
+                                            loadingBuilder:
+                                                (context, child, progress) {
+                                                  if (progress == null) {
+                                                    return child;
+                                                  }
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                                },
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  return Column(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.error,
+                                                        color: Colors.red,
+                                                      ),
+                                                      Text(
+                                                        "Image not available",
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                          ),
+                                        ],
                                       ),
                                     );
                                   },
@@ -837,7 +867,7 @@ class TaggingDataScreen extends StatelessWidget {
                                     }
                                   },
                                   context: context,
-                                  width: wp(33),
+                                  width: wp(32),
                                   text: "Yes",
                                   textcolor: AppColors.WHITE,
                                   color: Colors.red,
@@ -847,7 +877,7 @@ class TaggingDataScreen extends StatelessWidget {
                                   onTap: () {
                                     Get.back();
                                   },
-                                  width: wp(33),
+                                  width: wp(32),
                                   context: context,
                                   text: "No",
                                   textcolor: AppColors.WHITE,
@@ -962,7 +992,7 @@ void showDialogWithFields({
                 children: [
                   Customcontainer(
                     onTap: () {
-                      Get.offAllNamed('/homepage');
+                      Get.offAllNamed(routehomepage);
                     },
                     context: context,
                     width: wp(33),
