@@ -16,6 +16,7 @@ class TaggingScreen extends StatelessWidget {
     return GetBuilder<TaggingController>(
       init: TaggingController(),
       builder: (controller) {
+        print("tagging data :::::::  ${controller.taggings.length}");
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,

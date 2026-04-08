@@ -150,9 +150,7 @@ class ClaimScreen extends StatelessWidget {
                                     routetaggingdatapage,
                                     arguments: {
                                       "tagging": details,
-                                      "isclaim": controller.isRetagging
-                                          ? null
-                                          : controller.claim,
+                                      "isclaim": controller.claim,
                                       "retagging": controller.retagging,
                                     },
                                   );

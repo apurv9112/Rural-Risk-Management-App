@@ -47,7 +47,10 @@ class TaggingController extends GetxController {
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           decoded["status"] == "success") {
-        taggings = decoded["data"]?["leads"]?["tagging"] ?? decoded["data"]?["taggings"] ?? [];
+        taggings =
+            decoded["data"]?["leads"]?["tagging"] ??
+            decoded["data"]?["taggings"] ??
+            [];
         listshow = false;
 
         if (taggings.isNotEmpty) {
@@ -76,10 +79,7 @@ class TaggingController extends GetxController {
       final String token = appController.token.value;
 
       if (token.isEmpty) {
-        showSnackBar(
-          "Session expired. Please log in again.",
-          SNACK.FAILED,
-        );
+        showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
         debugPrint("Tagging search blocked: missing token");
         return;
       }
@@ -96,7 +96,7 @@ class TaggingController extends GetxController {
 
       final Map<String, dynamic> payload = {
         "page": 1,
-        "limit": 10,
+        "limit": 99999,
         "mobileNo": mobilecontroller.text.trim(),
         "loanAccountNo": loanaccoutnumbercontroller.text.trim(),
         "ownerName": nameofcattleownercontroller.text.trim(),
@@ -105,9 +105,7 @@ class TaggingController extends GetxController {
         "district": distcontroller.text.trim(),
       };
 
-      payload.removeWhere(
-        (_, value) => value is String && value.isEmpty,
-      );
+      payload.removeWhere((_, value) => value is String && value.isEmpty);
 
       final response = await _taggingService.searchTagging(
         token: token,
@@ -120,7 +118,8 @@ class TaggingController extends GetxController {
 
       final decoded = jsonDecode(response.body);
 
-      final bool isOkStatus = response.statusCode >= 200 && response.statusCode < 300;
+      final bool isOkStatus =
+          response.statusCode >= 200 && response.statusCode < 300;
       if (isOkStatus && decoded["status"] == "success") {
         taggings = decoded["data"]["taggings"] ?? [];
         listshow = false;
@@ -148,7 +147,10 @@ class TaggingController extends GetxController {
     } catch (e) {
       debugPrint("Tagging search error: $e");
       if (!(Get.isDialogOpen ?? false)) {
-        showSnackBar("Unable to search right now. Check connection and retry.", SNACK.FAILED);
+        showSnackBar(
+          "Unable to search right now. Check connection and retry.",
+          SNACK.FAILED,
+        );
       }
     } finally {
       isLoading = false;
