@@ -12,7 +12,6 @@ class LoginController extends GetxController {
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController mobilecontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final DeviceController deviceController = Get.find();
   final AppController appController = Get.find();
@@ -20,81 +19,68 @@ class LoginController extends GetxController {
 
   bool isemail = true;
 
-Future<void> submitLogin() async {
-  if (!formKey.currentState!.validate()) return;
+  Future<void> submitLogin() async {
+    if (!formKey.currentState!.validate()) return;
 
-  if (deviceController.deviceId.value.isEmpty) {
-    await deviceController.fetchDeviceId();
-  }
-
-  Get.dialog(
-    const Center(child: CircularProgressIndicator()),
-    barrierDismissible: false,
-  );
-
-  try {
-    final payload = isemail
-        ? {
-            "email": emailcontroller.text.trim(),
-            "password": passwordcontroller.text.trim(),
-            "deviceId": deviceController.deviceId.value,
-          }
-        : {
-            "mobileNo": mobilecontroller.text.trim(),
-            "password": passwordcontroller.text.trim(),
-            "deviceId": deviceController.deviceId.value,
-          };
-
-    debugPrint("Login payload keys: ${payload.keys}");
-
-    final resp = await _authService.login(payload);
-
-    // debugPrint(
-    //   "Login response: status=${resp.statusCode}, body=${resp.body}";
-    // );
-
-    if (Get.isDialogOpen ?? false) Get.back();
-
-    final decoded =
-        resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
-
-    if (resp.statusCode == 200 && decoded["status"] == "success") {
-      final String token = _extractToken(
-        decoded,
-        resp.headers,
-      );
-
-      if (token.isEmpty) {
-        showSnackBar(
-          "Login succeeded but no session token returned.",
-          SNACK.FAILED,
-        );
-        debugPrint("Login missing token. Body keys: ${decoded.keys}");
-        return;
-      }
-
-      appController.setToken(token);
-      debugPrint("Login token saved (${token.length} chars)");
-
-      showSnackBar(
-        decoded["message"] ?? "Login successful",
-        SNACK.SUCCESS,
-      );
-      Get.offAllNamed(routehomepage);
-    } else {
-      showSnackBar(
-        decoded["message"] ?? "Login failed",
-        SNACK.FAILED,
-      );
+    if (deviceController.deviceId.value.isEmpty) {
+      await deviceController.fetchDeviceId();
     }
-  } catch (e) {
-    if (Get.isDialogOpen ?? false) Get.back();
-    showSnackBar(
-      "Network error. Please try again.",
-      SNACK.FAILED,
+
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
     );
+
+    try {
+      final payload = isemail
+          ? {
+              "mobileNo": mobilecontroller.text.trim(),
+              "password": passwordcontroller.text.trim(),
+              "deviceId": deviceController.deviceId.value,
+            }
+          : {
+              "email": emailcontroller.text.trim(),
+              "password": passwordcontroller.text.trim(),
+              "deviceId": deviceController.deviceId.value,
+            };
+
+      debugPrint("Login payload keys: ${payload.keys}");
+
+      final resp = await _authService.login(payload);
+
+      debugPrint(
+        "Login response: status=${resp.statusCode}, body=${resp.body}",
+      );
+
+      if (Get.isDialogOpen ?? false) Get.back();
+
+      final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
+
+      if (resp.statusCode == 200 && decoded["status"] == "success") {
+        final String token = _extractToken(decoded, resp.headers);
+
+        if (token.isEmpty) {
+          showSnackBar(
+            "Login succeeded but no session token returned.",
+            SNACK.FAILED,
+          );
+          debugPrint("Login missing token. Body keys: ${decoded.keys}");
+          return;
+        }
+
+        appController.setToken(token);
+        debugPrint("Login token saved (${token.length} chars)");
+
+        showSnackBar(decoded["message"] ?? "Login successful", SNACK.SUCCESS);
+        Get.offAllNamed(routehomepage);
+      } else {
+        showSnackBar(decoded["message"] ?? "Login failed", SNACK.FAILED);
+      }
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      showSnackBar("Network error. Please try again.", SNACK.FAILED);
+    }
   }
-}
 
   // ✅ GetX-safe dialog (NO BuildContext)
   void showDeviceDialog() {

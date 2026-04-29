@@ -14,7 +14,6 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<LoginController>(
-
       builder: (controller) {
         return Scaffold(
           backgroundColor: AppColors.PRIMARY_COLOR,
@@ -47,7 +46,7 @@ class LoginPage extends StatelessWidget {
                               controller.update();
                             },
                             child: Text(
-                              "Email Id",
+                              "Mobile No",
                               style: TextStyle(
                                 color: AppColors.WHITE,
                                 fontSize: dp(context, 20),
@@ -60,7 +59,7 @@ class LoginPage extends StatelessWidget {
                               controller.update();
                             },
                             child: Text(
-                              "Mobile No",
+                              "Email Id",
                               style: TextStyle(
                                 color: AppColors.WHITE,
                                 fontSize: dp(context, 20),
@@ -96,19 +95,6 @@ class LoginPage extends StatelessWidget {
                       SizedBox(height: hp(2)),
                       controller.isemail
                           ? CustomTextField(
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              controller: controller.emailcontroller,
-                              hint: "Email Id",
-                              labeltext: 'Email Id',
-                              validator: formValidation.validation(
-                                type: 'email',
-                                multiValidator: MultiValidator([]),
-                                isRequired: true,
-                                errorText: "Email is required.",
-                              ),
-                            )
-                          : CustomTextField(
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
                               controller: controller.mobilecontroller,
@@ -119,6 +105,19 @@ class LoginPage extends StatelessWidget {
                                 multiValidator: MultiValidator([]),
                                 isRequired: true,
                                 errorText: "Mobile is required.",
+                              ),
+                            )
+                          : CustomTextField(
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              controller: controller.emailcontroller,
+                              hint: "Email Id",
+                              labeltext: 'Email Id',
+                              validator: formValidation.validation(
+                                type: 'email',
+                                multiValidator: MultiValidator([]),
+                                isRequired: true,
+                                errorText: "Email is required.",
                               ),
                             ),
                       SizedBox(height: hp(2)),
