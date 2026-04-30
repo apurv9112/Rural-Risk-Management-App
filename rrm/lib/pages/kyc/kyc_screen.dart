@@ -73,8 +73,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Front Side of Aadhar card",
-                    childimage:
-                        controller.selectedAadharfront.value != null
+                    childimage: controller.selectedAadharfront.value != null
                         ? Image.file(
                             controller.selectedAadharfront.value!,
                             fit: BoxFit.cover,
@@ -97,8 +96,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Back Side of Aadhar card",
-                    childimage:
-                        controller.selectedAadharback.value != null
+                    childimage: controller.selectedAadharback.value != null
                         ? Image.file(
                             controller.selectedAadharback.value!,
                             fit: BoxFit.cover,
@@ -120,8 +118,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Front Side of Pan card",
-                    childimage:
-                        controller.selectedPanfront.value != null
+                    childimage: controller.selectedPanfront.value != null
                         ? Image.file(
                             controller.selectedPanfront.value!,
                             fit: BoxFit.cover,
@@ -144,8 +141,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Add Bank Details 1",
-                    childimage:
-                        controller.selectedbankdetails1.value != null
+                    childimage: controller.selectedbankdetails1.value != null
                         ? Image.file(
                             controller.selectedbankdetails1.value!,
                             fit: BoxFit.cover,
@@ -167,8 +163,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Add Bank Details 2",
-                    childimage:
-                        controller.selectedbankdetails2.value != null
+                    childimage: controller.selectedbankdetails2.value != null
                         ? Image.file(
                             controller.selectedbankdetails2.value!,
                             fit: BoxFit.cover,
@@ -191,8 +186,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Other",
-                    childimage:
-                        controller.selectedOther5.value != null
+                    childimage: controller.selectedOther5.value != null
                         ? Image.file(
                             controller.selectedOther5.value!,
                             fit: BoxFit.cover,
@@ -213,8 +207,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Other",
-                    childimage:
-                        controller.selectedOther1.value != null
+                    childimage: controller.selectedOther1.value != null
                         ? Image.file(
                             controller.selectedOther1.value!,
                             fit: BoxFit.cover,
@@ -236,8 +229,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Other",
-                    childimage:
-                        controller.selectedOther2.value != null
+                    childimage: controller.selectedOther2.value != null
                         ? Image.file(
                             controller.selectedOther2.value!,
                             fit: BoxFit.cover,
@@ -258,8 +250,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Other",
-                    childimage:
-                        controller.selectedOther3.value != null
+                    childimage: controller.selectedOther3.value != null
                         ? Image.file(
                             controller.selectedOther3.value!,
                             fit: BoxFit.cover,
@@ -281,8 +272,7 @@ class KycScreen extends StatelessWidget {
                     context: context,
                     controller: controller,
                     textdata: "Other",
-                    childimage:
-                        controller.selectedOther4.value != null
+                    childimage: controller.selectedOther4.value != null
                         ? Image.file(
                             controller.selectedOther4.value!,
                             fit: BoxFit.cover,

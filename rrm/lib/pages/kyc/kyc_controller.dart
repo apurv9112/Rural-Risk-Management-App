@@ -330,7 +330,6 @@
 
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -524,18 +523,15 @@ class KycController extends GetxController {
     );
 
     try {
-      final payload = _buildImagePayload();
-
       final bool isTaggingFlow = ischangepage == null && retagging == null;
 
       debugPrint("FLOW TYPE → ${isTaggingFlow ? "TAGGING" : "CLAIM"}");
       debugPrint("SENDING ID → ${data["id"]}");
 
       if (isTaggingFlow) {
-        // ✅ TAGGING FLOW
-        final leadPayload = _buildLeadUpdatePayload(data)
-          ..addAll(payload)
-          ..["kycStatus"] = "Uploaded";
+        final payloadData = await _buildImagePayload();
+
+        final leadPayload = {...payloadData, "kycStatus": "Uploaded"};
 
         final resp = await _taggingService.updateLead(
           token: token,
@@ -548,45 +544,20 @@ class KycController extends GetxController {
         if (resp.statusCode >= 200 &&
             resp.statusCode < 300 &&
             decoded["status"] == "success") {
-          showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
+          Future.delayed(const Duration(milliseconds: 200), () {
+            showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
+          });
 
           if (Get.isDialogOpen ?? false) Get.back();
 
           Get.offNamed(routecattlepage, arguments: {"tagging": data});
         } else {
-          showSnackBar(
-            decoded["message"] ?? "Failed to update lead.",
-            SNACK.FAILED,
-          );
-        }
-      } else {
-        // ✅ CLAIM FLOW (FIXED)
-        final resp = await _kycService.updateKyc(
-          token: token,
-          leadId: data["id"].toString(), // ✅ ONLY THIS PARAM
-          payload: payload,
-        );
-
-        debugPrint("API CALLED SUCCESSFULLY");
-
-        final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
-
-        if (resp.statusCode >= 200 &&
-            resp.statusCode < 300 &&
-            decoded["status"] == "success") {
-          showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
-
-          if (Get.isDialogOpen ?? false) Get.back();
-
-          Get.offNamed(
-            routecattlepage,
-            arguments: {"tagging": data, "ischangepage": ischangepage},
-          );
-        } else {
-          showSnackBar(
-            decoded["message"] ?? "Failed to update KYC.",
-            SNACK.FAILED,
-          );
+          Future.delayed(const Duration(milliseconds: 200), () {
+            showSnackBar(
+              decoded["message"] ?? "Failed to update lead.",
+              SNACK.FAILED,
+            );
+          });
         }
       }
     } catch (e) {
@@ -613,23 +584,50 @@ class KycController extends GetxController {
         selectedOther5.value == null;
   }
 
-  Map<String, dynamic> _buildImagePayload() {
+  // Map<String, dynamic> _buildImagePayload() {
+  //   final payload = <String, dynamic>{};
+
+  //   void addFile(String key, File? file) {
+  //     if (file == null) return;
+  //     payload[key] = base64Encode(file.readAsBytesSync());
+  //   }
+
+  //   addFile("aadharFront", selectedAadharfront.value);
+  //   addFile("aadharBack", selectedAadharback.value);
+  //   addFile("panFront", selectedPanfront.value);
+  //   addFile("bankDetailsPhoto1", selectedbankdetails1.value);
+  //   addFile("bankDetailsPhoto2", selectedbankdetails2.value);
+  //   addFile("otherImage1", selectedOther1.value);
+  //   addFile("otherImage2", selectedOther2.value);
+  //   addFile("otherImage3", selectedOther3.value);
+  //   addFile("otherImage4", selectedOther4.value ?? selectedOther5.value);
+
+  //   return payload;
+  // }
+
+  Future<Map<String, dynamic>> _buildImagePayload() async {
     final payload = <String, dynamic>{};
 
-    void addFile(String key, File? file) {
+    Future<void> addFile(String key, File? file) async {
       if (file == null) return;
-      payload[key] = base64Encode(file.readAsBytesSync());
+
+      try {
+        final bytes = await file.readAsBytes(); // ✅ async (NO FREEZE)
+        payload[key] = base64Encode(bytes);
+      } catch (e) {
+        debugPrint("Error reading file $key: $e");
+      }
     }
 
-    addFile("aadharFront", selectedAadharfront.value);
-    addFile("aadharBack", selectedAadharback.value);
-    addFile("panFront", selectedPanfront.value);
-    addFile("bankDetailsPhoto1", selectedbankdetails1.value);
-    addFile("bankDetailsPhoto2", selectedbankdetails2.value);
-    addFile("otherImage1", selectedOther1.value);
-    addFile("otherImage2", selectedOther2.value);
-    addFile("otherImage3", selectedOther3.value);
-    addFile("otherImage4", selectedOther4.value ?? selectedOther5.value);
+    await addFile("aadharFront", selectedAadharfront.value);
+    await addFile("aadharBack", selectedAadharback.value);
+    await addFile("panFront", selectedPanfront.value);
+    await addFile("bankDetailsPhoto1", selectedbankdetails1.value);
+    await addFile("bankDetailsPhoto2", selectedbankdetails2.value);
+    await addFile("otherImage1", selectedOther1.value);
+    await addFile("otherImage2", selectedOther2.value);
+    await addFile("otherImage3", selectedOther3.value);
+    await addFile("otherImage4", selectedOther4.value ?? selectedOther5.value);
 
     return payload;
   }

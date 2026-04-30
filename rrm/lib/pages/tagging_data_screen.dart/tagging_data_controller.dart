@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/tagging_service.dart';
 
+import '../../routes/common/common_app_pages.dart';
+
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
@@ -33,9 +35,14 @@ class TaggingdataController extends GetxController {
   String? ischangepage;
   String? retagging;
   bool? manualtagging = false;
-  String? selectedReason;
+  String? selectedReasonDropdown;
   bool _fieldsInitialized = false;
   late final List<String> imageUrls;
+  void setInitialData(Map<String, dynamic> args) {
+    if (data != null) return;
+
+    data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+  }
 
   void initFieldsFromData(Map<String, dynamic> dataMap, BuildContext context) {
     if (_fieldsInitialized) return;
@@ -82,38 +89,6 @@ class TaggingdataController extends GetxController {
       if (cowCount != null) map["numberOfCow"] = cowCount;
       if (buffaloSI != null) map["sumInsuredBuffalo"] = buffaloSI;
       if (cowSI != null) map["sumInsuredCow"] = cowSI;
-    }
-  }
-
-  Future<void> saveLeadUpdates() async {
-    if (data is! Map<String, dynamic>) return;
-    final map = data as Map<String, dynamic>;
-    final id = map["id"]?.toString();
-    if (id == null || id.isEmpty) return;
-
-    final token = _appController.token.value;
-    if (token.isEmpty) return;
-
-    syncDataFromControllers();
-
-    final body = <String, dynamic>{};
-    final buffaloCount = int.tryParse(buffalocountcontroller.text.trim());
-    final cowCount = int.tryParse(cowcountcontroller.text.trim());
-    final buffaloSI = double.tryParse(buffalomoneycontroller.text.trim());
-    final cowSI = double.tryParse(cowmoneycontroller.text.trim());
-
-    if (buffaloCount != null) body["numberOfBuffalo"] = buffaloCount;
-    if (cowCount != null) body["numberOfCow"] = cowCount;
-    if (buffaloSI != null) body["sumInsuredBuffalo"] = buffaloSI;
-    if (cowSI != null) body["sumInsuredCow"] = cowSI;
-
-    if (body.isEmpty) return;
-
-    try {
-      await _taggingService.updateLead(token: token, id: id, body: body);
-      debugPrint("Lead $id updated with: $body");
-    } catch (e) {
-      debugPrint("Failed to update lead: $e");
     }
   }
 
@@ -250,5 +225,81 @@ class TaggingdataController extends GetxController {
       // print("controllerimage::::$isimage");
     }
     update();
+  }
+  // cancel lead API call //
+
+  Future<void> cancelLeadApi() async {
+    print("object1");
+    if (data is! Map<String, dynamic>) return;
+    final map = data as Map<String, dynamic>;
+    final id = map["id"]?.toString();
+    if (id == null || id.isEmpty) return;
+
+    print("FULL DATA: $data");
+    print("CANCEL ID: $id");
+    print("object2");
+
+    final token = _appController.token.value;
+    print("object3");
+    if (token.isEmpty) return;
+    print("object4");
+    try {
+      final body = {
+        "reason": selectedReasonDropdown,
+        // Optional: photos handle kari sakay (future ma)
+      };
+      print("object5");
+
+      final response = await _taggingService.cancelLead(
+        token: token,
+        id: id,
+        body: body,
+      );
+      print("CANCEL STATUS: ${response.statusCode}");
+      print("CANCEL BODY: ${response.body}");
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "Lead cancelled successfully");
+        Get.offAllNamed(routehomepage);
+      } else {
+        Get.snackbar("Error", "Failed to cancel lead");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong");
+      debugPrint("Cancel lead error: $e");
+    }
+  }
+
+  // Udate lead API call //
+  Future<void> saveLeadUpdates() async {
+    if (data is! Map<String, dynamic>) return;
+    final map = data as Map<String, dynamic>;
+    final id = map["id"]?.toString();
+    if (id == null || id.isEmpty) return;
+
+    final token = _appController.token.value;
+    if (token.isEmpty) return;
+
+    syncDataFromControllers();
+
+    final body = <String, dynamic>{};
+    final buffaloCount = int.tryParse(buffalocountcontroller.text.trim());
+    final cowCount = int.tryParse(cowcountcontroller.text.trim());
+    final buffaloSI = double.tryParse(buffalomoneycontroller.text.trim());
+    final cowSI = double.tryParse(cowmoneycontroller.text.trim());
+
+    if (buffaloCount != null) body["numberOfBuffalo"] = buffaloCount;
+    if (cowCount != null) body["numberOfCow"] = cowCount;
+    if (buffaloSI != null) body["sumInsuredBuffalo"] = buffaloSI;
+    if (cowSI != null) body["sumInsuredCow"] = cowSI;
+
+    if (body.isEmpty) return;
+
+    try {
+      await _taggingService.updateLead(token: token, id: id, body: body);
+      debugPrint("Lead $id updated with: $body");
+    } catch (e) {
+      debugPrint("Failed to update lead: $e");
+    }
   }
 }

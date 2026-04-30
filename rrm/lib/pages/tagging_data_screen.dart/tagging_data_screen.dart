@@ -23,7 +23,7 @@ class TaggingDataScreen extends StatelessWidget {
       builder: (controller) {
         final Map<String, dynamic> args =
             (Get.arguments as Map<String, dynamic>?) ?? {};
-        controller.data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+        controller.setInitialData(args);
         controller.retagging = args["retagging"];
         controller.ischangepage = args["isclaim"];
         controller.manualtagging = args["manualtagging"];
@@ -34,7 +34,7 @@ class TaggingDataScreen extends StatelessWidget {
             body: Center(child: Text("No lead data provided.")),
           );
         }
-        controller.initFieldsFromData(dataMap, context);
+        controller.initFieldsFromData(dataMap!, context);
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
@@ -626,56 +626,38 @@ class TaggingDataScreen extends StatelessWidget {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      children: controller.ischangepage == null
-                                          ? controller.taggingreasons.map((
-                                              reason,
-                                            ) {
-                                              return RadioListTile<String>(
-                                                activeColor:
-                                                    AppColors.PRIMARY_COLOR,
-                                                title: Text(reason),
-                                                value: reason,
-                                                groupValue:
-                                                    controller.selectedReason,
-                                                onChanged: (value) {
-                                                  controller.selectedReason =
-                                                      value;
-                                                  controller.update();
-                                                },
-                                              );
-                                            }).toList()
-                                          : controller.retagging != null
-                                          ? controller.retaggingreasons.map((
-                                              reason,
-                                            ) {
-                                              return RadioListTile<String>(
-                                                title: Text(reason),
-                                                value: reason,
-                                                groupValue:
-                                                    controller.selectedReason,
-                                                onChanged: (value) {
-                                                  controller.selectedReason =
-                                                      value;
-                                                  controller.update();
-                                                },
-                                              );
-                                            }).toList()
-                                          : controller.claimreasons.map((
-                                              reason,
-                                            ) {
-                                              return RadioListTile<String>(
-                                                title: Text(reason),
-                                                value: reason,
-                                                groupValue:
-                                                    controller.selectedReason,
-                                                onChanged: (value) {
-                                                  controller.selectedReason =
-                                                      value;
-                                                  controller.update();
-                                                },
-                                              );
-                                            }).toList(),
+                                    DropdownButtonFormField<String>(
+                                      value: controller.selectedReasonDropdown,
+                                      decoration: InputDecoration(
+                                        hintText: "Select Reason",
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 8,
+                                        ),
+                                      ),
+                                      items:
+                                          (controller.ischangepage == null
+                                                  ? controller.taggingreasons
+                                                  : controller.retagging != null
+                                                  ? controller.retaggingreasons
+                                                  : controller.claimreasons)
+                                              .map((reason) {
+                                                return DropdownMenuItem<String>(
+                                                  value: reason,
+                                                  child: Text(reason),
+                                                );
+                                              })
+                                              .toList(),
+                                      onChanged: (value) {
+                                        controller.selectedReasonDropdown =
+                                            value;
+                                        controller.update();
+                                      },
                                     ),
                                     SizedBox(height: hp(1)),
                                     Padding(
@@ -856,15 +838,32 @@ class TaggingDataScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Customcontainer(
-                                  onTap: () {
-                                    if (controller.selectedReason != null ||
-                                        controller.selectedOther1.value !=
-                                            null) {
-                                      showDialogWithFields(
-                                        context: context,
-                                        controller: controller,
+                                  onTap: () async {
+                                    print("YES BUTTON CLICKED");
+
+                                    if (controller.selectedReasonDropdown ==
+                                        null) {
+                                      Get.snackbar(
+                                        "Error",
+                                        "Please select reason",
                                       );
+                                      return;
                                     }
+
+                                    Get.back();
+
+                                    Get.dialog(
+                                      Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      barrierDismissible: false,
+                                    );
+
+                                    print("CALLING API...");
+
+                                    await controller.cancelLeadApi();
+
+                                    if (Get.isDialogOpen ?? false) Get.back();
                                   },
                                   context: context,
                                   width: wp(32),
