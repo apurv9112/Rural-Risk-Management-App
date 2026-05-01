@@ -34,6 +34,7 @@ class TaggingDataScreen extends StatelessWidget {
             body: Center(child: Text("No lead data provided.")),
           );
         }
+        // ignore: unnecessary_non_null_assertion
         controller.initFieldsFromData(dataMap!, context);
         return Scaffold(
           resizeToAvoidBottomInset: true,

@@ -39,7 +39,7 @@ custombuttomsheet({
               SizedBox(width: wp(5)),
               Customcontainer(
                 onTap: () {
-                  controller.pickMultipleFromGallery();
+                  controller.pickFromGallery();
                   controller.isimage = isimage;
                   Get.back();
                 },
