@@ -317,6 +317,7 @@ class KycController extends GetxController {
       "loanAccountNo": source["loanAccountNo"],
       "insuranceCompanyName": source["insuranceCompanyName"],
       "kycStatus": "Completed",
-    };
+    }; 
+    
   }
 }
