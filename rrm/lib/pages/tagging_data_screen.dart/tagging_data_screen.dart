@@ -463,7 +463,7 @@ class TaggingDataScreen extends StatelessWidget {
                                 child: ListView.builder(
                                   shrinkWrap: true,
                                   physics: BouncingScrollPhysics(),
-                                  itemCount: controller.imageUrls.length,
+                                  itemCount: controller.imageBytesList.length,
                                   itemBuilder: (context, index) {
                                     return Container(
                                       margin: EdgeInsets.only(bottom: hp(2)),
@@ -473,37 +473,13 @@ class TaggingDataScreen extends StatelessWidget {
                                           width: wp(1),
                                         ),
                                       ),
-                                      child: Column(
-                                        children: [
-                                          Image.network(
-                                            controller.imageUrls[index],
-                                            fit: BoxFit.cover,
-                                            loadingBuilder:
-                                                (context, child, progress) {
-                                                  if (progress == null) {
-                                                    return child;
-                                                  }
-                                                  return Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  );
-                                                },
-                                            errorBuilder:
-                                                (context, error, stackTrace) {
-                                                  return Column(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.error,
-                                                        color: Colors.red,
-                                                      ),
-                                                      Text(
-                                                        "Image not available",
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                          ),
-                                        ],
+                                      child: InteractiveViewer(
+                                        minScale: 1,
+                                        maxScale: 4,
+                                        child: Image.memory(
+                                          controller.imageBytesList[index],
+                                          fit: BoxFit.contain,
+                                        ),
                                       ),
                                     );
                                   },

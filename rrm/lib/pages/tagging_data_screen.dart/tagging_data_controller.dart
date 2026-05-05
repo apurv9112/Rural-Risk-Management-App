@@ -6,7 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/tagging_service.dart';
-
+import 'dart:convert';
+import 'dart:typed_data';
 import '../../routes/common/common_app_pages.dart';
 
 class TaggingdataController extends GetxController {
@@ -37,7 +38,7 @@ class TaggingdataController extends GetxController {
   bool? manualtagging = false;
   String? selectedReasonDropdown;
   bool _fieldsInitialized = false;
-  late final List<String> imageUrls;
+  List<Uint8List> imageBytesList = [];
   void setInitialData(Map<String, dynamic> args) {
     if (data != null) return;
 
@@ -69,7 +70,16 @@ class TaggingdataController extends GetxController {
     timeofdeathcontroller.text = retagging != null
         ? "5504845226"
         : selectedTime.value!.format(context);
-    imageUrls = [(dataMap["imageUrls"] ?? '').toString()];
+    final images = dataMap["images"];
+
+    if (images != null && images is List) {
+      imageBytesList = images.map<Uint8List>((img) {
+        final base64Str = img.toString().split(',').last;
+        return base64Decode(base64Str);
+      }).toList();
+    } else {
+      imageBytesList = [];
+    }
   }
 
   String _formatNumber(dynamic value) {

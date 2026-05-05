@@ -8,10 +8,9 @@ class RetaggingService {
   final http.Client _client;
 
   Future<http.Response> listAssigned({required String token}) {
-    return _client.post(
-      Uri.parse("$baseUrl/retagging/search"),
+    return _client.get(
+      Uri.parse("$baseUrl/field-worker/my-leads?leadType=retagging"),
       headers: _authHeaders(token),
-      body: jsonEncode({"status": "Pending", "page": 1, "limit": 50}),
     );
   }
 
@@ -22,7 +21,11 @@ class RetaggingService {
     );
   }
 
-  Future<http.Response> cancelLead({required String token, required String id, Map<String, dynamic>? body}) {
+  Future<http.Response> cancelLead({
+    required String token,
+    required String id,
+    Map<String, dynamic>? body,
+  }) {
     final payload = body ?? {"status": "Rejected"};
     return _client.patch(
       Uri.parse("$baseUrl/retagging/$id"),
@@ -31,7 +34,11 @@ class RetaggingService {
     );
   }
 
-  Future<http.Response> updateLead({required String token, required String id, required Map<String, dynamic> body}) {
+  Future<http.Response> updateLead({
+    required String token,
+    required String id,
+    required Map<String, dynamic> body,
+  }) {
     return _client.patch(
       Uri.parse("$baseUrl/retagging/$id"),
       headers: _authHeaders(token),
@@ -39,7 +46,10 @@ class RetaggingService {
     );
   }
 
-  Future<http.Response> completed({required String token, String status = "Attended"}) {
+  Future<http.Response> completed({
+    required String token,
+    String status = "Attended",
+  }) {
     return _client.post(
       Uri.parse("$baseUrl/retagging/search"),
       headers: _authHeaders(token),
@@ -47,19 +57,32 @@ class RetaggingService {
     );
   }
 
-  Future<http.Response> searchCompleted({required String token, required String searchString}) {
+  Future<http.Response> searchCompleted({
+    required String token,
+    required String searchString,
+  }) {
     return _client.post(
       Uri.parse("$baseUrl/retagging/search"),
       headers: _authHeaders(token),
-      body: jsonEncode({"searchString": searchString, "status": "Attended", "page": 1, "limit": 50}),
+      body: jsonEncode({
+        "searchString": searchString,
+        "status": "Attended",
+        "page": 1,
+        "limit": 50,
+      }),
     );
   }
 
-  Future<http.Response> downloadCertificate({required String token, required String id}) {
+  Future<http.Response> downloadCertificate({
+    required String token,
+    required String id,
+  }) {
     return _client.post(
       Uri.parse("$baseUrl/retagging/export"),
       headers: _authHeaders(token),
-      body: jsonEncode({"ids": [id]}),
+      body: jsonEncode({
+        "ids": [id],
+      }),
     );
   }
 
@@ -72,7 +95,7 @@ class RetaggingService {
   }
 
   Map<String, String> _authHeaders(String token) => {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      };
+    "Content-Type": "application/json",
+    "Authorization": "Bearer $token",
+  };
 }

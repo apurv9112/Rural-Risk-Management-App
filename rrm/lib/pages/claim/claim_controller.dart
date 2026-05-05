@@ -52,15 +52,17 @@ class ClaimController extends GetxController {
           ? await _retaggingService.listAssigned(token: token)
           : await _claimService.listAssigned(token: token);
 
-      debugPrint("${isRetagging ? 'Retagging' : 'Claim'} leads response: "
-          "status=${response.statusCode}, body=${response.body}");
+      debugPrint(
+        "${isRetagging ? 'Retagging' : 'Claim'} leads response: "
+        "status=${response.statusCode}, body=${response.body}",
+      );
 
       final decoded = jsonDecode(response.body);
       final bool isOk = response.statusCode >= 200 && response.statusCode < 300;
 
       if (isOk && decoded["status"] == "success") {
         if (isRetagging) {
-          leads = decoded["data"]?["retaggings"] ?? [];
+          leads = decoded["data"]?["leads"]?["retagging"] ?? [];
         } else {
           leads = decoded["data"]?["leads"]?["claim"] ?? [];
         }
@@ -75,7 +77,10 @@ class ClaimController extends GetxController {
       }
     } catch (e) {
       debugPrint("Fetch leads error: $e");
-      showSnackBar("Unable to fetch leads. Check connection and retry.", SNACK.FAILED);
+      showSnackBar(
+        "Unable to fetch leads. Check connection and retry.",
+        SNACK.FAILED,
+      );
     } finally {
       isLoading = false;
       update();
@@ -104,7 +109,10 @@ class ClaimController extends GetxController {
       if (isOk && decoded["status"] == "success") {
         return decoded["data"] as Map<String, dynamic>?;
       } else {
-        showSnackBar(decoded["message"] ?? "Failed to get details", SNACK.FAILED);
+        showSnackBar(
+          decoded["message"] ?? "Failed to get details",
+          SNACK.FAILED,
+        );
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
@@ -138,7 +146,10 @@ class ClaimController extends GetxController {
         showSnackBar("Lead cancelled successfully", SNACK.SUCCESS);
         fetchLeads(); // refresh
       } else {
-        showSnackBar(decoded["message"] ?? "Failed to cancel lead", SNACK.FAILED);
+        showSnackBar(
+          decoded["message"] ?? "Failed to cancel lead",
+          SNACK.FAILED,
+        );
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
