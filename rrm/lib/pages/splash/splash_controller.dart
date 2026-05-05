@@ -23,10 +23,12 @@ import 'package:rrm/controller.dart';
 import 'dart:async';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:rrm/services/auth_service.dart';
 
 class SplashController extends GetxController {
   final AppController appController = Get.find();
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final authService = AuthService();
 
   @override
   void onInit() {
@@ -36,19 +38,21 @@ class SplashController extends GetxController {
 
   Future<void> _startSplash() async {
     try {
-      await _audioPlayer.setVolume(0.6);
+      await _audioPlayer.setVolume(1);
       await _audioPlayer.play(AssetSource('sounds/cow.mp3'));
     } catch (e) {
       print("Sound error: $e");
     }
 
-    Timer(const Duration(seconds: 5), () {
-      if (appController.isLoggedIn) {
-        Get.offAllNamed(routehomepage);
-      } else {
-        Get.offAllNamed(routeLoginpage);
-      }
-    });
+    await Future.delayed(const Duration(seconds: 2));
+
+    final token = appController.token.value;
+
+    if (token.isEmpty) {
+      Get.offAllNamed(routeLoginpage);
+    } else {
+      Get.offAllNamed(routehomepage);
+    }
   }
 
   @override

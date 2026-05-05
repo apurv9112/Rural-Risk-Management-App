@@ -44,21 +44,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class KycService {
-  final String baseUrl = "https://ruralrisk.in/api"; // 🔁 replace this
+  final String baseUrl = "https://ruralrisk.in/api";
 
-  Future<http.Response> updateKyc({
+  Future<http.Response> uploadKyc({
     required String token,
-    required String leadId,
+    required String ownerId,
     required Map<String, dynamic> payload,
   }) async {
-    final url = Uri.parse("$baseUrl/kyc/update/$leadId"); // ✅ FIXED
+    final url = Uri.parse("$baseUrl/owner/kyc/documents/$ownerId");
 
     print("========== KYC API DEBUG ==========");
     print("URL → $url");
     print("PAYLOAD → ${jsonEncode(payload)}");
     print("===================================");
 
-    final response = await http.patch(
+    final response = await http.post(
       url,
       headers: {
         "Authorization": "Bearer $token",

@@ -16,9 +16,9 @@ class AppController extends GetxController {
     _box.write('token', value);
   }
 
-  void clearToken() {
+  Future<void> clearToken() async {
     token.value = '';
-    _box.remove('token');
+    await _box.remove('token');
   }
 
   bool get isLoggedIn => token.value.isNotEmpty;

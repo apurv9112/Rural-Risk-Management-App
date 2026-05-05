@@ -42,6 +42,7 @@ class TaggingController extends GetxController {
 
     try {
       final response = await _taggingService.listAssigned(token: token);
+
       final decoded = jsonDecode(response.body);
 
       if (response.statusCode >= 200 &&
