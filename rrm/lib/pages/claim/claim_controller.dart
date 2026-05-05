@@ -122,42 +122,6 @@ class ClaimController extends GetxController {
     return null;
   }
 
-  Future<void> cancelLead(String id, {String? reason}) async {
-    final String token = appController.token.value;
-    if (token.isEmpty) return;
-
-    try {
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
-
-      final body = reason != null ? {"reason": reason} : null;
-      final response = isRetagging
-          ? await _retaggingService.cancelLead(token: token, id: id, body: body)
-          : await _claimService.cancelLead(token: token, id: id, body: body);
-
-      if (Get.isDialogOpen ?? false) Get.back();
-
-      final decoded = jsonDecode(response.body);
-      final bool isOk = response.statusCode >= 200 && response.statusCode < 300;
-
-      if (isOk && decoded["status"] == "success") {
-        showSnackBar("Lead cancelled successfully", SNACK.SUCCESS);
-        fetchLeads(); // refresh
-      } else {
-        showSnackBar(
-          decoded["message"] ?? "Failed to cancel lead",
-          SNACK.FAILED,
-        );
-      }
-    } catch (e) {
-      if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("Cancel lead error: $e");
-      showSnackBar("Unable to cancel lead. Try again.", SNACK.FAILED);
-    }
-  }
-
   @override
   void onClose() {
     namecontroller.dispose();

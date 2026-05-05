@@ -5,14 +5,19 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rrm/controller.dart';
+import 'package:rrm/services/claim_service.dart';
+import 'package:rrm/services/retagging_service.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../routes/common/common_app_pages.dart';
+import 'package:http/http.dart' as http;
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
+  final RetaggingService _retaggingService = RetaggingService();
+  final ClaimService _claimService = ClaimService();
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -236,49 +241,6 @@ class TaggingdataController extends GetxController {
     }
     update();
   }
-  // cancel lead API call //
-
-  Future<void> cancelLeadApi() async {
-    print("object1");
-    if (data is! Map<String, dynamic>) return;
-    final map = data as Map<String, dynamic>;
-    final id = map["id"]?.toString();
-    if (id == null || id.isEmpty) return;
-
-    print("FULL DATA: $data");
-    print("CANCEL ID: $id");
-    print("object2");
-
-    final token = _appController.token.value;
-    print("object3");
-    if (token.isEmpty) return;
-    print("object4");
-    try {
-      final body = {
-        "reason": selectedReasonDropdown,
-        // Optional: photos handle kari sakay (future ma)
-      };
-      print("object5");
-
-      final response = await _taggingService.cancelLead(
-        token: token,
-        id: id,
-        body: body,
-      );
-      print("CANCEL STATUS: ${response.statusCode}");
-      print("CANCEL BODY: ${response.body}");
-
-      if (response.statusCode == 200) {
-        Get.snackbar("Success", "Lead cancelled successfully");
-        Get.offAllNamed(routehomepage);
-      } else {
-        Get.snackbar("Error", "Failed to cancel lead");
-      }
-    } catch (e) {
-      Get.snackbar("Error", "Something went wrong");
-      debugPrint("Cancel lead error: $e");
-    }
-  }
 
   // Udate lead API call //
   Future<void> saveLeadUpdates() async {
@@ -310,6 +272,79 @@ class TaggingdataController extends GetxController {
       debugPrint("Lead $id updated with: $body");
     } catch (e) {
       debugPrint("Failed to update lead: $e");
+    }
+  }
+
+  // cancel lead API call //
+  Future<void> cancelLeadUniversal() async {
+    if (data is! Map<String, dynamic>) return;
+
+    final map = data as Map<String, dynamic>;
+    final id = map["id"]?.toString();
+
+    if (id == null || id.isEmpty) {
+      Get.snackbar("Error", "Invalid Lead ID");
+      return;
+    }
+
+    final token = _appController.token.value;
+    if (token.isEmpty) {
+      Get.snackbar("Error", "Session expired");
+      return;
+    }
+
+    if (selectedReasonDropdown == null) {
+      Get.snackbar("Error", "Please select reason");
+      return;
+    }
+
+    try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      // ✅ IMPORTANT FIX — status added
+      final body = {"status": "Rejected", "reason": selectedReasonDropdown};
+
+      http.Response response;
+
+      if (retagging != null) {
+        response = await _retaggingService.cancelLead(
+          token: token,
+          id: id,
+          body: body,
+        );
+      } else if (ischangepage != null) {
+        response = await _claimService.cancelLead(
+          token: token,
+          id: id,
+          body: body,
+        );
+      } else {
+        response = await _taggingService.cancelLead(
+          token: token,
+          id: id,
+          body: body,
+        );
+      }
+
+      if (Get.isDialogOpen ?? false) Get.back();
+
+      final decoded = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          decoded["status"] == "success") {
+        Get.snackbar("Success", "Lead cancelled successfully");
+        Get.offAllNamed(routehomepage);
+      } else {
+        Get.snackbar("Error", decoded["message"] ?? "Cancel failed");
+      }
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      debugPrint("Cancel error: $e");
+      Get.snackbar("Error", "Something went wrong");
     }
   }
 }

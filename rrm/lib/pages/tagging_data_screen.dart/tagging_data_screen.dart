@@ -838,7 +838,7 @@ class TaggingDataScreen extends StatelessWidget {
 
                                     print("CALLING API...");
 
-                                    await controller.cancelLeadApi();
+                                    await controller.cancelLeadUniversal();
 
                                     if (Get.isDialogOpen ?? false) Get.back();
                                   },
