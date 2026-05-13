@@ -47,9 +47,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(1.0),
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.0)),
           child: child!,
         );
       },
@@ -57,10 +57,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: AppColors.WHITE,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+
       initialRoute: routeRootpage,
-      // initialRoute: routehomepage,
-      // initialRoute: routefarmerdetailspage,
-      // initialRoute: routecattlepage,
+      // initialRoute: routesignaturepage,
       getPages: AppRoutes.routes,
     );
   }

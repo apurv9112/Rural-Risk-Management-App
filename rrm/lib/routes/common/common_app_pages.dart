@@ -9,3 +9,4 @@ const routecattlepage = "/cattlepage";
 const routeclaimpage = "/claimpage";
 const routeDatadisplaypage = "/datadisplaypage";
 const routefarmerdetailspage = "/farmerdetailspage";
+const routesignaturepage = "/signaturepage";

@@ -56,6 +56,7 @@ dependencies:
   path_provider: ^2.1.4
   http: ^1.2.2
   audioplayers: ^5.2.1
+  signature: ^5.5.0
   
 
 dev_dependencies:
