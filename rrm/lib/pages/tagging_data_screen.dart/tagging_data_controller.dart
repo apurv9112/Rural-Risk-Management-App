@@ -73,7 +73,7 @@ class TaggingdataController extends GetxController {
       'yyyy-MM-dd',
     ).format(selectedDate.value!);
     timeofdeathcontroller.text = retagging != null
-        ? "5504845226"
+        ? ""
         : selectedTime.value!.format(context);
     final images = dataMap["images"];
 

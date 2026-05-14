@@ -154,86 +154,6 @@ class KycController extends GetxController {
 
   // ================= SAVE KYC =================
 
-  // Future<void> savekyc() async {
-  //   if (isSubmitting) return;
-
-  //   if (data == null || data["id"] == null) {
-  //     showSnackBar("Tagging/Claim data not found.", SNACK.FAILED);
-  //     return;
-  //   }
-
-  //   if (_allImagesEmpty()) {
-  //     showSnackBar("Please add at least one KYC document.", SNACK.FAILED);
-  //     return;
-  //   }
-
-  //   final token = appController.token.value;
-
-  //   if (token.isEmpty) {
-  //     showSnackBar("Session expired. Please login again.", SNACK.FAILED);
-  //     return;
-  //   }
-
-  //   isSubmitting = true;
-  //   update();
-
-  //   Get.dialog(
-  //     Center(
-  //       child: LoadingAnimationWidget.staggeredDotsWave(
-  //         color: Colors.white,
-  //         size: 60,
-  //       ),
-  //     ),
-  //     barrierDismissible: false,
-  //   );
-
-  //   try {
-  //     final bool isTaggingFlow = ischangepage == null && retagging == null;
-
-  //     debugPrint("FLOW TYPE → ${isTaggingFlow ? "TAGGING" : "CLAIM"}");
-  //     debugPrint("SENDING ID → ${data["id"]}");
-
-  //     if (isTaggingFlow) {
-  //       final payloadData = await _buildImagePayload();
-
-  //       final leadPayload = {...payloadData, "kycStatus": "Uploaded"};
-
-  //       final resp = await _taggingService.updateLead(
-  //         token: token,
-  //         id: data["id"].toString(),
-  //         body: leadPayload,
-  //       );
-
-  //       final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
-
-  //       if (resp.statusCode >= 200 &&
-  //           resp.statusCode < 300 &&
-  //           decoded["status"] == "success") {
-  //         Future.delayed(const Duration(milliseconds: 200), () {
-  //           showSnackBar("KYC updated successfully.", SNACK.SUCCESS);
-  //         });
-
-  //         if (Get.isDialogOpen ?? false) Get.back();
-
-  //         Get.offNamed(routecattlepage, arguments: {"tagging": data});
-  //       } else {
-  //         Future.delayed(const Duration(milliseconds: 200), () {
-  //           showSnackBar(
-  //             decoded["message"] ?? "Failed to update lead.",
-  //             SNACK.FAILED,
-  //           );
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint("ERROR → $e");
-  //     showSnackBar("Error: ${e.toString()}", SNACK.FAILED);
-  //   } finally {
-  //     isSubmitting = false;
-  //     if (Get.isDialogOpen ?? false) Get.back();
-  //     update();
-  //   }
-  // }
   Future<void> savekyc() async {
     if (isSubmitting) return;
 
@@ -242,107 +162,125 @@ class KycController extends GetxController {
       return;
     }
 
-    if (_allImagesEmpty()) {
-      showSnackBar("Please add at least one KYC document.", SNACK.FAILED);
-      return;
-    }
-
     final token = appController.token.value;
+
     if (token.isEmpty) {
       showSnackBar("Session expired.", SNACK.FAILED);
       return;
     }
 
+    // ================= FILE LIST =================
+
+    final List<File> uploadFiles = [];
+
+    void addFile(File? file) {
+      if (file != null) {
+        uploadFiles.add(file);
+      }
+    }
+
+    addFile(selectedAadharfront.value);
+    addFile(selectedAadharback.value);
+    addFile(selectedPanfront.value);
+    addFile(selectedbankdetails1.value);
+    addFile(selectedbankdetails2.value);
+    addFile(selectedOther1.value);
+    addFile(selectedOther2.value);
+    addFile(selectedOther3.value);
+    addFile(selectedOther4.value);
+    addFile(selectedOther5.value);
+
+    if (uploadFiles.isEmpty) {
+      showSnackBar("Please add at least one KYC document.", SNACK.FAILED);
+      return;
+    }
+
+    // ================= FLOW TYPE =================
+
+    String leadType = "tagging";
+
+    // RETAGGING FLOW
+    if (retagging == "retagging") {
+      leadType = "retagging";
+    }
+    // CLAIM FLOW
+    else if (ischangepage != null) {
+      leadType = "claim";
+    }
+
+    print("========== SAVE KYC DEBUG ==========");
+    print("FLOW => $leadType");
+    print("LEAD ID => ${data["id"]}");
+    print("IS CHANGE PAGE => $ischangepage");
+    print("RETAGGING => $retagging");
+    print("FILES COUNT => ${uploadFiles.length}");
+    print("===================================");
+
+    // ================= LOADER =================
+
     isSubmitting = true;
     update();
 
     Get.dialog(
-      Center(child: CircularProgressIndicator()),
+      const Center(child: CircularProgressIndicator()),
       barrierDismissible: false,
     );
 
     try {
-      final payloadImages = await _buildImagePayload();
-
-      final body = {...payloadImages, "kycStatus": "Completed"};
-
-      final ownerId = data["ownerId"] ?? data["owner"]?["id"];
-      print("FULL DATA → $data");
-      print("OWNER ID → ${data["ownerId"]}");
-      print("OWNER OBJ → ${data["owner"]}");
-
-      if (ownerId == null) {
-        showSnackBar("Owner ID not found", SNACK.FAILED);
-        return;
-      }
-
       final response = await _kycService.uploadKyc(
         token: token,
-        ownerId: ownerId.toString(),
-        payload: body,
+        leadId: data["id"].toString(),
+        leadType: leadType,
+        files: uploadFiles,
       );
 
-      final decoded = response.body.isNotEmpty ? jsonDecode(response.body) : {};
+      final statusCode = response["statusCode"];
 
-      if (response.statusCode >= 200 &&
-          response.statusCode < 300 &&
-          decoded["status"] == "success") {
-        showSnackBar("KYC uploaded successfully", SNACK.SUCCESS);
+      final decoded =
+          response["body"] != null && response["body"].toString().isNotEmpty
+          ? jsonDecode(response["body"])
+          : {};
 
-        if (Get.isDialogOpen ?? false) Get.back();
+      print("========== RESPONSE ==========");
+      print("STATUS CODE => $statusCode");
+      print("BODY => $decoded");
+      print("==============================");
 
-        Get.toNamed(routecattlepage, arguments: {"tagging": data});
+      if (statusCode >= 200 && statusCode < 300) {
+        showSnackBar(
+          decoded["message"] ?? "KYC uploaded successfully",
+          SNACK.SUCCESS,
+        );
+
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+
+        Get.toNamed(
+          routecattlepage,
+          arguments: {
+            "tagging": data,
+            "ischangepage": ischangepage,
+            "retagging": retagging,
+          },
+        );
       } else {
-        showSnackBar(decoded["message"] ?? "Failed", SNACK.FAILED);
+        showSnackBar(decoded["message"] ?? "Upload failed", SNACK.FAILED);
       }
     } catch (e) {
-      debugPrint("KYC ERROR: $e");
+      print("========== KYC ERROR ==========");
+      print(e.toString());
+      print("================================");
+
       showSnackBar("Something went wrong", SNACK.FAILED);
     } finally {
       isSubmitting = false;
-      if (Get.isDialogOpen ?? false) Get.back();
+
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
       update();
     }
-  }
-  // ================= HELPERS =================
-
-  bool _allImagesEmpty() {
-    return selectedAadharfront.value == null &&
-        selectedAadharback.value == null &&
-        selectedPanfront.value == null &&
-        selectedbankdetails1.value == null &&
-        selectedbankdetails2.value == null &&
-        selectedOther1.value == null &&
-        selectedOther2.value == null &&
-        selectedOther3.value == null &&
-        selectedOther4.value == null &&
-        selectedOther5.value == null;
-  }
-
-  Future<Map<String, dynamic>> _buildImagePayload() async {
-    final payload = <String, dynamic>{};
-
-    Future<void> addFile(String key, File? file) async {
-      if (file == null) return;
-
-      try {
-        final bytes = await file.readAsBytes(); // ✅ async (NO FREEZE)
-        payload[key] = base64Encode(bytes);
-      } catch (e) {
-        debugPrint("Error reading file $key: $e");
-      }
-    }
-
-    await addFile("aadharFront", selectedAadharfront.value);
-    await addFile("aadharBack", selectedAadharback.value);
-    await addFile("panFront", selectedPanfront.value);
-    await addFile("bankDetailsPhoto1", selectedbankdetails1.value);
-    await addFile("bankDetailsPhoto2", selectedbankdetails2.value);
-    await addFile("otherImage1", selectedOther1.value);
-    await addFile("otherImage2", selectedOther2.value);
-    await addFile("otherImage3", selectedOther3.value);
-    await addFile("otherImage4", selectedOther4.value ?? selectedOther5.value);
-
-    return payload;
   }
 }
