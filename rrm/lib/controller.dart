@@ -22,4 +22,18 @@ class AppController extends GetxController {
   }
 
   bool get isLoggedIn => token.value.isNotEmpty;
+
+  RxString userName = "".obs;
+  RxString mobileNumber = "".obs;
+  RxString email = "".obs;
+
+  void setUserData({
+    required String name,
+    required String mobile,
+    required String email,
+  }) {
+    userName.value = name;
+    mobileNumber.value = mobile;
+    this.email.value = email;
+  }
 }

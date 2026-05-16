@@ -61,6 +61,8 @@ class KycController extends GetxController {
 
     debugPrint("KYC INIT → ID: ${data?["id"]}");
     debugPrint("Flow → ischangepage: $ischangepage, retagging: $retagging");
+
+    checkKycStatus();
   }
 
   // ================= IMAGE PICKER =================
@@ -281,6 +283,66 @@ class KycController extends GetxController {
       }
 
       update();
+    }
+  }
+
+  Future<void> checkKycStatus() async {
+    try {
+      final token = appController.token.value;
+
+      if (token.isEmpty) return;
+
+      String leadType = "tagging";
+
+      if (retagging == "retagging") {
+        leadType = "retagging";
+      } else if (ischangepage != null) {
+        leadType = "claim";
+      }
+
+      print("========== CHECK KYC STATUS ==========");
+      print("LEAD ID => ${data["id"]}");
+      print("FLOW => $leadType");
+      print("======================================");
+
+      final response = await _kycService.uploadKyc(
+        token: token,
+        leadId: data["id"].toString(),
+        leadType: leadType,
+        files: [], // EMPTY FILES
+      );
+
+      final statusCode = response["statusCode"];
+
+      final decoded =
+          response["body"] != null && response["body"].toString().isNotEmpty
+          ? jsonDecode(response["body"])
+          : {};
+
+      print("========== CHECK RESPONSE ==========");
+      print(decoded);
+      print("===================================");
+
+      final message = decoded["message"]?.toString().toLowerCase() ?? "";
+
+      // ================= ALREADY UPLOADED =================
+
+      if (statusCode == 400 && message.contains("already uploaded")) {
+        showSnackBar("KYC already uploaded", SNACK.SUCCESS);
+
+        Future.delayed(const Duration(milliseconds: 700), () {
+          Get.offNamed(
+            routecattlepage,
+            arguments: {
+              "tagging": data,
+              "ischangepage": ischangepage,
+              "retagging": retagging,
+            },
+          );
+        });
+      }
+    } catch (e) {
+      print("CHECK KYC ERROR => $e");
     }
   }
 }

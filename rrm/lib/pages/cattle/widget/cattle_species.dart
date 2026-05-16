@@ -36,8 +36,9 @@ iscattlevalue({required BuildContext context, required controller}) {
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
-                    controller: controller.buffalocountcontroller,
+                    controller: controller.sumInsuredController,
                     backgroundColor: AppColors.WHITE,
                   ),
                 ),
@@ -45,8 +46,9 @@ iscattlevalue({required BuildContext context, required controller}) {
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
-                    controller: controller.buffalomoneycontroller,
+                    controller: controller.marketValueController,
                     backgroundColor: AppColors.WHITE,
                   ),
                 ),

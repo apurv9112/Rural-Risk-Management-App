@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:signature/signature.dart';
 
 class SignatureControllerX extends GetxController {
@@ -75,6 +76,7 @@ class SignatureControllerX extends GetxController {
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
+      Get.offNamed(routesignaturepage);
 
       // upload page open karvu hoy to ahi navigation muki sakay
       // Get.to(() => UploadPage());

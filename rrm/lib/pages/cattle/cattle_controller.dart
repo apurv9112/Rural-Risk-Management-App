@@ -10,6 +10,7 @@ import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
+import 'package:http/http.dart' as http;
 
 class CattleController extends GetxController {
   final CattleService _cattleService = CattleService();
@@ -20,6 +21,8 @@ class CattleController extends GetxController {
   dynamic data;
   String? ischangepage;
   String? claimcattle;
+  TextEditingController sumInsuredController = TextEditingController();
+  TextEditingController marketValueController = TextEditingController();
   String? retagging;
   TextEditingController buffalocountcontroller = TextEditingController();
   TextEditingController milklittercontroller = TextEditingController();
@@ -497,6 +500,162 @@ class CattleController extends GetxController {
     _submitCattle(isClaimFlow: true);
   }
 
+  // Future<void> _submitCattle({required bool isClaimFlow}) async {
+  //   if (isSubmitting) return;
+  //   final token = appController.token.value;
+  //   if (token.isEmpty) {
+  //     showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
+  //     return;
+  //   }
+  //   final taggingId = data is Map<String, dynamic> ? data['id'] : null;
+  //   if (taggingId == null) {
+  //     showSnackBar("Tagging data not found.", SNACK.FAILED);
+  //     return;
+  //   }
+  //   if (completedCattleCount >= totalCattleCount) {
+  //     showSnackBar("All cattle already saved for this lead.", SNACK.FAILED);
+  //     return;
+  //   }
+  //   final hasMandatoryImages =
+  //       selectedeartag.value != null &&
+  //       selectedheadpose.value != null &&
+  //       selectedsideposeleft.value != null &&
+  //       selectedsideposeright.value != null &&
+  //       selectedbackpose.value != null;
+  //   if (!hasMandatoryImages) {
+  //     showSnackBar("Please add all 5 mandatory cattle photos.", SNACK.FAILED);
+  //     return;
+  //   }
+  //   // ================= LEAD TYPE =================
+  //   String leadType = "tagging";
+  //   // RETAGGING FLOW
+  //   if (retagging == "retagging") {
+  //     leadType = "retagging";
+  //   }
+  //   // CLAIM FLOW
+  //   else if (isClaimFlow) {
+  //     leadType = "claim";
+  //   }
+  //   print("========== CATTLE SAVE DEBUG ==========");
+  //   print("LEAD TYPE => $leadType");
+  //   print("LEAD ID => $taggingId");
+  //   print("IS CLAIM FLOW => $isClaimFlow");
+  //   print("RETAGGING => $retagging");
+  //   print("=======================================");
+  //   isSubmitting = true;
+  //   update();
+  //   Get.dialog(
+  //     Center(
+  //       child: LoadingAnimationWidget.staggeredDotsWave(
+  //         color: Colors.white,
+  //         size: 60,
+  //       ),
+  //     ),
+  //     barrierDismissible: false,
+  //   );
+  //   final payload =
+  //       <String, dynamic>{
+  //         "leadId": taggingId.toString(),
+  //         "leadType": leadType,
+  //         "cattleIndex": completedCattleCount + 1,
+  //         "totalCattle": totalCattleCount,
+  //         "tagNumber": tagnumbercontroller.text.trim().isNotEmpty
+  //             ? tagnumbercontroller.text.trim()
+  //             : null,
+  //         "taggingDate": taggingdatecontroller.text.trim().isNotEmpty
+  //             ? taggingdatecontroller.text.trim()
+  //             : null,
+  //         "species": selectedSpeciesValue,
+  //         "breed": selectedbreedValue,
+  //         "bodyColor": selectedbodycolorValue,
+  //         "rightHorn": selectedrighthornValue,
+  //         "leftHorn": selectedlefthornValue,
+  //         "tailColor": selectedtailcolorValue,
+  //         "cattleAge": selectedAgeValue,
+  //         "idMark": selectedidmarkValue,
+  //         "milkPerDayLtr": _toNullableNumericString(milklittercontroller.text),
+  //         "lactation": _toNullableNumericString(buffalocountcontroller.text),
+  //         "sumInsured": _toNullableNumericString(buffalocountcontroller.text),
+  //         "marketValue": _toNullableNumericString(buffalomoneycontroller.text),
+  //         // ================= IMAGES =================
+  //         "earTagImage": selectedeartag.value != null
+  //             ? base64Encode(selectedeartag.value!.readAsBytesSync())
+  //             : null,
+  //         "headPoseImage": selectedheadpose.value != null
+  //             ? base64Encode(selectedheadpose.value!.readAsBytesSync())
+  //             : null,
+  //         "sidePoseLeftImage": selectedsideposeleft.value != null
+  //             ? base64Encode(selectedsideposeleft.value!.readAsBytesSync())
+  //             : null,
+  //         "sidePoseRightImage": selectedsideposeright.value != null
+  //             ? base64Encode(selectedsideposeright.value!.readAsBytesSync())
+  //             : null,
+  //         "backPoseImage": selectedbackpose.value != null
+  //             ? base64Encode(selectedbackpose.value!.readAsBytesSync())
+  //             : null,
+  //         "earCutPhoto": selectedearcut.value != null
+  //             ? base64Encode(selectedearcut.value!.readAsBytesSync())
+  //             : null,
+  //         "earBackSidePhoto": selectedearbackside.value != null
+  //             ? base64Encode(selectedearbackside.value!.readAsBytesSync())
+  //             : null,
+  //       }..removeWhere(
+  //         (_, value) => value == null || (value is String && value.isEmpty),
+  //       );
+  //   try {
+  //     final resp = await _cattleService.submitCattle(
+  //       token: token,
+  //       payload: payload,
+  //     );
+  //     final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
+  //     print("========== RESPONSE ==========");
+  //     print("STATUS => ${resp.statusCode}");
+  //     print("BODY => $decoded");
+  //     print("==============================");
+  //     if (resp.statusCode >= 200 &&
+  //         resp.statusCode < 300 &&
+  //         decoded['status'] == 'success') {
+  //       final nextCompleted = completedCattleCount + 1;
+  //       completedCattleCount = nextCompleted;
+  //       // ================= NEXT CATTLE =================
+  //       if (nextCompleted < totalCattleCount) {
+  //         showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
+  //         currentCattleIndex = nextCompleted + 1;
+  //         _resetCattleCaptureFormForNextStep();
+  //         update();
+  //       }
+  //       // ================= ALL DONE =================
+  //       else {
+  //         showSnackBar("All cattle completed.", SNACK.SUCCESS);
+  //         Get.offNamed(
+  //           routefarmerdetailspage,
+  //           arguments: {
+  //             "tagging": data,
+  //             "ischangepage": ischangepage,
+  //             "retagging": retagging,
+  //           },
+  //         );
+  //       }
+  //     } else {
+  //       showSnackBar(
+  //         decoded['message'] ?? 'Failed to save cattle.',
+  //         SNACK.FAILED,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("========== ERROR ==========");
+  //     print(e.toString());
+  //     print("===========================");
+  //     showSnackBar("Unable to save cattle: ${e.toString()}", SNACK.FAILED);
+  //   } finally {
+  //     isSubmitting = false;
+  //     if (Get.isDialogOpen ?? false) {
+  //       Get.back();
+  //     }
+  //     update();
+  //   }
+  // }
+
   Future<void> _submitCattle({required bool isClaimFlow}) async {
     if (isSubmitting) return;
 
@@ -504,6 +663,7 @@ class CattleController extends GetxController {
 
     if (token.isEmpty) {
       showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
+
       return;
     }
 
@@ -511,11 +671,13 @@ class CattleController extends GetxController {
 
     if (taggingId == null) {
       showSnackBar("Tagging data not found.", SNACK.FAILED);
+
       return;
     }
 
     if (completedCattleCount >= totalCattleCount) {
       showSnackBar("All cattle already saved for this lead.", SNACK.FAILED);
+
       return;
     }
 
@@ -528,6 +690,7 @@ class CattleController extends GetxController {
 
     if (!hasMandatoryImages) {
       showSnackBar("Please add all 5 mandatory cattle photos.", SNACK.FAILED);
+
       return;
     }
 
@@ -535,23 +698,14 @@ class CattleController extends GetxController {
 
     String leadType = "tagging";
 
-    // RETAGGING FLOW
     if (retagging == "retagging") {
       leadType = "retagging";
-    }
-    // CLAIM FLOW
-    else if (isClaimFlow) {
+    } else if (isClaimFlow) {
       leadType = "claim";
     }
 
-    print("========== CATTLE SAVE DEBUG ==========");
-    print("LEAD TYPE => $leadType");
-    print("LEAD ID => $taggingId");
-    print("IS CLAIM FLOW => $isClaimFlow");
-    print("RETAGGING => $retagging");
-    print("=======================================");
-
     isSubmitting = true;
+
     update();
 
     Get.dialog(
@@ -564,78 +718,132 @@ class CattleController extends GetxController {
       barrierDismissible: false,
     );
 
-    final payload =
-        <String, dynamic>{
-          "leadId": taggingId.toString(),
-          "leadType": leadType,
-
-          "cattleIndex": completedCattleCount + 1,
-          "totalCattle": totalCattleCount,
-
-          "tagNumber": tagnumbercontroller.text.trim().isNotEmpty
-              ? tagnumbercontroller.text.trim()
-              : null,
-
-          "taggingDate": taggingdatecontroller.text.trim().isNotEmpty
-              ? taggingdatecontroller.text.trim()
-              : null,
-
-          "species": selectedSpeciesValue,
-          "breed": selectedbreedValue,
-          "bodyColor": selectedbodycolorValue,
-          "rightHorn": selectedrighthornValue,
-          "leftHorn": selectedlefthornValue,
-          "tailColor": selectedtailcolorValue,
-          "cattleAge": selectedAgeValue,
-          "idMark": selectedidmarkValue,
-
-          "milkPerDayLtr": _toNullableNumericString(milklittercontroller.text),
-
-          "lactation": _toNullableNumericString(buffalocountcontroller.text),
-
-          "sumInsured": _toNullableNumericString(buffalocountcontroller.text),
-
-          "marketValue": _toNullableNumericString(buffalomoneycontroller.text),
-
-          // ================= IMAGES =================
-          "earTagImage": selectedeartag.value != null
-              ? base64Encode(selectedeartag.value!.readAsBytesSync())
-              : null,
-
-          "headPoseImage": selectedheadpose.value != null
-              ? base64Encode(selectedheadpose.value!.readAsBytesSync())
-              : null,
-
-          "sidePoseLeftImage": selectedsideposeleft.value != null
-              ? base64Encode(selectedsideposeleft.value!.readAsBytesSync())
-              : null,
-
-          "sidePoseRightImage": selectedsideposeright.value != null
-              ? base64Encode(selectedsideposeright.value!.readAsBytesSync())
-              : null,
-
-          "backPoseImage": selectedbackpose.value != null
-              ? base64Encode(selectedbackpose.value!.readAsBytesSync())
-              : null,
-
-          "earCutPhoto": selectedearcut.value != null
-              ? base64Encode(selectedearcut.value!.readAsBytesSync())
-              : null,
-
-          "earBackSidePhoto": selectedearbackside.value != null
-              ? base64Encode(selectedearbackside.value!.readAsBytesSync())
-              : null,
-        }..removeWhere(
-          (_, value) => value == null || (value is String && value.isEmpty),
-        );
-
     try {
+      final payload = <String, dynamic>{
+        // ================= BASIC =================
+        "leadId": taggingId.toString(),
+
+        "leadType": leadType,
+
+        "cattleIndex": completedCattleCount.toString() ?? "",
+
+        "totalCattle": totalCattleCount.toString() ?? "",
+
+        "tagNumber": tagnumbercontroller.text.trim() ?? "",
+
+        "taggingDate": taggingdatecontroller.text.trim() ?? "",
+
+        "species": selectedSpeciesValue?.toUpperCase() ?? "",
+
+        "breed": selectedbreedValue?.toUpperCase() ?? "",
+
+        "bodyColor": selectedbodycolorValue?.toUpperCase() ?? "",
+
+        "rightHorn": selectedrighthornValue?.toUpperCase() ?? "",
+
+        "leftHorn": selectedlefthornValue?.toUpperCase() ?? "",
+
+        "tailColor": selectedtailcolorValue?.toUpperCase() ?? "",
+
+        "cattleAge": selectedAgeValue ?? "",
+
+        "idMark": selectedidmarkValue ?? "",
+
+        "milkPerDayLtr":
+            _toNullableNumericString(milklittercontroller.text) ?? "",
+
+        "lactation": selectedlactationValue?.toUpperCase() ?? "",
+
+        "sumInsured": _toNullableNumericString(sumInsuredController.text) ?? "",
+
+        "marketValue":
+            _toNullableNumericString(marketValueController.text) ?? "",
+
+        // ================= MAIN IMAGES =================
+        "earTagImage": selectedeartag.value ?? "",
+
+        "headPoseImage": selectedheadpose.value ?? "",
+
+        "sidePoseLeftImage": selectedsideposeleft.value ?? "",
+
+        "sidePoseRightImage": selectedsideposeright.value ?? "",
+
+        "backPoseImage": selectedbackpose.value ?? "",
+
+        "earCutPhoto": selectedearcut.value ?? "",
+
+        "earBackSidePhoto": selectedearbackside.value ?? "",
+
+        // ================= RETAGGING =================
+        "dateOfReTagging": leadType == "retagging"
+            ? newtaggingdatecontroller.text.trim()
+            : "",
+
+        "oldTagNumber": leadType == "retagging"
+            ? tagnumbercontroller.text.trim()
+            : "",
+
+        "oldTagDate": leadType == "retagging"
+            ? taggingdatecontroller.text.trim()
+            : "",
+
+        "oldEarTagImage": "",
+        "oldHeadPoseImage": "",
+        "oldSidePoseLeftImage": "",
+        "oldSidePoseRightImage": "",
+        "oldBackPoseImage": "",
+
+        // ================= TAGGING COPY =================
+        "taggingEarTagImage": selectedeartag.value ?? "",
+
+        "taggingHeadPoseImage": selectedheadpose.value ?? "",
+
+        "taggingSidePoseLeftImage": selectedsideposeleft.value ?? "",
+
+        "taggingSidePoseRightImage": selectedsideposeright.value ?? "",
+
+        "taggingBackPoseImage": selectedbackpose.value ?? "",
+
+        // ================= CLAIM =================
+        "dateOfDeath": leadType == "claim"
+            ? selectedDate.value?.toString().split(" ")[0] ?? ""
+            : "",
+
+        "timeOfDeath": leadType == "claim"
+            ? TimeOfDay.now().format(Get.context!)
+            : "",
+
+        "causeOfDeath": leadType == "claim" ? "ILLNESS" : "",
+
+        // ================= VIDEOS =================
+        "reTaggingVideo": videopath1 != null ? File(videopath1!) : "",
+
+        "fullCattleVideo": videopath2 != null ? File(videopath2!) : "",
+
+        // ================= PDF =================
+        "conversionPdf": "",
+      };
+
+      print("========== PAYLOAD ==========");
+
+      payload.forEach((key, value) {
+        if (value is File) {
+          print("$key => FILE: ${value.path}");
+        } else {
+          print("$key => $value");
+        }
+      });
+
+      print("================================");
+
       final resp = await _cattleService.submitCattle(
         token: token,
         payload: payload,
       );
 
-      final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
+      final responseBody = await resp.stream.bytesToString();
+
+      final decoded = responseBody.isNotEmpty ? jsonDecode(responseBody) : {};
 
       print("========== RESPONSE ==========");
       print("STATUS => ${resp.statusCode}");
@@ -649,8 +857,6 @@ class CattleController extends GetxController {
 
         completedCattleCount = nextCompleted;
 
-        // ================= NEXT CATTLE =================
-
         if (nextCompleted < totalCattleCount) {
           showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
 
@@ -659,13 +865,11 @@ class CattleController extends GetxController {
           _resetCattleCaptureFormForNextStep();
 
           update();
-        }
-        // ================= ALL DONE =================
-        else {
+        } else {
           showSnackBar("All cattle completed.", SNACK.SUCCESS);
 
           Get.offNamed(
-            routefarmerdetailspage,
+            routesignaturepage,
             arguments: {
               "tagging": data,
               "ischangepage": ischangepage,

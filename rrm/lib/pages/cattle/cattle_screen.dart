@@ -19,13 +19,14 @@ class Cattlescreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<CattleController>(
       builder: (controller) {
-        final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
+        final Map<String, dynamic> args =
+            (Get.arguments as Map<String, dynamic>?) ?? {};
         if (controller.data == null) {
           controller.syncFromArgs(args);
         }
 
         controller.taggingdatecontroller.text = DateFormat(
-          'yyyy-MM-dd', 
+          'yyyy-MM-dd',
         ).format(controller.selectedDate.value!);
 
         return Scaffold(
@@ -93,6 +94,7 @@ class Cattlescreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          keyboardType: TextInputType.number,
                           controller: controller.tagnumbercontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -116,6 +118,7 @@ class Cattlescreen extends StatelessWidget {
                             Expanded(
                               flex: 2,
                               child: CustomTextField(
+                                keyboardType: TextInputType.number,
                                 controller: controller.newtagnumbercontroller,
                                 backgroundColor: AppColors.WHITE,
                                 inputtextcolor: AppColors.PRIMARY_COLOR,

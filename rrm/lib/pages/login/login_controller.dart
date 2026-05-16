@@ -71,6 +71,17 @@ class LoginController extends GetxController {
         appController.setToken(token);
         debugPrint("Login token saved (${token.length} chars)");
 
+        /// USER DATA
+        final userData = decoded["data"]["user"];
+
+        appController.setUserData(
+          name: "${userData["firstName"] ?? ""} ${userData["lastName"] ?? ""}",
+          mobile: userData["mobileNo"] ?? "",
+          email: userData["email"] ?? "",
+        );
+
+        debugPrint("USER NAME ::: ${appController.userName.value}");
+
         showSnackBar(decoded["message"] ?? "Login successful", SNACK.SUCCESS);
         Get.offAllNamed(routehomepage);
       } else {

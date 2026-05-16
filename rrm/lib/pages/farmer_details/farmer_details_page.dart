@@ -19,7 +19,7 @@ class FarmerDetailsScreen extends StatelessWidget {
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
           appBar: CustomAppBarAction(
-            title: 'Cattle Claim',
+            title: 'Report',
             iconleft: Icons.arrow_back_outlined,
             lefticononTap: () {
               Get.back();
@@ -59,11 +59,6 @@ class FarmerDetailsScreen extends StatelessWidget {
                             context: context,
                             staticdata: "Name - ",
                             listdata: "Apurv Patel",
-                          ),
-                          datarow(
-                            context: context,
-                            staticdata: "Addher Number - ",
-                            listdata: "458962578452",
                           ),
                           datarow(
                             context: context,
