@@ -83,10 +83,10 @@ class LoginController extends GetxController {
         /// USER DATA
         final userData = decoded["data"]["user"];
 
-        appController.setUserData(
+        appController.saveUserData(
           name: "${userData["firstName"] ?? ""} ${userData["lastName"] ?? ""}",
           mobile: userData["mobileNo"] ?? "",
-          email: userData["email"] ?? "",
+          emailId: userData["email"] ?? "",
         );
 
         debugPrint("USER NAME ::: ${appController.userName.value}");

@@ -12,17 +12,6 @@ import 'utils/colors.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get_storage/get_storage.dart';
 
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   await getTemporaryDirectory();
-//   getIt.registerLazySingleton<FormValidations>(() => FormValidations());
-//   getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
-//   Get.put(AppController());
-//   Get.put(DeviceController());
-//   runApp(MyApp());
-// }
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

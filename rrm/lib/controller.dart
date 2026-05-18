@@ -8,6 +8,7 @@ class AppController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    loadUserData();
     token.value = _box.read('token') ?? '';
   }
 
@@ -27,13 +28,34 @@ class AppController extends GetxController {
   RxString mobileNumber = "".obs;
   RxString email = "".obs;
 
-  void setUserData({
+  /// SAVE USER DATA
+  void saveUserData({
     required String name,
     required String mobile,
-    required String email,
+    required String emailId,
   }) {
     userName.value = name;
     mobileNumber.value = mobile;
-    this.email.value = email;
+    email.value = emailId;
+
+    _box.write("userName", name);
+    _box.write("mobileNumber", mobile);
+    _box.write("email", emailId);
+  }
+
+  /// LOAD USER DATA
+  void loadUserData() {
+    userName.value = _box.read("userName") ?? "";
+    mobileNumber.value = _box.read("mobileNumber") ?? "";
+    email.value = _box.read("email") ?? "";
+  }
+
+  /// CLEAR USER DATA
+  void clearUserData() {
+    _box.erase();
+
+    userName.value = "";
+    mobileNumber.value = "";
+    email.value = "";
   }
 }

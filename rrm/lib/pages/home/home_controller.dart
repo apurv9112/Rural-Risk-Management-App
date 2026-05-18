@@ -21,6 +21,13 @@ class HomeController extends GetxController {
     exportBackgroundColor: Colors.white,
   );
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    appController.loadUserData();
+  }
+
   /// SAVE SIGNATURE
   Future<void> saveSignature() async {
     try {
