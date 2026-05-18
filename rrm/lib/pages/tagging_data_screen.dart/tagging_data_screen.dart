@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
@@ -831,8 +832,13 @@ class TaggingDataScreen extends StatelessWidget {
 
                                     Get.dialog(
                                       Center(
-                                        child: CircularProgressIndicator(),
+                                        child: Lottie.asset(
+                                          'assets/animations/cow.json',
+                                          width: wp(30),
+                                          height: hp(30),
+                                        ),
                                       ),
+                                      barrierColor: Colors.black45,
                                       barrierDismissible: false,
                                     );
 
@@ -881,11 +887,13 @@ class TaggingDataScreen extends StatelessWidget {
 
                         Get.dialog(
                           Center(
-                            child: LoadingAnimationWidget.staggeredDotsWave(
-                              color: Colors.white,
-                              size: 60,
+                            child: Lottie.asset(
+                              'assets/animations/cow.json',
+                              width: wp(30),
+                              height: hp(30),
                             ),
                           ),
+                          barrierColor: Colors.black45,
                           barrierDismissible: false,
                         );
 

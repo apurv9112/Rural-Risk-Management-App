@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rrm/pages/claim/claim_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
@@ -30,8 +31,12 @@ class ClaimScreen extends StatelessWidget {
             },
           ),
           body: controller.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
+              ? Center(
+                  child: Lottie.asset(
+                    'assets/animations/cow.json',
+                    width: wp(30),
+                    height: hp(30),
+                  ),
                 )
               : controller.leads.isEmpty
               ? Center(
@@ -127,22 +132,6 @@ class ClaimScreen extends StatelessWidget {
                           return Column(
                             children: [
                               GestureDetector(
-                                // onTap: () async {
-                                //   final id = (lead["_id"] ?? lead["id"] ?? "").toString();
-                                //   if (id.isEmpty) return;
-
-                                //   final details = await controller.getLeadDetails(id);
-                                //   if (details != null) {
-                                //     Get.toNamed(
-                                //       routetaggingdatapage,
-                                //       arguments: {
-                                //         "tagging": details,
-                                //         "isclaim": controller.isRetagging ? null : controller.claim,
-                                //         "retagging": controller.retagging,
-                                //       },
-                                //     );
-                                //   }
-                                // },
                                 onTap: () async {
                                   final details = lead;
 

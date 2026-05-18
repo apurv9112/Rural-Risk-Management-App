@@ -4,9 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/kyc_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
+import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 
@@ -62,7 +64,7 @@ class KycController extends GetxController {
     debugPrint("KYC INIT → ID: ${data?["id"]}");
     debugPrint("Flow → ischangepage: $ischangepage, retagging: $retagging");
 
-    checkKycStatus();
+    // checkKycStatus();
   }
 
   // ================= IMAGE PICKER =================
@@ -224,7 +226,14 @@ class KycController extends GetxController {
     update();
 
     Get.dialog(
-      const Center(child: CircularProgressIndicator()),
+      Center(
+        child: Lottie.asset(
+          'assets/animations/cow.json',
+          width: wp(30),
+          height: hp(30),
+        ),
+      ),
+      barrierColor: Colors.black45,
       barrierDismissible: false,
     );
 
@@ -286,63 +295,63 @@ class KycController extends GetxController {
     }
   }
 
-  Future<void> checkKycStatus() async {
-    try {
-      final token = appController.token.value;
+  // Future<void> checkKycStatus() async {
+  //   try {
+  //     final token = appController.token.value;
 
-      if (token.isEmpty) return;
+  //     if (token.isEmpty) return;
 
-      String leadType = "tagging";
+  //     String leadType = "tagging";
 
-      if (retagging == "retagging") {
-        leadType = "retagging";
-      } else if (ischangepage != null) {
-        leadType = "claim";
-      }
+  //     if (retagging == "retagging") {
+  //       leadType = "retagging";
+  //     } else if (ischangepage != null) {
+  //       leadType = "claim";
+  //     }
 
-      print("========== CHECK KYC STATUS ==========");
-      print("LEAD ID => ${data["id"]}");
-      print("FLOW => $leadType");
-      print("======================================");
+  //     print("========== CHECK KYC STATUS ==========");
+  //     print("LEAD ID => ${data["id"]}");
+  //     print("FLOW => $leadType");
+  //     print("======================================");
 
-      final response = await _kycService.uploadKyc(
-        token: token,
-        leadId: data["id"].toString(),
-        leadType: leadType,
-        files: [], // EMPTY FILES
-      );
+  //     final response = await _kycService.uploadKyc(
+  //       token: token,
+  //       leadId: data["id"].toString(),
+  //       leadType: leadType,
+  //       files: [], // EMPTY FILES
+  //     );
 
-      final statusCode = response["statusCode"];
+  //     final statusCode = response["statusCode"];
 
-      final decoded =
-          response["body"] != null && response["body"].toString().isNotEmpty
-          ? jsonDecode(response["body"])
-          : {};
+  //     final decoded =
+  //         response["body"] != null && response["body"].toString().isNotEmpty
+  //         ? jsonDecode(response["body"])
+  //         : {};
 
-      print("========== CHECK RESPONSE ==========");
-      print(decoded);
-      print("===================================");
+  //     print("========== CHECK RESPONSE ==========");
+  //     print(decoded);
+  //     print("===================================");
 
-      final message = decoded["message"]?.toString().toLowerCase() ?? "";
+  //     final message = decoded["message"]?.toString().toLowerCase() ?? "";
 
-      // ================= ALREADY UPLOADED =================
+  //     // ================= ALREADY UPLOADED =================
 
-      if (statusCode == 400 && message.contains("already uploaded")) {
-        showSnackBar("KYC already uploaded", SNACK.SUCCESS);
+  //     if (statusCode == 400 && message.contains("already uploaded")) {
+  //       showSnackBar("KYC already uploaded", SNACK.SUCCESS);
 
-        Future.delayed(const Duration(milliseconds: 700), () {
-          Get.offNamed(
-            routecattlepage,
-            arguments: {
-              "tagging": data,
-              "ischangepage": ischangepage,
-              "retagging": retagging,
-            },
-          );
-        });
-      }
-    } catch (e) {
-      print("CHECK KYC ERROR => $e");
-    }
-  }
+  //       Future.delayed(const Duration(milliseconds: 700), () {
+  //         Get.offNamed(
+  //           routecattlepage,
+  //           arguments: {
+  //             "tagging": data,
+  //             "ischangepage": ischangepage,
+  //             "retagging": retagging,
+  //           },
+  //         );
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print("CHECK KYC ERROR => $e");
+  //   }
+  // }
 }

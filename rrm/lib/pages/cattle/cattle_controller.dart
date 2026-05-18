@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
+import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -710,11 +712,13 @@ class CattleController extends GetxController {
 
     Get.dialog(
       Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: Colors.white,
-          size: 60,
+        child: Lottie.asset(
+          'assets/animations/cow.json',
+          width: wp(30),
+          height: hp(30),
         ),
       ),
+      barrierColor: Colors.black45,
       barrierDismissible: false,
     );
 

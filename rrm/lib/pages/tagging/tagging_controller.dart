@@ -19,17 +19,31 @@ class TaggingController extends GetxController {
   TextEditingController villagecontroller = TextEditingController();
   TextEditingController talukacontroller = TextEditingController();
   TextEditingController distcontroller = TextEditingController();
+  ScrollController scrollController = ScrollController();
 
   bool listshow = true;
   bool manualtagging = false;
   bool isLoading = false;
-
+  int currentPage = 1;
+  bool hasMoreData = true;
+  bool isPaginationLoading = false;
   List<dynamic> taggings = [];
 
   @override
   void onInit() {
     super.onInit();
     _fetchInitialData();
+
+    scrollController.addListener(() {
+      debugPrint("SCROLL: ${scrollController.position.pixels}");
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 200 &&
+          !isPaginationLoading &&
+          hasMoreData) {
+        debugPrint("BOTTOM REACHED");
+        loadMoreData();
+      }
+    });
   }
 
   /// Fetch all assigned taggings when the screen first opens.
@@ -52,7 +66,7 @@ class TaggingController extends GetxController {
             decoded["data"]?["leads"]?["tagging"] ??
             decoded["data"]?["taggings"] ??
             [];
-        listshow = false;
+        // listshow = false;
 
         if (taggings.isNotEmpty) {
           final first = taggings[0];
@@ -79,25 +93,16 @@ class TaggingController extends GetxController {
     try {
       final String token = appController.token.value;
 
-      if (token.isEmpty) {
-        showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
-        debugPrint("Tagging search blocked: missing token");
-        return;
-      }
-
-      debugPrint("Tagging search token length: ${token.length}");
-
       isLoading = true;
+
+      currentPage = 1;
+      hasMoreData = true;
+
       update();
 
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
-
       final Map<String, dynamic> payload = {
-        "page": 1,
-        "limit": 99999,
+        "page": currentPage,
+        "limit": 20,
         "mobileNo": mobilecontroller.text.trim(),
         "loanAccountNo": loanaccoutnumbercontroller.text.trim(),
         "ownerName": nameofcattleownercontroller.text.trim(),
@@ -113,49 +118,78 @@ class TaggingController extends GetxController {
         body: payload,
       );
 
-      debugPrint(
-        "Tagging search response: status=${response.statusCode}, body=${response.body}",
+      final decoded = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          decoded["status"] == "success") {
+        taggings = decoded["data"]["taggings"] ?? [];
+
+        /// if less than limit => no more data
+        if (taggings.length < 20) {
+          hasMoreData = false;
+        }
+
+        listshow = false;
+      }
+    } catch (e) {
+      debugPrint("Search Error: $e");
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
+  Future<void> loadMoreData() async {
+    if (!hasMoreData || isPaginationLoading) return;
+
+    try {
+      isPaginationLoading = true;
+      update();
+
+      currentPage++;
+
+      final String token = appController.token.value;
+
+      final Map<String, dynamic> payload = {
+        "page": currentPage,
+        "limit": 20,
+        "mobileNo": mobilecontroller.text.trim(),
+        "loanAccountNo": loanaccoutnumbercontroller.text.trim(),
+        "ownerName": nameofcattleownercontroller.text.trim(),
+        "village": villagecontroller.text.trim(),
+        "taluko": talukacontroller.text.trim(),
+        "district": distcontroller.text.trim(),
+      };
+
+      payload.removeWhere((_, value) => value is String && value.isEmpty);
+
+      final response = await _taggingService.searchTagging(
+        token: token,
+        body: payload,
       );
 
       final decoded = jsonDecode(response.body);
 
-      final bool isOkStatus =
-          response.statusCode >= 200 && response.statusCode < 300;
-      if (isOkStatus && decoded["status"] == "success") {
-        taggings = decoded["data"]["taggings"] ?? [];
-        listshow = false;
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          decoded["status"] == "success") {
+        List<dynamic> newData = decoded["data"]["taggings"] ?? [];
 
-        if (taggings.isNotEmpty) {
-          final first = taggings[0];
-          debugPrint("=== TAGGING SEARCH RESPONSE (first lead) ===");
-          debugPrint("sumInsuredCow: ${first['sumInsuredCow']}");
-          debugPrint("sumInsuredBuffalo: ${first['sumInsuredBuffalo']}");
-          debugPrint("numberOfCow: ${first['numberOfCow']}");
-          debugPrint("numberOfBuffalo: ${first['numberOfBuffalo']}");
-          debugPrint("All keys: ${first.keys.toList()}");
-          debugPrint("=============================================");
-        }
-      } else {
-        final msg = decoded["message"] ?? "Search failed";
-        if (response.statusCode == 401) {
-          appController.clearToken();
-          showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
+        if (newData.isEmpty) {
+          hasMoreData = false;
         } else {
-          showSnackBar(msg, SNACK.FAILED);
+          taggings.addAll(newData);
+
+          if (newData.length < 20) {
+            hasMoreData = false;
+          }
         }
-        return;
       }
     } catch (e) {
-      debugPrint("Tagging search error: $e");
-      if (!(Get.isDialogOpen ?? false)) {
-        showSnackBar(
-          "Unable to search right now. Check connection and retry.",
-          SNACK.FAILED,
-        );
-      }
+      debugPrint("Pagination Error: $e");
     } finally {
-      isLoading = false;
-      if (Get.isDialogOpen ?? false) Get.back();
+      isPaginationLoading = false;
       update();
     }
   }

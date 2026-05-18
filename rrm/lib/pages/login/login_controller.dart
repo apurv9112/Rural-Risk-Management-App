@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/device_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/services/auth_service.dart';
+import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 
 class LoginController extends GetxController {
@@ -27,10 +29,17 @@ class LoginController extends GetxController {
     }
 
     Get.dialog(
-      const Center(child: CircularProgressIndicator()),
+      Center(
+        child: Lottie.asset(
+          'assets/animations/cow.json',
+          width: wp(30),
+          height: hp(30),
+        ),
+      ),
+      barrierColor: Colors.black45,
       barrierDismissible: false,
     );
-
+    await Future.delayed(Duration(seconds: 3));
     try {
       final payload = isemail
           ? {

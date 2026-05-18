@@ -5,8 +5,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
+import 'package:rrm/utils/responsive.dart';
 import 'package:signature/signature.dart';
 
 class SignatureControllerX extends GetxController {
@@ -69,6 +71,18 @@ class SignatureControllerX extends GetxController {
 
       debugPrint("Customer Sign Saved => ${customerFile.path}");
       debugPrint("Worker Sign Saved => ${workerFile.path}");
+
+      Get.dialog(
+        Center(
+          child: Lottie.asset(
+            'assets/animations/cow.json',
+            width: wp(30),
+            height: hp(30),
+          ),
+        ),
+        barrierColor: Colors.black45,
+        barrierDismissible: false,
+      );
 
       Get.snackbar(
         "Success",
