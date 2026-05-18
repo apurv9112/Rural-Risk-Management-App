@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:signature/signature.dart';
 import 'package:rrm/pages/home/drawer.dart';
 import 'package:rrm/pages/home/home_controller.dart';
@@ -232,6 +235,26 @@ class Homepage extends StatelessWidget {
                                                 .toPngBytes()
                                           : Future.value(null),
                                       builder: (context, snapshot) {
+                                        /// SAVED SIGNATURE
+                                        if (controller
+                                                .signaturePath
+                                                .value
+                                                .isNotEmpty &&
+                                            File(
+                                              controller.signaturePath.value,
+                                            ).existsSync()) {
+                                          return Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Image.file(
+                                              File(
+                                                controller.signaturePath.value,
+                                              ),
+                                              fit: BoxFit.contain,
+                                            ),
+                                          );
+                                        }
+
+                                        /// CURRENT DRAW SIGNATURE
                                         if (snapshot.hasData &&
                                             snapshot.data != null) {
                                           return Padding(
@@ -265,14 +288,52 @@ class Homepage extends StatelessWidget {
                           /// BUTTONS
                           Row(
                             children: [
+                              /// CAMERA
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await controller.pickSignatureImage(
+                                      source: ImageSource.camera,
+                                    );
+                                  },
+
+                                  icon: Icon(Icons.camera_alt),
+
+                                  label: Text("Camera"),
+                                ),
+                              ),
+
+                              SizedBox(width: wp(3)),
+
+                              /// GALLERY
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await controller.pickSignatureImage(
+                                      source: ImageSource.gallery,
+                                    );
+                                  },
+
+                                  icon: Icon(Icons.photo),
+
+                                  label: Text("Gallery"),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: hp(2)),
+                          Row(
+                            children: [
                               /// CLEAR
                               Expanded(
                                 child: ElevatedButton.icon(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                   ),
-                                  onPressed: () {
-                                    controller.signatureController.clear();
+                                  onPressed: () async {
+                                    // controller.signatureController.clear();
+                                    await controller.clearSignature();
                                   },
                                   icon: Icon(
                                     Icons.refresh,
@@ -302,6 +363,8 @@ class Homepage extends StatelessWidget {
                                       backgroundColor: Colors.green,
                                       colorText: Colors.white,
                                     );
+
+                                    controller.update();
                                   },
                                   icon: Icon(
                                     Icons.save,

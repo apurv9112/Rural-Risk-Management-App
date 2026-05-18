@@ -58,7 +58,7 @@ dependencies:
   audioplayers: ^5.2.1
   signature: ^5.5.0
   lottie: ^2.7.0
-  
+  image: ^4.2.0
 
 dev_dependencies:
   flutter_test:
