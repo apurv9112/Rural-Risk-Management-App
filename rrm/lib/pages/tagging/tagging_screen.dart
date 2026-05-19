@@ -361,7 +361,12 @@ class TaggingScreen extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton.extended(
             backgroundColor: AppColors.WHITE,
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(
+                routetaggingdatapage,
+                arguments: {"manualtagging": controller.manualtagging},
+              );
+            },
             label: Text("Manual Tagging"),
           ),
         );

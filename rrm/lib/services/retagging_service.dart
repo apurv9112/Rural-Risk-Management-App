@@ -21,19 +21,6 @@ class RetaggingService {
     );
   }
 
-  Future<http.Response> cancelLead({
-    required String token,
-    required String id,
-    Map<String, dynamic>? body,
-  }) {
-    final payload = body ?? {"status": "Rejected"};
-    return _client.patch(
-      Uri.parse("$baseUrl/retagging/$id"),
-      headers: _authHeaders(token),
-      body: jsonEncode(payload),
-    );
-  }
-
   Future<http.Response> updateLead({
     required String token,
     required String id,

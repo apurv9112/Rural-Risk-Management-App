@@ -38,22 +38,21 @@ class TaggingService {
     );
   }
 
-  Future<http.Response> getTagging({required String token, required String id}) {
+  Future<http.Response> getTagging({
+    required String token,
+    required String id,
+  }) {
     return _client.get(
       Uri.parse("$baseUrl/tagging/$id"),
       headers: _authHeaders(token),
     );
   }
 
-  Future<http.Response> cancelLead({required String token, required String id, Map<String, dynamic>? body}) {
-    return _client.patch(
-      Uri.parse("$baseUrl/tagging/cancellead/$id"),
-      headers: _authHeaders(token),
-      body: body == null ? null : jsonEncode(body),
-    );
-  }
-
-  Future<http.Response> updateLead({required String token, required String id, required Map<String, dynamic> body}) {
+  Future<http.Response> updateLead({
+    required String token,
+    required String id,
+    required Map<String, dynamic> body,
+  }) {
     return _client.patch(
       Uri.parse("$baseUrl/tagging/$id"),
       headers: _authHeaders(token),
@@ -61,7 +60,10 @@ class TaggingService {
     );
   }
 
-  Future<http.Response> completed({required String token, String status = "Attended"}) {
+  Future<http.Response> completed({
+    required String token,
+    String status = "Attended",
+  }) {
     return _client
         .post(
           Uri.parse("$baseUrl/tagging/search"),
@@ -71,17 +73,28 @@ class TaggingService {
         .timeout(const Duration(seconds: 30));
   }
 
-  Future<http.Response> searchCompleted({required String token, required String searchString}) {
+  Future<http.Response> searchCompleted({
+    required String token,
+    required String searchString,
+  }) {
     return _client
         .post(
           Uri.parse("$baseUrl/tagging/search"),
           headers: _authHeaders(token),
-          body: jsonEncode({"searchString": searchString, "status": "Attended", "page": 1, "limit": 50}),
+          body: jsonEncode({
+            "searchString": searchString,
+            "status": "Attended",
+            "page": 1,
+            "limit": 50,
+          }),
         )
         .timeout(const Duration(seconds: 30));
   }
 
-  Future<http.Response> downloadHealthCertificate({required String token, required String id}) {
+  Future<http.Response> downloadHealthCertificate({
+    required String token,
+    required String id,
+  }) {
     return _client.get(
       Uri.parse("$baseUrl/tagging/health-certificate/$id"),
       headers: _authHeaders(token),
@@ -96,7 +109,7 @@ class TaggingService {
   }
 
   Map<String, String> _authHeaders(String token) => {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      };
+    "Content-Type": "application/json",
+    "Authorization": "Bearer $token",
+  };
 }

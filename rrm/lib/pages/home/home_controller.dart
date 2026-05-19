@@ -105,10 +105,15 @@ class HomeController extends GetxController {
   }
 
   /// SAVE SIGNATURE
+  /// SAVE SIGNATURE
   Future<void> saveSignature() async {
     try {
       if (signatureController.isEmpty) {
-        Get.snackbar("Error", "Please Draw Signature First");
+        if (Get.context != null) {
+          ScaffoldMessenger.of(Get.context!).showSnackBar(
+            const SnackBar(content: Text("Please Draw Signature First")),
+          );
+        }
 
         return;
       }
@@ -149,11 +154,11 @@ class HomeController extends GetxController {
 
       update();
 
+      /// SUCCESS MESSAGE
       if (Get.context != null) {
-        Get.showSnackbar(
-          GetSnackBar(
-            message: "Signature Saved Successfully",
-            duration: Duration(seconds: 2),
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          const SnackBar(
+            content: Text("Signature Saved Successfully"),
             backgroundColor: Colors.green,
           ),
         );

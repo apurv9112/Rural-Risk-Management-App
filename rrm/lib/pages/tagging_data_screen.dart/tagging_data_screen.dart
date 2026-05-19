@@ -51,875 +51,886 @@ class TaggingDataScreen extends StatelessWidget {
               Get.back();
             },
           ),
-          body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: hp(4), right: wp(4), left: wp(4)),
-            child: Column(
-              children: [
-                CustomTextField(
-                  controller: controller.namecontroller,
-                  backgroundColor: AppColors.WHITE,
-                  inputtextcolor: AppColors.PRIMARY_COLOR,
-                  readOnly: controller.manualtagging ?? true,
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "M:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.mobilenumbercontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            final number = controller
-                                .mobilenumbercontroller
-                                .text
-                                .trim();
-                            if (number.isEmpty) return;
-                            url_launcher.launchUrl(Uri.parse('tel:+$number'));
-                          },
-                          child: Icon(
-                            Icons.call_sharp,
-                            color: AppColors.PRIMARY_COLOR,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              padding: EdgeInsets.only(top: hp(4), right: wp(4), left: wp(4)),
+              child: Column(
+                children: [
+                  CustomTextField(
+                    controller: controller.namecontroller,
+                    backgroundColor: AppColors.WHITE,
+                    inputtextcolor: AppColors.PRIMARY_COLOR,
+                    readOnly: controller.manualtagging ?? true,
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "M:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.mobilenumbercontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              final number = controller
+                                  .mobilenumbercontroller
+                                  .text
+                                  .trim();
+                              if (number.isEmpty) return;
+                              url_launcher.launchUrl(Uri.parse('tel:+$number'));
+                            },
+                            child: Icon(
+                              Icons.call_sharp,
+                              color: AppColors.PRIMARY_COLOR,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Add:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.addresscontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Add:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.addresscontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Vill:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.villegcontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Vill:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.villegcontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Ta:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.talukcontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Ta:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.talukcontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: wp(2.5)),
-                    Customcontainer(context: context, text: "Di:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.districcontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                      SizedBox(width: wp(2.5)),
+                      Customcontainer(context: context, text: "Di:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.districcontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Bank:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.banknamecontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Bank:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.banknamecontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Branch:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.branchcontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Branch:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.branchcontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Loan A/c No:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.loanacnocontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Loan A/c No:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.loanacnocontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: hp(2)),
-                Row(
-                  children: [
-                    Customcontainer(context: context, text: "Insurance Co:"),
-                    SizedBox(width: wp(2.5)),
-                    Expanded(
-                      flex: 2,
-                      child: CustomTextField(
-                        controller: controller.insurancecontroller,
-                        backgroundColor: AppColors.WHITE,
-                        inputtextcolor: AppColors.PRIMARY_COLOR,
-                        readOnly: controller.manualtagging ?? true,
+                    ],
+                  ),
+                  SizedBox(height: hp(2)),
+                  Row(
+                    children: [
+                      Customcontainer(context: context, text: "Insurance Co:"),
+                      SizedBox(width: wp(2.5)),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextField(
+                          controller: controller.insurancecontroller,
+                          backgroundColor: AppColors.WHITE,
+                          inputtextcolor: AppColors.PRIMARY_COLOR,
+                          readOnly: controller.manualtagging ?? true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                controller.ischangepage == null
-                    ? SizedBox(height: hp(4))
-                    : SizedBox(height: hp(2)),
-                controller.ischangepage == null
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            text: "Species",
-                            height: hp(4.5),
-                            width: wp(22),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Customcontainer(
-                            width: wp(16),
-                            context: context,
-                            text: "No",
-                            height: hp(4.5),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Customcontainer(
-                            context: context,
-                            width: wp(48),
-                            text: "Sum Insured",
-                            height: hp(4.5),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                        ],
-                      )
-                    : SizedBox(),
-                controller.ischangepage == null
-                    ? SizedBox(height: hp(2))
-                    : SizedBox(),
-                controller.ischangepage == null
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            width: wp(22),
-                            text: "Buffalo",
-                            textcolor: Colors.deepPurple,
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Expanded(
-                            flex: 2,
-                            child: CustomTextField(
-                              readOnly: controller.buffaloreadOnly,
-                              controller: controller.buffalocountcontroller,
-                              backgroundColor: AppColors.WHITE,
-                              inputtextcolor: Colors.deepPurple,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Expanded(
-                            flex: 4,
-                            child: CustomTextField(
-                              textAlign: TextAlign.center,
-                              readOnly: controller.buffaloreadOnly,
-                              controller: controller.buffalomoneycontroller,
-                              backgroundColor: AppColors.WHITE,
-                              inputtextcolor: Colors.deepPurple,
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Container(
-                            height: hp(7),
-                            decoration: BoxDecoration(
-                              color: AppColors.WHITE,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                controller.buffaloreadOnly =
-                                    !(controller.buffaloreadOnly ?? false);
-                                controller.update();
-                              },
-                              icon: Icon(
-                                Icons.edit,
-                                color: AppColors.DARK,
-                                size: dp(context, 25),
+                    ],
+                  ),
+                  controller.ischangepage == null
+                      ? SizedBox(height: hp(4))
+                      : SizedBox(height: hp(2)),
+                  controller.ischangepage == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              text: "Species",
+                              height: hp(4.5),
+                              width: wp(22),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
                               ),
                             ),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            text: "Species",
-                            height: hp(4.5),
-                            width: wp(30),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Customcontainer(
-                            width: wp(60),
-                            context: context,
-                            text: controller.retagging != null
-                                ? "Old Tag Number"
-                                : "Tag Number",
-                            height: hp(4.5),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                SizedBox(height: hp(2)),
-                controller.ischangepage == null
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            width: wp(22),
-                            text: "Cow",
-                            textcolor: Colors.redAccent,
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Expanded(
-                            flex: 2,
-                            child: CustomTextField(
-                              textAlign: TextAlign.center,
-                              readOnly: controller.cowreadOnly,
-                              controller: controller.cowcountcontroller,
-                              backgroundColor: AppColors.WHITE,
-                              inputtextcolor: Colors.redAccent,
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Expanded(
-                            flex: 4,
-                            child: CustomTextField(
-                              textAlign: TextAlign.center,
-                              readOnly: controller.cowreadOnly,
-                              controller: controller.cowmoneycontroller,
-                              backgroundColor: AppColors.WHITE,
-                              inputtextcolor: Colors.redAccent,
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Container(
-                            height: hp(7),
-                            decoration: BoxDecoration(
-                              color: AppColors.WHITE,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                controller.cowreadOnly =
-                                    !(controller.cowreadOnly ?? false);
-                                controller.update();
-                              },
-                              icon: Icon(
-                                Icons.edit,
-                                color: AppColors.DARK,
-                                size: dp(context, 25),
+                            SizedBox(width: wp(2)),
+                            Customcontainer(
+                              width: wp(16),
+                              context: context,
+                              text: "No",
+                              height: hp(4.5),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
                               ),
                             ),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            text: "Buffalo",
-                            height: hp(4.5),
-                            width: wp(30),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
+                            SizedBox(width: wp(2)),
+                            Customcontainer(
+                              context: context,
+                              width: wp(48),
+                              text: "Sum Insured",
+                              height: hp(4.5),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
                             ),
-                          ),
-                          SizedBox(width: wp(2)),
-                          Customcontainer(
-                            width: wp(60),
-                            context: context,
-                            text: "4123421554415",
-                            height: hp(4.5),
-                            padding: EdgeInsets.only(
-                              left: wp(2.5),
-                              right: wp(2.5),
+                          ],
+                        )
+                      : SizedBox(),
+                  controller.ischangepage == null
+                      ? SizedBox(height: hp(2))
+                      : SizedBox(),
+                  controller.ischangepage == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              width: wp(22),
+                              text: "Buffalo",
+                              textcolor: Colors.deepPurple,
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                controller.ischangepage == null
-                    ? SizedBox()
-                    : SizedBox(height: hp(2)),
-                controller.ischangepage == null
-                    ? SizedBox()
-                    : Customcontainer(
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 2,
+                              child: CustomTextField(
+                                readOnly: controller.buffaloreadOnly,
+                                controller: controller.buffalocountcontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.deepPurple,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 4,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.buffaloreadOnly,
+                                controller: controller.buffalomoneycontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.deepPurple,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Container(
+                              height: hp(7),
+                              decoration: BoxDecoration(
+                                color: AppColors.WHITE,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  controller.buffaloreadOnly =
+                                      !(controller.buffaloreadOnly ?? false);
+                                  controller.update();
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: AppColors.DARK,
+                                  size: dp(context, 25),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              text: "Species",
+                              height: hp(4.5),
+                              width: wp(30),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Customcontainer(
+                              width: wp(60),
+                              context: context,
+                              text: controller.retagging != null
+                                  ? "Old Tag Number"
+                                  : "Tag Number",
+                              height: hp(4.5),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                          ],
+                        ),
+                  SizedBox(height: hp(2)),
+                  controller.ischangepage == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              width: wp(22),
+                              text: "Cow",
+                              textcolor: Colors.redAccent,
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 2,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.cowreadOnly,
+                                controller: controller.cowcountcontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.redAccent,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 4,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.cowreadOnly,
+                                controller: controller.cowmoneycontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.redAccent,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Container(
+                              height: hp(7),
+                              decoration: BoxDecoration(
+                                color: AppColors.WHITE,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  controller.cowreadOnly =
+                                      !(controller.cowreadOnly ?? false);
+                                  controller.update();
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: AppColors.DARK,
+                                  size: dp(context, 25),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              text: "Buffalo",
+                              height: hp(4.5),
+                              width: wp(30),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Customcontainer(
+                              width: wp(60),
+                              context: context,
+                              text: "4123421554415",
+                              height: hp(4.5),
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                          ],
+                        ),
+                  controller.ischangepage == null
+                      ? SizedBox()
+                      : SizedBox(height: hp(2)),
+                  controller.ischangepage == null
+                      ? SizedBox()
+                      : Customcontainer(
+                          onTap: () {
+                            showDialogWithFields(
+                              context: context,
+                              controller: controller,
+                              title: Text(
+                                controller.retagging != null
+                                    ? "Old Tagging Photo"
+                                    : "Tagging Photo",
+                                style: TextStyle(
+                                  color: AppColors.PRIMARY_COLOR,
+                                  fontSize: dp(context, 20),
+                                ),
+                              ),
+                              content: SingleChildScrollView(
+                                physics: BouncingScrollPhysics(),
+
+                                child: SizedBox(
+                                  height: hp(78),
+                                  width: wp(70),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    itemCount: controller.imageBytesList.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        margin: EdgeInsets.only(bottom: hp(2)),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: AppColors.PRIMARY_COLOR,
+                                            width: wp(1),
+                                          ),
+                                        ),
+                                        child: InteractiveViewer(
+                                          minScale: 1,
+                                          maxScale: 4,
+                                          child: Image.memory(
+                                            controller.imageBytesList[index],
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              actions: [],
+                            );
+                          },
+                          context: context,
+                          text: controller.retagging != null
+                              ? "Old Tagging Photo"
+                              : "Tagging Photo",
+                          icon: Icons.image_rounded,
+                        ),
+                  controller.ischangepage == null
+                      ? SizedBox()
+                      : SizedBox(height: hp(2)),
+                  controller.ischangepage == null
+                      ? SizedBox()
+                      : Row(
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              text: controller.retagging != null
+                                  ? "Date of Retagging:"
+                                  : "Date of Death:",
+                            ),
+                            SizedBox(width: wp(2.5)),
+                            Expanded(
+                              flex: 2,
+                              child: CustomTextField(
+                                controller: controller.dateofdeathcontroller,
+                                inputtextcolor: AppColors.PRIMARY_COLOR,
+                                readOnly: true,
+                                backgroundColor: AppColors.WHITE,
+                                suffixIcon: GestureDetector(
+                                  onTap: () {
+                                    controller.pickDate(
+                                      controller: controller,
+                                      context,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.calendar_month_outlined,
+                                    color: AppColors.PRIMARY_COLOR,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                  controller.ischangepage == null
+                      ? SizedBox()
+                      : SizedBox(height: hp(2)),
+                  controller.ischangepage == null
+                      ? SizedBox()
+                      : Row(
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              text: controller.retagging != null
+                                  ? "New Tag No:"
+                                  : "Time of Death:",
+                            ),
+                            SizedBox(width: wp(2.5)),
+                            Expanded(
+                              flex: 2,
+                              child: CustomTextField(
+                                keyboardType: TextInputType.number,
+                                controller: controller.timeofdeathcontroller,
+                                inputtextcolor: AppColors.PRIMARY_COLOR,
+                                readOnly: controller.retagging != null
+                                    ? false
+                                    : true,
+                                backgroundColor: AppColors.WHITE,
+                                suffixIcon: controller.retagging != null
+                                    ? null
+                                    : GestureDetector(
+                                        onTap: () {
+                                          controller.pickTime(
+                                            controller: controller,
+                                            context,
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.access_time,
+                                          color: AppColors.PRIMARY_COLOR,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                  SizedBox(height: hp(3)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Customcontainer(
                         onTap: () {
                           showDialogWithFields(
                             context: context,
                             controller: controller,
                             title: Text(
-                              controller.retagging != null
-                                  ? "Old Tagging Photo"
-                                  : "Tagging Photo",
+                              controller.ischangepage == null
+                                  ? "Lead Cancel"
+                                  : controller.retagging != null
+                                  ? "RT Cancel"
+                                  : "Claim Cancel",
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: AppColors.PRIMARY_COLOR,
-                                fontSize: dp(context, 20),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            content: SingleChildScrollView(
-                              physics: BouncingScrollPhysics(),
+                            content: SizedBox(
+                              height: hp(61),
+                              width: wp(70),
+                              child: GetBuilder<TaggingdataController>(
+                                builder: (controller) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      DropdownButtonFormField<String>(
+                                        value:
+                                            controller.selectedReasonDropdown,
+                                        decoration: InputDecoration(
+                                          hintText: "Select Reason",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
+                                          ),
+                                        ),
+                                        items:
+                                            (controller.ischangepage == null
+                                                    ? controller.taggingreasons
+                                                    : controller.retagging !=
+                                                          null
+                                                    ? controller
+                                                          .retaggingreasons
+                                                    : controller.claimreasons)
+                                                .map((reason) {
+                                                  return DropdownMenuItem<
+                                                    String
+                                                  >(
+                                                    value: reason,
+                                                    child: Text(reason),
+                                                  );
+                                                })
+                                                .toList(),
+                                        onChanged: (value) {
+                                          controller.selectedReasonDropdown =
+                                              value;
+                                          controller.update();
+                                        },
+                                      ),
+                                      SizedBox(height: hp(1)),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: wp(7)),
+                                        child: Text(
+                                          "Add Photo :",
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            color: AppColors.PRIMARY_COLOR,
+                                            fontSize: dp(context, 14),
+                                          ),
+                                        ),
+                                      ),
 
-                              child: SizedBox(
-                                height: hp(78),
-                                width: wp(70),
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  itemCount: controller.imageBytesList.length,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      margin: EdgeInsets.only(bottom: hp(2)),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: AppColors.PRIMARY_COLOR,
-                                          width: wp(1),
-                                        ),
+                                      SizedBox(height: hp(1.5)),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              custombuttomsheet(
+                                                context: context,
+                                                controller: controller,
+                                                isimage: 1,
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsetsDirectional.symmetric(
+                                                    horizontal: wp(1),
+                                                    vertical: hp(0.5),
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      AppColors.PRIMARY_COLOR,
+                                                  width: wp(0.5),
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child:
+                                                  controller
+                                                          .selectedOther1
+                                                          .value ==
+                                                      null
+                                                  ? Icon(
+                                                      Icons.camera_alt_outlined,
+                                                      color: AppColors
+                                                          .PRIMARY_COLOR,
+                                                      size: dp(context, 45),
+                                                    )
+                                                  : ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            dp(context, 8),
+                                                          ),
+                                                      child: Image.file(
+                                                        controller
+                                                            .selectedOther1
+                                                            .value!,
+                                                        fit: BoxFit.fill,
+                                                        height: hp(6),
+                                                        width: wp(13),
+                                                      ),
+                                                    ),
+                                            ),
+                                          ),
+                                          SizedBox(width: wp(2.5)),
+                                          GestureDetector(
+                                            onTap: () {
+                                              custombuttomsheet(
+                                                context: context,
+                                                controller: controller,
+                                                isimage: 2,
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsetsDirectional.symmetric(
+                                                    horizontal: wp(1),
+                                                    vertical: hp(0.5),
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      AppColors.PRIMARY_COLOR,
+                                                  width: wp(0.5),
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child:
+                                                  controller
+                                                          .selectedOther2
+                                                          .value ==
+                                                      null
+                                                  ? Icon(
+                                                      Icons.camera_alt_outlined,
+                                                      color: AppColors
+                                                          .PRIMARY_COLOR,
+                                                      size: dp(context, 45),
+                                                    )
+                                                  : ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            dp(context, 8),
+                                                          ),
+                                                      child: Image.file(
+                                                        controller
+                                                            .selectedOther2
+                                                            .value!,
+                                                        fit: BoxFit.fill,
+                                                        height: hp(6),
+                                                        width: wp(13),
+                                                      ),
+                                                    ),
+                                            ),
+                                          ),
+                                          SizedBox(width: wp(2.5)),
+                                          GestureDetector(
+                                            onTap: () {
+                                              custombuttomsheet(
+                                                context: context,
+                                                controller: controller,
+                                                isimage: 3,
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsetsDirectional.symmetric(
+                                                    horizontal: wp(1),
+                                                    vertical: hp(0.5),
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      AppColors.PRIMARY_COLOR,
+                                                  width: wp(0.5),
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child:
+                                                  controller
+                                                          .selectedOther3
+                                                          .value ==
+                                                      null
+                                                  ? Icon(
+                                                      Icons.camera_alt_outlined,
+                                                      color: AppColors
+                                                          .PRIMARY_COLOR,
+                                                      size: dp(context, 45),
+                                                    )
+                                                  : ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            dp(context, 8),
+                                                          ),
+                                                      child: Image.file(
+                                                        controller
+                                                            .selectedOther3
+                                                            .value!,
+                                                        fit: BoxFit.fill,
+                                                        height: hp(6),
+                                                        width: wp(13),
+                                                      ),
+                                                    ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      child: InteractiveViewer(
-                                        minScale: 1,
-                                        maxScale: 4,
-                                        child: Image.memory(
-                                          controller.imageBytesList[index],
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
-                            actions: [],
+                            actions: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Customcontainer(
+                                    onTap: () async {
+                                      print("YES BUTTON CLICKED");
+
+                                      if (controller.selectedReasonDropdown ==
+                                          null) {
+                                        Get.snackbar(
+                                          "Error",
+                                          "Please select reason",
+                                        );
+                                        return;
+                                      }
+
+                                      Get.back();
+
+                                      Get.dialog(
+                                        Center(
+                                          child: Lottie.asset(
+                                            'assets/animations/cow.json',
+                                            width: wp(30),
+                                            height: hp(30),
+                                          ),
+                                        ),
+                                        barrierColor: Colors.black45,
+                                        barrierDismissible: false,
+                                      );
+
+                                      print("CALLING API...");
+
+                                      await controller.cancelLeadUniversal();
+
+                                      if (Get.isDialogOpen ?? false) Get.back();
+                                    },
+                                    context: context,
+                                    width: wp(32),
+                                    text: "Yes",
+                                    textcolor: AppColors.WHITE,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(width: wp(2)),
+                                  Customcontainer(
+                                    onTap: () {
+                                      Get.back();
+                                    },
+                                    width: wp(32),
+                                    context: context,
+                                    text: "No",
+                                    textcolor: AppColors.WHITE,
+                                    color: AppColors.PRIMARY_COLOR,
+                                  ),
+                                ],
+                              ),
+                            ],
                           );
                         },
                         context: context,
-                        text: controller.retagging != null
-                            ? "Old Tagging Photo"
-                            : "Tagging Photo",
-                        icon: Icons.image_rounded,
+                        width: wp(44),
+                        text: controller.ischangepage == null
+                            ? "Lead Cancel"
+                            : controller.retagging != null
+                            ? "RT Cancel"
+                            : "Claim Cancel",
+                        icon: Icons.cancel_presentation_sharp,
+                        padding: EdgeInsets.only(left: wp(2.5), right: wp(2.5)),
                       ),
-                controller.ischangepage == null
-                    ? SizedBox()
-                    : SizedBox(height: hp(2)),
-                controller.ischangepage == null
-                    ? SizedBox()
-                    : Row(
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            text: controller.retagging != null
-                                ? "Date of Retagging:"
-                                : "Date of Death:",
-                          ),
-                          SizedBox(width: wp(2.5)),
-                          Expanded(
-                            flex: 2,
-                            child: CustomTextField(
-                              controller: controller.dateofdeathcontroller,
-                              inputtextcolor: AppColors.PRIMARY_COLOR,
-                              readOnly: true,
-                              backgroundColor: AppColors.WHITE,
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  controller.pickDate(
-                                    controller: controller,
-                                    context,
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.calendar_month_outlined,
-                                  color: AppColors.PRIMARY_COLOR,
-                                ),
+                      SizedBox(width: wp(3)),
+                      Customcontainer(
+                        onTap: () async {
+                          controller.syncDataFromControllers();
+
+                          Get.dialog(
+                            Center(
+                              child: Lottie.asset(
+                                'assets/animations/cow.json',
+                                width: wp(30),
+                                height: hp(30),
                               ),
                             ),
-                          ),
-                        ],
+                            barrierColor: Colors.black45,
+                            barrierDismissible: false,
+                          );
+
+                          await controller.saveLeadUpdates();
+
+                          if (Get.isDialogOpen ?? false) Get.back();
+                          Get.toNamed(
+                            routekycpage,
+                            arguments: {
+                              "tagging": controller.data,
+                              "ischangepage": controller.ischangepage,
+                              "retagging": controller.retagging,
+                            },
+                          );
+                        },
+                        context: context,
+                        width: wp(44),
+                        text: "Next",
+                        icon: Icons.arrow_forward_sharp,
+                        padding: EdgeInsets.only(left: wp(2.5), right: wp(2.5)),
                       ),
-                controller.ischangepage == null
-                    ? SizedBox()
-                    : SizedBox(height: hp(2)),
-                controller.ischangepage == null
-                    ? SizedBox()
-                    : Row(
-                        children: [
-                          Customcontainer(
-                            context: context,
-                            text: controller.retagging != null
-                                ? "New Tag No:"
-                                : "Time of Death:",
-                          ),
-                          SizedBox(width: wp(2.5)),
-                          Expanded(
-                            flex: 2,
-                            child: CustomTextField(
-                              keyboardType: TextInputType.number,
-                              controller: controller.timeofdeathcontroller,
-                              inputtextcolor: AppColors.PRIMARY_COLOR,
-                              readOnly: controller.retagging != null
-                                  ? false
-                                  : true,
-                              backgroundColor: AppColors.WHITE,
-                              suffixIcon: controller.retagging != null
-                                  ? null
-                                  : GestureDetector(
-                                      onTap: () {
-                                        controller.pickTime(
-                                          controller: controller,
-                                          context,
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.access_time,
-                                        color: AppColors.PRIMARY_COLOR,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
-                      ),
-                SizedBox(height: hp(3)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Customcontainer(
-                      onTap: () {
-                        showDialogWithFields(
-                          context: context,
-                          controller: controller,
-                          title: Text(
-                            controller.ischangepage == null
-                                ? "Lead Cancel"
-                                : controller.retagging != null
-                                ? "RT Cancel"
-                                : "Claim Cancel",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.PRIMARY_COLOR,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          content: SizedBox(
-                            height: hp(61),
-                            width: wp(70),
-                            child: GetBuilder<TaggingdataController>(
-                              builder: (controller) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    DropdownButtonFormField<String>(
-                                      value: controller.selectedReasonDropdown,
-                                      decoration: InputDecoration(
-                                        hintText: "Select Reason",
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 8,
-                                        ),
-                                      ),
-                                      items:
-                                          (controller.ischangepage == null
-                                                  ? controller.taggingreasons
-                                                  : controller.retagging != null
-                                                  ? controller.retaggingreasons
-                                                  : controller.claimreasons)
-                                              .map((reason) {
-                                                return DropdownMenuItem<String>(
-                                                  value: reason,
-                                                  child: Text(reason),
-                                                );
-                                              })
-                                              .toList(),
-                                      onChanged: (value) {
-                                        controller.selectedReasonDropdown =
-                                            value;
-                                        controller.update();
-                                      },
-                                    ),
-                                    SizedBox(height: hp(1)),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: wp(7)),
-                                      child: Text(
-                                        "Add Photo :",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: AppColors.PRIMARY_COLOR,
-                                          fontSize: dp(context, 14),
-                                        ),
-                                      ),
-                                    ),
+                    ],
+                  ),
 
-                                    SizedBox(height: hp(1.5)),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            custombuttomsheet(
-                                              context: context,
-                                              controller: controller,
-                                              isimage: 1,
-                                            );
-                                          },
-                                          child: Container(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                  horizontal: wp(1),
-                                                  vertical: hp(0.5),
-                                                ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: AppColors.PRIMARY_COLOR,
-                                                width: wp(0.5),
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child:
-                                                controller
-                                                        .selectedOther1
-                                                        .value ==
-                                                    null
-                                                ? Icon(
-                                                    Icons.camera_alt_outlined,
-                                                    color:
-                                                        AppColors.PRIMARY_COLOR,
-                                                    size: dp(context, 45),
-                                                  )
-                                                : ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          dp(context, 8),
-                                                        ),
-                                                    child: Image.file(
-                                                      controller
-                                                          .selectedOther1
-                                                          .value!,
-                                                      fit: BoxFit.fill,
-                                                      height: hp(6),
-                                                      width: wp(13),
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        SizedBox(width: wp(2.5)),
-                                        GestureDetector(
-                                          onTap: () {
-                                            custombuttomsheet(
-                                              context: context,
-                                              controller: controller,
-                                              isimage: 2,
-                                            );
-                                          },
-                                          child: Container(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                  horizontal: wp(1),
-                                                  vertical: hp(0.5),
-                                                ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: AppColors.PRIMARY_COLOR,
-                                                width: wp(0.5),
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child:
-                                                controller
-                                                        .selectedOther2
-                                                        .value ==
-                                                    null
-                                                ? Icon(
-                                                    Icons.camera_alt_outlined,
-                                                    color:
-                                                        AppColors.PRIMARY_COLOR,
-                                                    size: dp(context, 45),
-                                                  )
-                                                : ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          dp(context, 8),
-                                                        ),
-                                                    child: Image.file(
-                                                      controller
-                                                          .selectedOther2
-                                                          .value!,
-                                                      fit: BoxFit.fill,
-                                                      height: hp(6),
-                                                      width: wp(13),
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        SizedBox(width: wp(2.5)),
-                                        GestureDetector(
-                                          onTap: () {
-                                            custombuttomsheet(
-                                              context: context,
-                                              controller: controller,
-                                              isimage: 3,
-                                            );
-                                          },
-                                          child: Container(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                  horizontal: wp(1),
-                                                  vertical: hp(0.5),
-                                                ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: AppColors.PRIMARY_COLOR,
-                                                width: wp(0.5),
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child:
-                                                controller
-                                                        .selectedOther3
-                                                        .value ==
-                                                    null
-                                                ? Icon(
-                                                    Icons.camera_alt_outlined,
-                                                    color:
-                                                        AppColors.PRIMARY_COLOR,
-                                                    size: dp(context, 45),
-                                                  )
-                                                : ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          dp(context, 8),
-                                                        ),
-                                                    child: Image.file(
-                                                      controller
-                                                          .selectedOther3
-                                                          .value!,
-                                                      fit: BoxFit.fill,
-                                                      height: hp(6),
-                                                      width: wp(13),
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                          actions: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Customcontainer(
-                                  onTap: () async {
-                                    print("YES BUTTON CLICKED");
-
-                                    if (controller.selectedReasonDropdown ==
-                                        null) {
-                                      Get.snackbar(
-                                        "Error",
-                                        "Please select reason",
-                                      );
-                                      return;
-                                    }
-
-                                    Get.back();
-
-                                    Get.dialog(
-                                      Center(
-                                        child: Lottie.asset(
-                                          'assets/animations/cow.json',
-                                          width: wp(30),
-                                          height: hp(30),
-                                        ),
-                                      ),
-                                      barrierColor: Colors.black45,
-                                      barrierDismissible: false,
-                                    );
-
-                                    print("CALLING API...");
-
-                                    await controller.cancelLeadUniversal();
-
-                                    if (Get.isDialogOpen ?? false) Get.back();
-                                  },
-                                  context: context,
-                                  width: wp(32),
-                                  text: "Yes",
-                                  textcolor: AppColors.WHITE,
-                                  color: Colors.red,
-                                ),
-                                SizedBox(width: wp(2)),
-                                Customcontainer(
-                                  onTap: () {
-                                    Get.back();
-                                  },
-                                  width: wp(32),
-                                  context: context,
-                                  text: "No",
-                                  textcolor: AppColors.WHITE,
-                                  color: AppColors.PRIMARY_COLOR,
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                      context: context,
-                      width: wp(44),
-                      text: controller.ischangepage == null
-                          ? "Lead Cancel"
-                          : controller.retagging != null
-                          ? "RT Cancel"
-                          : "Claim Cancel",
-                      icon: Icons.cancel_presentation_sharp,
-                      padding: EdgeInsets.only(left: wp(2.5), right: wp(2.5)),
-                    ),
-                    SizedBox(width: wp(3)),
-                    Customcontainer(
-                      onTap: () async {
-                        controller.syncDataFromControllers();
-
-                        Get.dialog(
-                          Center(
-                            child: Lottie.asset(
-                              'assets/animations/cow.json',
-                              width: wp(30),
-                              height: hp(30),
-                            ),
-                          ),
-                          barrierColor: Colors.black45,
-                          barrierDismissible: false,
-                        );
-
-                        await controller.saveLeadUpdates();
-
-                        if (Get.isDialogOpen ?? false) Get.back();
-                        Get.toNamed(
-                          routekycpage,
-                          arguments: {
-                            "tagging": controller.data,
-                            "ischangepage": controller.ischangepage,
-                            "retagging": controller.retagging,
-                          },
-                        );
-                      },
-                      context: context,
-                      width: wp(44),
-                      text: "Next",
-                      icon: Icons.arrow_forward_sharp,
-                      padding: EdgeInsets.only(left: wp(2.5), right: wp(2.5)),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: hp(3)),
-              ],
+                  SizedBox(height: hp(3)),
+                ],
+              ),
             ),
           ),
         );

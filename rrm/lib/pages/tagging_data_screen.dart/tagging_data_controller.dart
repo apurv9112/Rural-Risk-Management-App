@@ -5,19 +5,20 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rrm/controller.dart';
+import 'package:rrm/services/cancel_lead_service.dart';
 import 'package:rrm/services/claim_service.dart';
 import 'package:rrm/services/retagging_service.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../routes/common/common_app_pages.dart';
-import 'package:http/http.dart' as http;
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
   final RetaggingService _retaggingService = RetaggingService();
   final ClaimService _claimService = ClaimService();
+  final CancelLeadService _cancelLeadService = CancelLeadService();
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -276,6 +277,7 @@ class TaggingdataController extends GetxController {
   }
 
   // cancel lead API call //
+  // cancel lead API call //
   Future<void> cancelLeadUniversal() async {
     if (data is! Map<String, dynamic>) return;
 
@@ -283,68 +285,96 @@ class TaggingdataController extends GetxController {
     final id = map["id"]?.toString();
 
     if (id == null || id.isEmpty) {
-      Get.snackbar("Error", "Invalid Lead ID");
+      debugPrint("Invalid Lead ID");
       return;
     }
 
     final token = _appController.token.value;
+
     if (token.isEmpty) {
-      Get.snackbar("Error", "Session expired");
+      debugPrint("Session expired");
       return;
     }
 
     if (selectedReasonDropdown == null) {
-      Get.snackbar("Error", "Please select reason");
+      debugPrint("Please select reason");
       return;
     }
 
     try {
+      // ✅ ONLY ONE LOADER
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
 
-      // ✅ IMPORTANT FIX — status added
-      final body = {"status": "Rejected", "reason": selectedReasonDropdown};
-
-      http.Response response;
+      // ✅ Lead Type
+      String leadType = "tagging";
 
       if (retagging != null) {
-        response = await _retaggingService.cancelLead(
-          token: token,
-          id: id,
-          body: body,
-        );
+        leadType = "retagging";
       } else if (ischangepage != null) {
-        response = await _claimService.cancelLead(
-          token: token,
-          id: id,
-          body: body,
-        );
-      } else {
-        response = await _taggingService.cancelLead(
-          token: token,
-          id: id,
-          body: body,
-        );
+        leadType = "claim";
       }
 
-      if (Get.isDialogOpen ?? false) Get.back();
+      // ✅ Images List
+      List<File> images = [];
 
-      final decoded = jsonDecode(response.body);
+      if (selectedOther1.value != null) {
+        images.add(selectedOther1.value!);
+      }
 
+      if (selectedOther2.value != null) {
+        images.add(selectedOther2.value!);
+      }
+
+      if (selectedOther3.value != null) {
+        images.add(selectedOther3.value!);
+      }
+
+      final response = await _cancelLeadService.cancelLead(
+        token: token,
+        leadId: id,
+        leadType: leadType,
+        reason: selectedReasonDropdown!,
+        otherReason: selectedReasonDropdown == "Other" ? "Custom Reason" : null,
+        images: images,
+      );
+
+      // ✅ CLOSE LOADER SAFELY
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      final responseBody = await response.stream.bytesToString();
+
+      print("========= CANCEL RESPONSE =========");
+      print(response.statusCode);
+      print(responseBody);
+
+      final decoded = jsonDecode(responseBody);
+
+      // ✅ SUCCESS
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           decoded["status"] == "success") {
-        Get.snackbar("Success", "Lead cancelled successfully");
-        Get.offAllNamed(routehomepage);
+        Get.offAllNamed(
+          routehomepage,
+          arguments: {"success": "Lead cancelled successfully"},
+        );
       } else {
-        Get.snackbar("Error", decoded["message"] ?? "Cancel failed");
+        // ❌ NO SNACKBAR HERE
+        debugPrint(decoded["message"] ?? "Cancel failed");
       }
     } catch (e) {
-      if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("Cancel error: $e");
-      Get.snackbar("Error", "Something went wrong");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      print("CANCEL ERROR => $e");
+
+      // ❌ NO SNACKBAR HERE
+      debugPrint("Something went wrong");
     }
   }
 }

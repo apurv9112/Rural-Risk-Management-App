@@ -243,26 +243,20 @@ class Homepage extends StatelessWidget {
                                             File(
                                               controller.signaturePath.value,
                                             ).existsSync()) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(10),
-                                            child: Image.file(
-                                              File(
-                                                controller.signaturePath.value,
-                                              ),
-                                              fit: BoxFit.contain,
+                                          return Image.file(
+                                            File(
+                                              controller.signaturePath.value,
                                             ),
+                                            fit: BoxFit.cover,
                                           );
                                         }
 
                                         /// CURRENT DRAW SIGNATURE
                                         if (snapshot.hasData &&
                                             snapshot.data != null) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(10),
-                                            child: Image.memory(
-                                              snapshot.data!,
-                                              fit: BoxFit.contain,
-                                            ),
+                                          return Image.memory(
+                                            snapshot.data!,
+                                            fit: BoxFit.cover,
                                           );
                                         }
 
@@ -356,13 +350,6 @@ class Homepage extends StatelessWidget {
                                   ),
                                   onPressed: () async {
                                     await controller.saveSignature();
-
-                                    Get.snackbar(
-                                      "Success",
-                                      "Signature Saved Successfully",
-                                      backgroundColor: Colors.green,
-                                      colorText: Colors.white,
-                                    );
 
                                     controller.update();
                                   },
