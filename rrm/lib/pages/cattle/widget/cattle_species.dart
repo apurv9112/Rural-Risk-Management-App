@@ -33,9 +33,10 @@ iscattlevalue({required BuildContext context, required controller}) {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  flex: 2,
+                SizedBox(
+                  width: wp(44.5),
                   child: CustomTextField(
+                    inputtextcolor: AppColors.PRIMARY_COLOR,
                     keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
                     controller: controller.sumInsuredController,
@@ -43,9 +44,10 @@ iscattlevalue({required BuildContext context, required controller}) {
                   ),
                 ),
                 SizedBox(width: wp(3)),
-                Expanded(
-                  flex: 2,
+                SizedBox(
+                  width: wp(44.5),
                   child: CustomTextField(
+                    inputtextcolor: AppColors.PRIMARY_COLOR,
                     keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
                     controller: controller.marketValueController,

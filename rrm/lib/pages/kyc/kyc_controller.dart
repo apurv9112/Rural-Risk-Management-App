@@ -257,17 +257,20 @@ class KycController extends GetxController {
       print("BODY => $decoded");
       print("==============================");
 
+      final message = decoded["message"] ?? "Something went wrong";
+
+      // ================= SUCCESS =================
+
       if (statusCode >= 200 && statusCode < 300) {
-        showSnackBar(
-          decoded["message"] ?? "KYC uploaded successfully",
-          SNACK.SUCCESS,
-        );
+        showSnackBar(message, SNACK.SUCCESS);
+
+        await Future.delayed(const Duration(seconds: 1));
 
         if (Get.isDialogOpen ?? false) {
           Get.back();
         }
 
-        Get.toNamed(
+        Get.offNamed(
           routecattlepage,
           arguments: {
             "tagging": data,
@@ -275,22 +278,46 @@ class KycController extends GetxController {
             "retagging": retagging,
           },
         );
-      } else {
-        showSnackBar(decoded["message"] ?? "Upload failed", SNACK.FAILED);
+      }
+      // ================= ALREADY UPLOADED =================
+      else if (message.toString().toLowerCase().contains("already uploaded")) {
+        showSnackBar(message, SNACK.FAILED);
+
+        await Future.delayed(const Duration(seconds: 2));
+
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+
+        Get.offNamed(
+          routecattlepage,
+          arguments: {
+            "tagging": data,
+            "ischangepage": ischangepage,
+            "retagging": retagging,
+          },
+        );
+      }
+      // ================= OTHER ERRORS =================
+      else {
+        showSnackBar(message, SNACK.FAILED);
+
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
       }
     } catch (e) {
       print("========== KYC ERROR ==========");
       print(e.toString());
       print("================================");
 
-      showSnackBar("Something went wrong", SNACK.FAILED);
-    } finally {
-      isSubmitting = false;
-
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
 
+      showSnackBar("Something went wrong", SNACK.FAILED);
+    } finally {
+      isSubmitting = false;
       update();
     }
   }

@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:rrm/services/base.dart';
 
 class CancelLeadService {
-  static const String baseUrl = "https://ruralrisk.in/api";
+  static const String baseUrl = baseAPIUrl;
 
   Future<http.StreamedResponse> cancelLead({
     required String token,

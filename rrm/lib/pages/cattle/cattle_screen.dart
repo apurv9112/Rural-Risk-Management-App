@@ -94,7 +94,7 @@ class Cattlescreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.none,
                           controller: controller.tagnumbercontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,

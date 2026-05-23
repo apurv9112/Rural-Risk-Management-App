@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:rrm/services/base.dart';
 
 class KycService {
-  static const String baseUrl = "https://ruralrisk.in/api";
+  static const String baseUrl = baseAPIUrl;
 
   Future<Map<String, dynamic>> uploadKyc({
     required String token,

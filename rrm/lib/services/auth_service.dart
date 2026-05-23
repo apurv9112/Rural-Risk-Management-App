@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:rrm/services/base.dart';
 
 class AuthService {
   AuthService({http.Client? client}) : _client = client ?? http.Client();
 
-  static const String baseUrl = "https://ruralrisk.in/api";
+  static const String baseUrl = baseAPIUrl;
   final http.Client _client;
 
   Future<http.Response> login(Map<String, dynamic> payload) {

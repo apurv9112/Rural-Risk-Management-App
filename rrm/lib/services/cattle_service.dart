@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:rrm/services/base.dart';
 
 class CattleService {
   CattleService({http.Client? client}) : _client = client ?? http.Client();
 
-  static const String baseUrl = "https://ruralrisk.in/api";
+  static const String baseUrl = baseAPIUrl;
 
   final http.Client _client;
 
