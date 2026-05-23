@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/cancel_lead_service.dart';
-import 'package:rrm/services/claim_service.dart';
-import 'package:rrm/services/retagging_service.dart';
+// import 'package:rrm/services/claim_service.dart';
+// import 'package:rrm/services/retagging_service.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -16,8 +16,8 @@ import '../../routes/common/common_app_pages.dart';
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
-  final RetaggingService _retaggingService = RetaggingService();
-  final ClaimService _claimService = ClaimService();
+  // final RetaggingService _retaggingService = RetaggingService();
+  // final ClaimService _claimService = ClaimService();
   final CancelLeadService _cancelLeadService = CancelLeadService();
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
@@ -33,11 +33,18 @@ class TaggingdataController extends GetxController {
   TextEditingController cowcountcontroller = TextEditingController();
   TextEditingController buffalomoneycontroller = TextEditingController();
   TextEditingController cowmoneycontroller = TextEditingController();
+  TextEditingController goatmoneycontroller = TextEditingController();
+  TextEditingController sheepmoneycontroller = TextEditingController();
+  TextEditingController sheepcountcontroller = TextEditingController();
+  TextEditingController goatcontroller = TextEditingController();
   TextEditingController dateofdeathcontroller = TextEditingController();
   TextEditingController timeofdeathcontroller = TextEditingController();
-
+  String? species;
+  String? tagnumberclaim;
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
+  bool? goatoreadOnly = false;
+  bool? sheepreadOnly = false;
   dynamic data;
   String? ischangepage;
   String? retagging;
@@ -70,6 +77,8 @@ class TaggingdataController extends GetxController {
     cowcountcontroller.text = _formatNumber(dataMap["numberOfCow"]);
     buffalomoneycontroller.text = _formatNumber(dataMap["sumInsuredBuffalo"]);
     cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
+    species = dataMap["species"];
+    tagnumberclaim = dataMap["tagNumber"] ?? dataMap["oldTagNumber"];
     dateofdeathcontroller.text = DateFormat(
       'yyyy-MM-dd',
     ).format(selectedDate.value!);

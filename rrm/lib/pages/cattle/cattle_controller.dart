@@ -36,6 +36,7 @@ class CattleController extends GetxController {
   int completedCattleCount = 0;
   int currentCattleIndex = 1;
   bool _isTagFieldsInitialized = false;
+  List<Map<String, dynamic>> cattleSequence = [];
 
   @override
   void onInit() {
@@ -59,6 +60,73 @@ class CattleController extends GetxController {
     currentCattleIndex =
         _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
     _initializeTagFields();
+    currentCattleIndex =
+        _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
+
+    _prepareCattleSequence();
+
+    _initializeTagFields();
+  }
+
+  String formatAmount(dynamic value) {
+    if (value == null) return "";
+
+    final number = num.tryParse(value.toString());
+
+    if (number == null) return "";
+
+    return number.toInt().toString();
+  }
+
+  void updateSumInsuredBySpecies(String species) {
+    if (data is! Map<String, dynamic>) return;
+
+    final lead = data as Map<String, dynamic>;
+
+    if (species == "Buffalo") {
+      sumInsuredController.text = formatAmount(lead["sumInsuredBuffalo"]);
+    } else if (species == "Cow") {
+      sumInsuredController.text = formatAmount(lead["sumInsuredCow"]);
+    } else {
+      sumInsuredController.clear();
+    }
+
+    update();
+  }
+
+  void _prepareCattleSequence() {
+    cattleSequence.clear();
+
+    if (data is! Map<String, dynamic>) return;
+
+    final lead = data as Map<String, dynamic>;
+
+    final buffaloCount = _parseInt(lead["numberOfBuffalo"]) ?? 0;
+    final cowCount = _parseInt(lead["numberOfCow"]) ?? 0;
+
+    final buffaloSI = formatAmount(lead["sumInsuredBuffalo"]);
+
+    final cowSI = formatAmount(lead["sumInsuredCow"]);
+
+    // Buffalo sequence
+    for (int i = 0; i < buffaloCount; i++) {
+      cattleSequence.add({"species": "Buffalo", "sumInsured": buffaloSI});
+    }
+
+    // Cow sequence
+    for (int i = 0; i < cowCount; i++) {
+      cattleSequence.add({"species": "Cow", "sumInsured": cowSI});
+    }
+
+    // Initial auto set
+    if (cattleSequence.isNotEmpty &&
+        completedCattleCount < cattleSequence.length) {
+      final current = cattleSequence[completedCattleCount];
+
+      selectedSpeciesValue = current["species"];
+
+      sumInsuredController.text = current["sumInsured"] ?? "";
+    }
   }
 
   void _initializeTagFields() {
@@ -502,162 +570,6 @@ class CattleController extends GetxController {
     _submitCattle(isClaimFlow: true);
   }
 
-  // Future<void> _submitCattle({required bool isClaimFlow}) async {
-  //   if (isSubmitting) return;
-  //   final token = appController.token.value;
-  //   if (token.isEmpty) {
-  //     showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
-  //     return;
-  //   }
-  //   final taggingId = data is Map<String, dynamic> ? data['id'] : null;
-  //   if (taggingId == null) {
-  //     showSnackBar("Tagging data not found.", SNACK.FAILED);
-  //     return;
-  //   }
-  //   if (completedCattleCount >= totalCattleCount) {
-  //     showSnackBar("All cattle already saved for this lead.", SNACK.FAILED);
-  //     return;
-  //   }
-  //   final hasMandatoryImages =
-  //       selectedeartag.value != null &&
-  //       selectedheadpose.value != null &&
-  //       selectedsideposeleft.value != null &&
-  //       selectedsideposeright.value != null &&
-  //       selectedbackpose.value != null;
-  //   if (!hasMandatoryImages) {
-  //     showSnackBar("Please add all 5 mandatory cattle photos.", SNACK.FAILED);
-  //     return;
-  //   }
-  //   // ================= LEAD TYPE =================
-  //   String leadType = "tagging";
-  //   // RETAGGING FLOW
-  //   if (retagging == "retagging") {
-  //     leadType = "retagging";
-  //   }
-  //   // CLAIM FLOW
-  //   else if (isClaimFlow) {
-  //     leadType = "claim";
-  //   }
-  //   print("========== CATTLE SAVE DEBUG ==========");
-  //   print("LEAD TYPE => $leadType");
-  //   print("LEAD ID => $taggingId");
-  //   print("IS CLAIM FLOW => $isClaimFlow");
-  //   print("RETAGGING => $retagging");
-  //   print("=======================================");
-  //   isSubmitting = true;
-  //   update();
-  //   Get.dialog(
-  //     Center(
-  //       child: LoadingAnimationWidget.staggeredDotsWave(
-  //         color: Colors.white,
-  //         size: 60,
-  //       ),
-  //     ),
-  //     barrierDismissible: false,
-  //   );
-  //   final payload =
-  //       <String, dynamic>{
-  //         "leadId": taggingId.toString(),
-  //         "leadType": leadType,
-  //         "cattleIndex": completedCattleCount + 1,
-  //         "totalCattle": totalCattleCount,
-  //         "tagNumber": tagnumbercontroller.text.trim().isNotEmpty
-  //             ? tagnumbercontroller.text.trim()
-  //             : null,
-  //         "taggingDate": taggingdatecontroller.text.trim().isNotEmpty
-  //             ? taggingdatecontroller.text.trim()
-  //             : null,
-  //         "species": selectedSpeciesValue,
-  //         "breed": selectedbreedValue,
-  //         "bodyColor": selectedbodycolorValue,
-  //         "rightHorn": selectedrighthornValue,
-  //         "leftHorn": selectedlefthornValue,
-  //         "tailColor": selectedtailcolorValue,
-  //         "cattleAge": selectedAgeValue,
-  //         "idMark": selectedidmarkValue,
-  //         "milkPerDayLtr": _toNullableNumericString(milklittercontroller.text),
-  //         "lactation": _toNullableNumericString(buffalocountcontroller.text),
-  //         "sumInsured": _toNullableNumericString(buffalocountcontroller.text),
-  //         "marketValue": _toNullableNumericString(buffalomoneycontroller.text),
-  //         // ================= IMAGES =================
-  //         "earTagImage": selectedeartag.value != null
-  //             ? base64Encode(selectedeartag.value!.readAsBytesSync())
-  //             : null,
-  //         "headPoseImage": selectedheadpose.value != null
-  //             ? base64Encode(selectedheadpose.value!.readAsBytesSync())
-  //             : null,
-  //         "sidePoseLeftImage": selectedsideposeleft.value != null
-  //             ? base64Encode(selectedsideposeleft.value!.readAsBytesSync())
-  //             : null,
-  //         "sidePoseRightImage": selectedsideposeright.value != null
-  //             ? base64Encode(selectedsideposeright.value!.readAsBytesSync())
-  //             : null,
-  //         "backPoseImage": selectedbackpose.value != null
-  //             ? base64Encode(selectedbackpose.value!.readAsBytesSync())
-  //             : null,
-  //         "earCutPhoto": selectedearcut.value != null
-  //             ? base64Encode(selectedearcut.value!.readAsBytesSync())
-  //             : null,
-  //         "earBackSidePhoto": selectedearbackside.value != null
-  //             ? base64Encode(selectedearbackside.value!.readAsBytesSync())
-  //             : null,
-  //       }..removeWhere(
-  //         (_, value) => value == null || (value is String && value.isEmpty),
-  //       );
-  //   try {
-  //     final resp = await _cattleService.submitCattle(
-  //       token: token,
-  //       payload: payload,
-  //     );
-  //     final decoded = resp.body.isNotEmpty ? jsonDecode(resp.body) : {};
-  //     print("========== RESPONSE ==========");
-  //     print("STATUS => ${resp.statusCode}");
-  //     print("BODY => $decoded");
-  //     print("==============================");
-  //     if (resp.statusCode >= 200 &&
-  //         resp.statusCode < 300 &&
-  //         decoded['status'] == 'success') {
-  //       final nextCompleted = completedCattleCount + 1;
-  //       completedCattleCount = nextCompleted;
-  //       // ================= NEXT CATTLE =================
-  //       if (nextCompleted < totalCattleCount) {
-  //         showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
-  //         currentCattleIndex = nextCompleted + 1;
-  //         _resetCattleCaptureFormForNextStep();
-  //         update();
-  //       }
-  //       // ================= ALL DONE =================
-  //       else {
-  //         showSnackBar("All cattle completed.", SNACK.SUCCESS);
-  //         Get.offNamed(
-  //           routefarmerdetailspage,
-  //           arguments: {
-  //             "tagging": data,
-  //             "ischangepage": ischangepage,
-  //             "retagging": retagging,
-  //           },
-  //         );
-  //       }
-  //     } else {
-  //       showSnackBar(
-  //         decoded['message'] ?? 'Failed to save cattle.',
-  //         SNACK.FAILED,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print("========== ERROR ==========");
-  //     print(e.toString());
-  //     print("===========================");
-  //     showSnackBar("Unable to save cattle: ${e.toString()}", SNACK.FAILED);
-  //   } finally {
-  //     isSubmitting = false;
-  //     if (Get.isDialogOpen ?? false) {
-  //       Get.back();
-  //     }
-  //     update();
-  //   }
-  // }
-
   Future<void> _submitCattle({required bool isClaimFlow}) async {
     if (isSubmitting) return;
 
@@ -976,5 +888,15 @@ class CattleController extends GetxController {
     videopath1 = null;
     videopath2 = null;
     galleryFiles.clear();
+
+    // Auto set next cattle species & SI
+    if (cattleSequence.isNotEmpty &&
+        completedCattleCount < cattleSequence.length) {
+      final current = cattleSequence[completedCattleCount];
+
+      selectedSpeciesValue = current["species"];
+
+      sumInsuredController.text = current["sumInsured"] ?? "";
+    }
   }
 }

@@ -31,7 +31,7 @@ class Customcontainer extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: height ?? hp(7),
+        height: height ?? hp(6),
         width: width,
         decoration: BoxDecoration(
           color: color ?? AppColors.WHITE,

@@ -32,6 +32,7 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedbodycolorValue = null;
                 controller.selectedrighthornValue = null;
                 controller.selectedlefthornValue = null;
+                controller.updateSumInsuredBySpecies(value);
                 controller.update();
               },
             ),

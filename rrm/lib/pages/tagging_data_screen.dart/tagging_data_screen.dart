@@ -302,7 +302,7 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                             SizedBox(width: wp(2)),
                             Container(
-                              height: hp(7),
+                              height: hp(6),
                               decoration: BoxDecoration(
                                 color: AppColors.WHITE,
                                 borderRadius: BorderRadius.circular(10),
@@ -391,7 +391,7 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                             SizedBox(width: wp(2)),
                             Container(
-                              height: hp(7),
+                              height: hp(6),
                               decoration: BoxDecoration(
                                 color: AppColors.WHITE,
                                 borderRadius: BorderRadius.circular(10),
@@ -416,7 +416,7 @@ class TaggingDataScreen extends StatelessWidget {
                           children: [
                             Customcontainer(
                               context: context,
-                              text: "Buffalo",
+                              text: controller.species ?? "",
                               height: hp(4.5),
                               width: wp(30),
                               padding: EdgeInsets.only(
@@ -428,7 +428,7 @@ class TaggingDataScreen extends StatelessWidget {
                             Customcontainer(
                               width: wp(60),
                               context: context,
-                              text: "4123421554415",
+                              text: controller.tagnumberclaim ?? "",
                               height: hp(4.5),
                               padding: EdgeInsets.only(
                                 left: wp(2.5),
@@ -437,6 +437,135 @@ class TaggingDataScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                  controller.ischangepage == null
+                      ? SizedBox(height: hp(2))
+                      : SizedBox(),
+                  controller.ischangepage == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              width: wp(22),
+                              text: "Goat",
+                              textcolor: Colors.brown,
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 2,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.goatoreadOnly,
+                                controller: controller.goatcontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.brown,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 4,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.goatoreadOnly,
+                                controller: controller.goatmoneycontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.brown,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+
+                            Container(
+                              height: hp(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.WHITE,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  controller.goatoreadOnly =
+                                      !(controller.goatoreadOnly ?? false);
+                                  controller.update();
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: AppColors.DARK,
+                                  size: dp(context, 25),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(),
+                  controller.ischangepage == null
+                      ? SizedBox(height: hp(2))
+                      : SizedBox(),
+                  controller.ischangepage == null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Customcontainer(
+                              context: context,
+                              width: wp(22),
+                              text: "Sheep",
+                              textcolor: Colors.blue,
+                              padding: EdgeInsets.only(
+                                left: wp(2.5),
+                                right: wp(2.5),
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 2,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.sheepreadOnly,
+                                controller: controller.sheepcountcontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.blue,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Expanded(
+                              flex: 4,
+                              child: CustomTextField(
+                                textAlign: TextAlign.center,
+                                readOnly: controller.sheepreadOnly,
+                                controller: controller.sheepmoneycontroller,
+                                backgroundColor: AppColors.WHITE,
+                                inputtextcolor: Colors.blue,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(width: wp(2)),
+                            Container(
+                              height: hp(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.WHITE,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  controller.sheepreadOnly =
+                                      !(controller.sheepreadOnly ?? false);
+                                  controller.update();
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: AppColors.DARK,
+                                  size: dp(context, 25),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(),
                   controller.ischangepage == null
                       ? SizedBox()
                       : SizedBox(height: hp(2)),
