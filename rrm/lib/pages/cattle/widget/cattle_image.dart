@@ -13,8 +13,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Ear Tag",
-        childimage:
-            controller.selectedeartag.value != null
+        childimage: controller.selectedeartag.value != null
             ? Image.file(controller.selectedeartag.value!, fit: BoxFit.cover)
             : SizedBox(),
 
@@ -34,8 +33,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Head Pose",
-        childimage:
-            controller.selectedheadpose.value != null
+        childimage: controller.selectedheadpose.value != null
             ? Image.file(controller.selectedheadpose.value!, fit: BoxFit.cover)
             : SizedBox(),
         image: controller.ischangepage == null
@@ -54,8 +52,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Side Pose 1(Left)",
-        childimage:
-            controller.selectedsideposeleft.value != null
+        childimage: controller.selectedsideposeleft.value != null
             ? Image.file(
                 controller.selectedsideposeleft.value!,
                 fit: BoxFit.cover,
@@ -77,8 +74,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Side Pose 2(Right)",
-        childimage:
-            controller.selectedsideposeright.value != null
+        childimage: controller.selectedsideposeright.value != null
             ? Image.file(
                 controller.selectedsideposeright.value!,
                 fit: BoxFit.cover,
@@ -100,8 +96,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Back Pose",
-        childimage:
-            controller.selectedbackpose.value != null
+        childimage: controller.selectedbackpose.value != null
             ? Image.file(controller.selectedbackpose.value!, fit: BoxFit.cover)
             : SizedBox(),
         image: controller.ischangepage == null
@@ -162,8 +157,7 @@ iscattleimage({required BuildContext context, required controller}) {
               context: context,
               controller: controller,
               textdata: "Cut Ear",
-              childimage:
-                  controller.selectedearcut.value != null
+              childimage: controller.selectedearcut.value != null
                   ? Image.file(
                       controller.selectedearcut.value!,
                       fit: BoxFit.cover,
@@ -179,7 +173,7 @@ iscattleimage({required BuildContext context, required controller}) {
                 buttomsheet(
                   context: context,
                   controller: controller,
-                  isimage: 1,
+                  isimage: 11,
                 );
               },
             ),
@@ -194,8 +188,7 @@ iscattleimage({required BuildContext context, required controller}) {
               context: context,
               controller: controller,
               textdata: "Ear Back Side",
-              childimage:
-                  controller.selectedearbackside.value != null
+              childimage: controller.selectedearbackside.value != null
                   ? Image.file(
                       controller.selectedearbackside.value!,
                       fit: BoxFit.cover,
@@ -211,7 +204,7 @@ iscattleimage({required BuildContext context, required controller}) {
                 buttomsheet(
                   context: context,
                   controller: controller,
-                  isimage: 1,
+                  isimage: 12,
                 );
               },
             ),
@@ -224,8 +217,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Other",
-        childimage:
-            controller.selectedOther5.value != null
+        childimage: controller.selectedOther5.value != null
             ? Image.file(controller.selectedOther5.value!, fit: BoxFit.cover)
             : SizedBox(),
 
@@ -240,8 +232,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Other",
-        childimage:
-            controller.selectedOther1.value != null
+        childimage: controller.selectedOther1.value != null
             ? Image.file(controller.selectedOther1.value!, fit: BoxFit.cover)
             : SizedBox(),
 
@@ -256,8 +247,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Other",
-        childimage:
-            controller.selectedOther2.value != null
+        childimage: controller.selectedOther2.value != null
             ? Image.file(controller.selectedOther2.value!, fit: BoxFit.cover)
             : SizedBox(),
         onTap: () {
@@ -271,8 +261,7 @@ iscattleimage({required BuildContext context, required controller}) {
         context: context,
         controller: controller,
         textdata: "Other",
-        childimage:
-            controller.selectedOther3.value != null
+        childimage: controller.selectedOther3.value != null
             ? Image.file(controller.selectedOther3.value!, fit: BoxFit.cover)
             : SizedBox(),
         onTap: () {

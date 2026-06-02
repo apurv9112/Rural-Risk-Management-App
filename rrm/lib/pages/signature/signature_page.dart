@@ -15,7 +15,8 @@ import 'signature_controller.dart';
 class SignaturePage extends StatelessWidget {
   SignaturePage({super.key});
 
-  final controller = Get.put(SignatureControllerX());
+  // final controller = Get.put(SignatureControllerX());
+  final controller = Get.find<SignatureControllerX>();
 
   // dummy data
   final String ownerName = "Ramesh B Patel";
@@ -68,7 +69,7 @@ class SignaturePage extends StatelessWidget {
 
                         ElevatedButton.icon(
                           onPressed: () {
-                            Get.back();
+                            Navigator.pop(context);
                           },
                           icon: const Icon(Icons.check),
                           label: const Text("OK"),

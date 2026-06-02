@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
@@ -12,7 +11,6 @@ import 'package:rrm/services/cattle_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
-import 'package:http/http.dart' as http;
 
 class CattleController extends GetxController {
   final CattleService _cattleService = CattleService();
@@ -181,7 +179,6 @@ class CattleController extends GetxController {
     '6',
     '7',
   ];
-
   final List<String> breedItemsBuffalo = [
     'Mehsani',
     'Surati',
@@ -225,7 +222,6 @@ class CattleController extends GetxController {
     "Jamunapari",
     "Barbari",
   ];
-
   final List<String> bodycolorItemsBuffalo = ['Black', 'G.Black', 'Grey'];
   final List<String> bodycolorItemsCow = [
     'Black',
@@ -256,7 +252,6 @@ class CattleController extends GetxController {
     'Tan',
     'WHITE',
   ];
-
   final List<String> righthornItemsBuffalo = [
     'Sideward',
     'Downward',
@@ -287,7 +282,6 @@ class CattleController extends GetxController {
     'Sideward',
     'Scurs',
   ];
-
   final List<String> lefthornItemsBuffalo = [
     'Sideward',
     'Downward',
@@ -318,7 +312,6 @@ class CattleController extends GetxController {
     'Sideward',
     'Scurs',
   ];
-
   final List<String> tailcolorItems = ['Black', 'Gray', 'White', 'brown'];
   final List<String> idmarkItems = ['Star', 'Nil'];
   final List<String> milkdayItems = [
@@ -494,31 +487,73 @@ class CattleController extends GetxController {
     update();
   }
 
-  // camera video picker
-  int? isvideo = 0;
+  // // camera video picker
+  // int? isvideo = 0;
 
-  String? cameravideopath1;
-  String? cameravideopath2;
+  // String? cameravideopath1;
+  // String? cameravideopath2;
+
+  // void pickVideoFromCamera() async {
+  //   final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
+
+  //   if (pickedVideo != null) {
+  //     isvideo == 1
+  //         ? cameravideopath1 = pickedVideo.path
+  //         : isvideo == 2
+  //         ? cameravideopath2 = pickedVideo.path
+  //         : null;
+  //   }
+
+  //   // print("Selected video for isimage $isimage: ${pickedVideo?.path}");
+
+  //   update();
+  // }
+
+  // // Gallery video picker
+  // String? videopath1;
+  // String? videopath2;
+
+  // void pickVideoFromGallery() async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.video,
+  //     allowMultiple: false,
+  //   );
+
+  //   if (result != null && result.files.single.path != null) {
+  //     isvideo == 1
+  //         ? videopath1 = result.files.single.path!
+  //         : isvideo == 2
+  //         ? videopath2 = result.files.single.path!
+  //         : null;
+  //   }
+
+  //   update();
+  // }
+
+  int? isvideo = 0;
+  // Gallery video picker
+  String? videopath1;
+  String? videopath2;
+
+  // String? cameravideopath1;
+  // String? cameravideopath2;
 
   void pickVideoFromCamera() async {
     final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
 
     if (pickedVideo != null) {
       isvideo == 1
-          ? cameravideopath1 = pickedVideo.path
+          ? videopath1 = pickedVideo.path
           : isvideo == 2
-          ? cameravideopath2 = pickedVideo.path
+          ? videopath2 = pickedVideo.path
           : null;
     }
 
     // print("Selected video for isimage $isimage: ${pickedVideo?.path}");
-
+    print("CameraVideo 1 => $videopath1");
+    print("CameraVideo 2 => $videopath2");
     update();
   }
-
-  // Gallery video picker
-  String? videopath1;
-  String? videopath2;
 
   void pickVideoFromGallery() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -533,7 +568,8 @@ class CattleController extends GetxController {
           ? videopath2 = result.files.single.path!
           : null;
     }
-
+    print("galleryVideo 1 => $videopath1");
+    print("galleryVideo 2 => $videopath2");
     update();
   }
 
@@ -557,7 +593,7 @@ class CattleController extends GetxController {
 
     if (result != null) {
       galleryFiles.value = result.paths.map((path) => File(path!)).toList();
-      // print("Picked files: ${galleryFiles.value.map((f) => f.path)}");
+      print("Picked files: ${galleryFiles.value.map((f) => f.path)}");
     }
     update();
   }
@@ -645,7 +681,9 @@ class CattleController extends GetxController {
 
         "totalCattle": totalCattleCount.toString() ?? "",
 
-        "tagNumber": tagnumbercontroller.text.trim() ?? "",
+        "tagNumber": retagging == "retagging"
+            ? newtagnumbercontroller.text.trim()
+            : tagnumbercontroller.text.trim(),
 
         "taggingDate": taggingdatecontroller.text.trim() ?? "",
 
@@ -763,6 +801,7 @@ class CattleController extends GetxController {
 
       print("========== RESPONSE ==========");
       print("STATUS => ${resp.statusCode}");
+      print("STATUS11111 => ${resp.stream}");
       print("BODY => $decoded");
       print("==============================");
 
@@ -777,6 +816,8 @@ class CattleController extends GetxController {
           showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
 
           currentCattleIndex = nextCompleted + 1;
+
+          print("STATUS11111 resp  :::::  => $resp");
 
           _resetCattleCaptureFormForNextStep();
 
@@ -883,8 +924,8 @@ class CattleController extends GetxController {
     selectedOther4.value = null;
     selectedearcut.value = null;
     selectedearbackside.value = null;
-    cameravideopath1 = null;
-    cameravideopath2 = null;
+    // cameravideopath1 = null;
+    // cameravideopath2 = null;
     videopath1 = null;
     videopath2 = null;
     galleryFiles.clear();

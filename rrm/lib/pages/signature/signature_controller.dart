@@ -72,25 +72,17 @@ class SignatureControllerX extends GetxController {
       debugPrint("Customer Sign Saved => ${customerFile.path}");
       debugPrint("Worker Sign Saved => ${workerFile.path}");
 
-      Get.dialog(
-        Center(
-          child: Lottie.asset(
-            'assets/animations/cow.json',
-            width: wp(30),
-            height: hp(30),
-          ),
-        ),
-        barrierColor: Colors.black45,
-        barrierDismissible: false,
-      );
-
       Get.snackbar(
         "Success",
-        "Signatures saved successfully",
+        "Signatures Saved Successfully",
         backgroundColor: Colors.green,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
       );
-      Get.offNamed(routesignaturepage);
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      Get.offNamed(routefarmerdetailspage);
 
       // upload page open karvu hoy to ahi navigation muki sakay
       // Get.to(() => UploadPage());
