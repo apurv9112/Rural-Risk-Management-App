@@ -22,12 +22,14 @@ class TaggingDataScreen extends StatelessWidget {
     return GetBuilder<TaggingdataController>(
       init: TaggingdataController(),
       builder: (controller) {
-        final Map<String, dynamic> args =
-            (Get.arguments as Map<String, dynamic>?) ?? {};
-        controller.setInitialData(args);
-        controller.retagging = args["retagging"];
-        controller.ischangepage = args["isclaim"];
-        controller.manualtagging = args["manualtagging"];
+        final Map<String, dynamic>? args =
+            Get.arguments as Map<String, dynamic>?;
+        if (args != null && args.isNotEmpty) {
+          controller.setInitialData(args);
+          controller.retagging = args["retagging"];
+          controller.ischangepage = args["isclaim"];
+          controller.manualtagging = args["manualtagging"];
+        }
 
         final dataMap = controller.data as Map<String, dynamic>?;
         if (dataMap == null && controller.manualtagging != true) {

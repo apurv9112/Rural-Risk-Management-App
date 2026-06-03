@@ -259,10 +259,11 @@ class TaggingdataController extends GetxController {
       // print("controllerimage::::$isimage");
       // print("object  ::  ${selectedOther1.value}");
     }
-    update();
+    // update();
+    update(['cancelDialog']);
   }
 
-  void pickMultipleFromGallery() async {
+  void pickFromGallery() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false, // Only one for dropdown
@@ -277,7 +278,8 @@ class TaggingdataController extends GetxController {
           : null;
       // print("controllerimage::::$isimage");
     }
-    update();
+    // update();
+    update(['cancelDialog']);
   }
 
   // Udate lead API call //
