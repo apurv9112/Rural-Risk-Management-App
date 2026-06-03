@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:lottie/lottie.dart';
+import 'package:rrm/pages/tagging_data_screen.dart/widget/cancel.dart';
+import 'package:rrm/pages/tagging_data_screen.dart/widget/species.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
-import 'package:rrm/widgets/custom_camera_button.dart';
 import 'package:rrm/widgets/customappbar.dart';
 import 'package:rrm/widgets/customcontainer.dart';
 import 'package:rrm/widgets/text_field.dart';
@@ -30,7 +30,7 @@ class TaggingDataScreen extends StatelessWidget {
         controller.manualtagging = args["manualtagging"];
 
         final dataMap = controller.data as Map<String, dynamic>?;
-        if (dataMap == null) {
+        if (dataMap == null && controller.manualtagging != true) {
           return const Scaffold(
             body: Center(child: Text("No lead data provided.")),
           );
@@ -58,6 +58,10 @@ class TaggingDataScreen extends StatelessWidget {
               child: Column(
                 children: [
                   CustomTextField(
+                    hint: "Owner Name",
+                    hintStyle: TextStyle(
+                      color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                    ),
                     controller: controller.namecontroller,
                     backgroundColor: AppColors.WHITE,
                     inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -71,6 +75,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Mobile Number",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.mobilenumbercontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -101,6 +109,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Address",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.addresscontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -117,6 +129,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Village",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.villegcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -133,6 +149,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Taluk",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.talukcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -145,6 +165,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "District",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.districcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -161,6 +185,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Bank Name",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.banknamecontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -177,6 +205,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Branch",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.branchcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -193,6 +225,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Loan Account Number",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.loanacnocontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -209,6 +245,10 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          hint: "Insurance Company",
+                          hintStyle: TextStyle(
+                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                          ),
                           controller: controller.insurancecontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -220,352 +260,8 @@ class TaggingDataScreen extends StatelessWidget {
                   controller.ischangepage == null
                       ? SizedBox(height: hp(4))
                       : SizedBox(height: hp(2)),
-                  controller.ischangepage == null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              text: "Species",
-                              height: hp(4.5),
-                              width: wp(22),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Customcontainer(
-                              width: wp(16),
-                              context: context,
-                              text: "No",
-                              height: hp(4.5),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Customcontainer(
-                              context: context,
-                              width: wp(48),
-                              text: "Sum Insured",
-                              height: hp(4.5),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                          ],
-                        )
-                      : SizedBox(),
-                  controller.ischangepage == null
-                      ? SizedBox(height: hp(2))
-                      : SizedBox(),
-                  controller.ischangepage == null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              width: wp(22),
-                              text: "Buffalo",
-                              textcolor: Colors.deepPurple,
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                readOnly: controller.buffaloreadOnly,
-                                controller: controller.buffalocountcontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.deepPurple,
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 4,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.buffaloreadOnly,
-                                controller: controller.buffalomoneycontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.deepPurple,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Container(
-                              height: hp(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.WHITE,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  controller.buffaloreadOnly =
-                                      !(controller.buffaloreadOnly ?? false);
-                                  controller.update();
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: AppColors.DARK,
-                                  size: dp(context, 25),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              text: "Species",
-                              height: hp(4.5),
-                              width: wp(30),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Customcontainer(
-                              width: wp(60),
-                              context: context,
-                              text: controller.retagging != null
-                                  ? "Old Tag Number"
-                                  : "Tag Number",
-                              height: hp(4.5),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                  SizedBox(height: hp(2)),
-                  controller.ischangepage == null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              width: wp(22),
-                              text: "Cow",
-                              textcolor: Colors.redAccent,
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.cowreadOnly,
-                                controller: controller.cowcountcontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.redAccent,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 4,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.cowreadOnly,
-                                controller: controller.cowmoneycontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.redAccent,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Container(
-                              height: hp(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.WHITE,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  controller.cowreadOnly =
-                                      !(controller.cowreadOnly ?? false);
-                                  controller.update();
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: AppColors.DARK,
-                                  size: dp(context, 25),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              text: controller.species ?? "",
-                              height: hp(4.5),
-                              width: wp(30),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Customcontainer(
-                              width: wp(60),
-                              context: context,
-                              text: controller.tagnumberclaim ?? "",
-                              height: hp(4.5),
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                  controller.ischangepage == null
-                      ? SizedBox(height: hp(2))
-                      : SizedBox(),
-                  controller.ischangepage == null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              width: wp(22),
-                              text: "Goat",
-                              textcolor: Colors.brown,
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.goatoreadOnly,
-                                controller: controller.goatcontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.brown,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 4,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.goatoreadOnly,
-                                controller: controller.goatmoneycontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.brown,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-
-                            Container(
-                              height: hp(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.WHITE,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  controller.goatoreadOnly =
-                                      !(controller.goatoreadOnly ?? false);
-                                  controller.update();
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: AppColors.DARK,
-                                  size: dp(context, 25),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : SizedBox(),
-                  controller.ischangepage == null
-                      ? SizedBox(height: hp(2))
-                      : SizedBox(),
-                  controller.ischangepage == null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Customcontainer(
-                              context: context,
-                              width: wp(22),
-                              text: "Sheep",
-                              textcolor: Colors.blue,
-                              padding: EdgeInsets.only(
-                                left: wp(2.5),
-                                right: wp(2.5),
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.sheepreadOnly,
-                                controller: controller.sheepcountcontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.blue,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Expanded(
-                              flex: 4,
-                              child: CustomTextField(
-                                textAlign: TextAlign.center,
-                                readOnly: controller.sheepreadOnly,
-                                controller: controller.sheepmoneycontroller,
-                                backgroundColor: AppColors.WHITE,
-                                inputtextcolor: Colors.blue,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: wp(2)),
-                            Container(
-                              height: hp(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.WHITE,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  controller.sheepreadOnly =
-                                      !(controller.sheepreadOnly ?? false);
-                                  controller.update();
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: AppColors.DARK,
-                                  size: dp(context, 25),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : SizedBox(),
+                  ////////////////////////
+                  species(context: context, controller: controller),
                   controller.ischangepage == null
                       ? SizedBox()
                       : SizedBox(height: hp(2)),
@@ -714,299 +410,6 @@ class TaggingDataScreen extends StatelessWidget {
                           showDialogWithFields(
                             context: context,
                             controller: controller,
-                            title: Text(
-                              controller.ischangepage == null
-                                  ? "Lead Cancel"
-                                  : controller.retagging != null
-                                  ? "RT Cancel"
-                                  : "Claim Cancel",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: AppColors.PRIMARY_COLOR,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            content: SizedBox(
-                              height: hp(61),
-                              width: wp(70),
-                              child: GetBuilder<TaggingdataController>(
-                                builder: (controller) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      DropdownButtonFormField<String>(
-                                        value:
-                                            controller.selectedReasonDropdown,
-                                        decoration: InputDecoration(
-                                          hintText: "Select Reason",
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 8,
-                                          ),
-                                        ),
-                                        items:
-                                            (controller.ischangepage == null
-                                                    ? controller.taggingreasons
-                                                    : controller.retagging !=
-                                                          null
-                                                    ? controller
-                                                          .retaggingreasons
-                                                    : controller.claimreasons)
-                                                .map((reason) {
-                                                  return DropdownMenuItem<
-                                                    String
-                                                  >(
-                                                    value: reason,
-                                                    child: Text(reason),
-                                                  );
-                                                })
-                                                .toList(),
-                                        onChanged: (value) {
-                                          controller.selectedReasonDropdown =
-                                              value;
-                                          controller.update();
-                                        },
-                                      ),
-                                      SizedBox(height: hp(1)),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: wp(7)),
-                                        child: Text(
-                                          "Add Photo :",
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            color: AppColors.PRIMARY_COLOR,
-                                            fontSize: dp(context, 14),
-                                          ),
-                                        ),
-                                      ),
-
-                                      SizedBox(height: hp(1.5)),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              custombuttomsheet(
-                                                context: context,
-                                                controller: controller,
-                                                isimage: 1,
-                                              );
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsetsDirectional.symmetric(
-                                                    horizontal: wp(1),
-                                                    vertical: hp(0.5),
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color:
-                                                      AppColors.PRIMARY_COLOR,
-                                                  width: wp(0.5),
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child:
-                                                  controller
-                                                          .selectedOther1
-                                                          .value ==
-                                                      null
-                                                  ? Icon(
-                                                      Icons.camera_alt_outlined,
-                                                      color: AppColors
-                                                          .PRIMARY_COLOR,
-                                                      size: dp(context, 45),
-                                                    )
-                                                  : ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            dp(context, 8),
-                                                          ),
-                                                      child: Image.file(
-                                                        controller
-                                                            .selectedOther1
-                                                            .value!,
-                                                        fit: BoxFit.fill,
-                                                        height: hp(6),
-                                                        width: wp(13),
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
-                                          SizedBox(width: wp(2.5)),
-                                          GestureDetector(
-                                            onTap: () {
-                                              custombuttomsheet(
-                                                context: context,
-                                                controller: controller,
-                                                isimage: 2,
-                                              );
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsetsDirectional.symmetric(
-                                                    horizontal: wp(1),
-                                                    vertical: hp(0.5),
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color:
-                                                      AppColors.PRIMARY_COLOR,
-                                                  width: wp(0.5),
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child:
-                                                  controller
-                                                          .selectedOther2
-                                                          .value ==
-                                                      null
-                                                  ? Icon(
-                                                      Icons.camera_alt_outlined,
-                                                      color: AppColors
-                                                          .PRIMARY_COLOR,
-                                                      size: dp(context, 45),
-                                                    )
-                                                  : ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            dp(context, 8),
-                                                          ),
-                                                      child: Image.file(
-                                                        controller
-                                                            .selectedOther2
-                                                            .value!,
-                                                        fit: BoxFit.fill,
-                                                        height: hp(6),
-                                                        width: wp(13),
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
-                                          SizedBox(width: wp(2.5)),
-                                          GestureDetector(
-                                            onTap: () {
-                                              custombuttomsheet(
-                                                context: context,
-                                                controller: controller,
-                                                isimage: 3,
-                                              );
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsetsDirectional.symmetric(
-                                                    horizontal: wp(1),
-                                                    vertical: hp(0.5),
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color:
-                                                      AppColors.PRIMARY_COLOR,
-                                                  width: wp(0.5),
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child:
-                                                  controller
-                                                          .selectedOther3
-                                                          .value ==
-                                                      null
-                                                  ? Icon(
-                                                      Icons.camera_alt_outlined,
-                                                      color: AppColors
-                                                          .PRIMARY_COLOR,
-                                                      size: dp(context, 45),
-                                                    )
-                                                  : ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            dp(context, 8),
-                                                          ),
-                                                      child: Image.file(
-                                                        controller
-                                                            .selectedOther3
-                                                            .value!,
-                                                        fit: BoxFit.fill,
-                                                        height: hp(6),
-                                                        width: wp(13),
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                            actions: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Customcontainer(
-                                    onTap: () async {
-                                      print("YES BUTTON CLICKED");
-
-                                      if (controller.selectedReasonDropdown ==
-                                          null) {
-                                        Get.snackbar(
-                                          "Error",
-                                          "Please select reason",
-                                        );
-                                        return;
-                                      }
-
-                                      Get.back();
-
-                                      Get.dialog(
-                                        Center(
-                                          child: Lottie.asset(
-                                            'assets/animations/cow.json',
-                                            width: wp(30),
-                                            height: hp(30),
-                                          ),
-                                        ),
-                                        barrierColor: Colors.black45,
-                                        barrierDismissible: false,
-                                      );
-
-                                      print("CALLING API...");
-
-                                      await controller.cancelLeadUniversal();
-
-                                      if (Get.isDialogOpen ?? false) Get.back();
-                                    },
-                                    context: context,
-                                    width: wp(32),
-                                    text: "Yes",
-                                    textcolor: AppColors.WHITE,
-                                    color: Colors.red,
-                                  ),
-                                  SizedBox(width: wp(2)),
-                                  Customcontainer(
-                                    onTap: () {
-                                      Get.back();
-                                    },
-                                    width: wp(32),
-                                    context: context,
-                                    text: "No",
-                                    textcolor: AppColors.WHITE,
-                                    color: AppColors.PRIMARY_COLOR,
-                                  ),
-                                ],
-                              ),
-                            ],
                           );
                         },
                         context: context,
@@ -1026,10 +429,23 @@ class TaggingDataScreen extends StatelessWidget {
 
                           Get.dialog(
                             Center(
-                              child: Lottie.asset(
-                                'assets/animations/cow.json',
-                                width: wp(30),
-                                height: hp(30),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  LoadingAnimationWidget.staggeredDotsWave(
+                                    color: Colors.white,
+                                    size: 60,
+                                  ),
+                                  SizedBox(height: hp(0.5)),
+                                  Text(
+                                    "Please wait...",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: dp(context, 16),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             barrierColor: Colors.black45,
@@ -1066,79 +482,4 @@ class TaggingDataScreen extends StatelessWidget {
       },
     );
   }
-}
-
-void showDialogWithFields({
-  required BuildContext context,
-  required TaggingdataController controller,
-  Widget? title,
-  Widget? content,
-  List<Widget>? actions,
-}) {
-  showDialog(
-    context: context,
-    builder: (_) {
-      return AlertDialog(
-        titleTextStyle: TextStyle(
-          color: Colors.red,
-          fontSize: dp(context, 20),
-          fontStyle: FontStyle.italic,
-        ),
-        title:
-            title ??
-            Text(
-              controller.ischangepage == null
-                  ? "Lead Cancel"
-                  : controller.retagging != null
-                  ? "Retagging Cancel"
-                  : "Claim Cancel",
-              textAlign: TextAlign.center,
-            ),
-        content:
-            content ??
-            Text(
-              controller.ischangepage == null
-                  ? "Are You Sure You want to Cancel Lead."
-                  : controller.retagging != null
-                  ? "Are You Sure You want to Cancel Retagging."
-                  : "Are You Sure You want to Cancel Claim.",
-              textAlign: TextAlign.center,
-            ),
-        contentTextStyle: TextStyle(
-          fontSize: dp(context, 15),
-          color: AppColors.DARK,
-        ),
-        actions:
-            actions ??
-            [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Customcontainer(
-                    onTap: () {
-                      Get.offAllNamed(routehomepage);
-                    },
-                    context: context,
-                    width: wp(33),
-                    text: "Yes",
-                    textcolor: AppColors.WHITE,
-                    color: Colors.red,
-                  ),
-                  SizedBox(width: wp(2)),
-                  Customcontainer(
-                    onTap: () {
-                      Get.back();
-                    },
-                    width: wp(33),
-                    context: context,
-                    text: "No",
-                    textcolor: AppColors.WHITE,
-                    color: AppColors.PRIMARY_COLOR,
-                  ),
-                ],
-              ),
-            ],
-      );
-    },
-  );
 }

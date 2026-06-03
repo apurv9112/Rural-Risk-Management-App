@@ -10,7 +10,9 @@ class TaggingService {
 
   Future<http.Response> listAssigned({required String token}) {
     return _client.get(
-      Uri.parse("$baseUrl/field-worker/my-leads?leadType=tagging"),
+      Uri.parse(
+        "$baseUrl/field-worker/my-leads?status=Pending&leadType=tagging",
+      ),
       headers: _authHeaders(token),
     );
   }
@@ -66,10 +68,12 @@ class TaggingService {
     String status = "Attended",
   }) {
     return _client
-        .post(
-          Uri.parse("$baseUrl/tagging/search"),
+        .get(
+          // Uri.parse("$baseUrl/tagging/search"),
+          Uri.parse(
+            "$baseUrl/field-worker/database?database=all&page=1&limit=50&searchString=Tagging",
+          ),
           headers: _authHeaders(token),
-          body: jsonEncode({"status": status, "page": 1, "limit": 50}),
         )
         .timeout(const Duration(seconds: 30));
   }
@@ -80,7 +84,9 @@ class TaggingService {
   }) {
     return _client
         .post(
-          Uri.parse("$baseUrl/tagging/search"),
+          Uri.parse(
+            "$baseUrl/field-worker/database?database=all&page=1&limit=50&searchString=$searchString",
+          ),
           headers: _authHeaders(token),
           body: jsonEncode({
             "searchString": searchString,

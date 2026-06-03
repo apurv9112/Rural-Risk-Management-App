@@ -52,7 +52,9 @@ class Datadisplaypage extends StatelessWidget {
                       labeltext: controller.searchHint,
                       onchange: (value) {
                         if (value.isEmpty) {
-                          controller.filteredLeads = List.from(controller.completedLeads);
+                          controller.filteredLeads = List.from(
+                            controller.completedLeads,
+                          );
                           controller.update();
                         }
                       },
@@ -81,7 +83,11 @@ class Datadisplaypage extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.download, color: AppColors.PRIMARY_COLOR, size: dp(context, 18)),
+                                Icon(
+                                  Icons.download,
+                                  color: AppColors.PRIMARY_COLOR,
+                                  size: dp(context, 18),
+                                ),
                                 SizedBox(width: wp(1)),
                                 Text(
                                   "Download All",
@@ -123,7 +129,9 @@ class Datadisplaypage extends StatelessWidget {
                         physics: const BouncingScrollPhysics(),
                         itemCount: controller.filteredLeads.length,
                         itemBuilder: (context, i) {
-                          final lead = controller.filteredLeads[i] as Map<String, dynamic>;
+                          final lead =
+                              controller.filteredLeads[i]
+                                  as Map<String, dynamic>;
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -132,9 +140,8 @@ class Datadisplaypage extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => OwnerDatadisplaypage(
-                                        dataList: lead,
-                                      ),
+                                      builder: (context) =>
+                                          OwnerDatadisplaypage(dataList: lead),
                                     ),
                                   );
                                 },
@@ -178,24 +185,39 @@ class Datadisplaypage extends StatelessWidget {
                                           children: [
                                             SizedBox(height: hp(0.5)),
                                             Text(
-                                              (lead["ownerName"] ?? lead["name"] ?? "").toString(),
+                                              (lead["ownerName"] ??
+                                                      lead["nameOfBeneficiary"] ??
+                                                      lead["name"] ??
+                                                      "")
+                                                  .toString(),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             SizedBox(height: hp(0.5)),
                                             Text(
-                                              (lead["mobileNo"] ?? lead["mobile"] ?? "").toString(),
+                                              (lead["mobileNo"] ??
+                                                      lead["phoneNo"] ??
+                                                      lead["mobile"] ??
+                                                      "")
+                                                  .toString(),
                                             ),
                                             SizedBox(height: hp(0.5)),
                                             Text(
-                                              (lead["village"] ?? "").toString(),
+                                              (lead["village"] ?? "")
+                                                  .toString(),
                                             ),
                                             SizedBox(height: hp(0.5)),
                                             Text(
-                                              (lead["taluko"] ?? "").toString(),
+                                              (lead["taluko"] ??
+                                                      lead["taluka"] ??
+                                                      "")
+                                                  .toString(),
                                             ),
                                             SizedBox(height: hp(0.5)),
                                             Text(
-                                              (lead["insuranceCompanyName"] ?? lead["Insurance"] ?? "").toString(),
+                                              (lead["insuranceCompanyName"] ??
+                                                      lead["Insurance"] ??
+                                                      "")
+                                                  .toString(),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ],
@@ -204,7 +226,9 @@ class Datadisplaypage extends StatelessWidget {
                                       // Download certificate icon
                                       GestureDetector(
                                         onTap: () {
-                                          final id = (lead["_id"] ?? lead["id"] ?? "").toString();
+                                          final id =
+                                              (lead["_id"] ?? lead["id"] ?? "")
+                                                  .toString();
                                           if (id.isNotEmpty) {
                                             controller.downloadCertificate(id);
                                           }

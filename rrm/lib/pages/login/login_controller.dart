@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/device_controller.dart';
@@ -30,10 +31,9 @@ class LoginController extends GetxController {
 
     Get.dialog(
       Center(
-        child: Lottie.asset(
-          'assets/animations/cow.json',
-          width: wp(30),
-          height: hp(30),
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
         ),
       ),
       barrierColor: Colors.black45,

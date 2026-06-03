@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/tagging_service.dart';
-import 'package:rrm/utils/enum_utils.dart';
-import 'package:rrm/widgets/snackbar_widget.dart';
 
 class TaggingController extends GetxController {
   final AppController appController = Get.find();
@@ -32,7 +30,7 @@ class TaggingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _fetchInitialData();
+    fetchInitialData();
 
     scrollController.addListener(() {
       debugPrint("SCROLL: ${scrollController.position.pixels}");
@@ -46,12 +44,64 @@ class TaggingController extends GetxController {
     });
   }
 
+  bool isSearching = false;
+
+  bool hasSearchValue() {
+    return mobilecontroller.text.trim().isNotEmpty ||
+        loanaccoutnumbercontroller.text.trim().isNotEmpty ||
+        nameofcattleownercontroller.text.trim().isNotEmpty ||
+        villagecontroller.text.trim().isNotEmpty ||
+        talukacontroller.text.trim().isNotEmpty ||
+        distcontroller.text.trim().isNotEmpty;
+  }
+
   /// Fetch all assigned taggings when the screen first opens.
-  Future<void> _fetchInitialData() async {
+  // Future<void> fetchInitialData() async {
+  //   final String token = appController.token.value;
+  //   if (token.isEmpty) return;
+
+  //   isLoading = true;
+  //   update();
+
+  //   try {
+  //     final response = await _taggingService.listAssigned(token: token);
+
+  //     final decoded = jsonDecode(response.body);
+
+  //     if (response.statusCode >= 200 &&
+  //         response.statusCode < 300 &&
+  //         decoded["status"] == "success") {
+  //       taggings =
+  //           decoded["data"]?["leads"]?["tagging"] ??
+  //           decoded["data"]?["taggings"] ??
+  //           [];
+  //       listshow = false; // Add this line
+
+  //       if (taggings.isNotEmpty) {
+  //         final first = taggings[0];
+  //         debugPrint("=== TAGGING API RESPONSE (first lead) ===");
+  //         debugPrint("sumInsuredCow: ${first['sumInsuredCow']}");
+  //         debugPrint("sumInsuredBuffalo: ${first['sumInsuredBuffalo']}");
+  //         debugPrint("numberOfCow: ${first['numberOfCow']}");
+  //         debugPrint("numberOfBuffalo: ${first['numberOfBuffalo']}");
+  //         debugPrint("All keys: ${first.keys.toList()}");
+  //         debugPrint("=========================================");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Initial tagging fetch error: $e");
+  //   } finally {
+  //     isLoading = false;
+  //     update();
+  //   }
+  // }
+
+  Future<void> fetchInitialData() async {
     final String token = appController.token.value;
     if (token.isEmpty) return;
 
     isLoading = true;
+    isSearching = false;
     update();
 
     try {
@@ -66,18 +116,9 @@ class TaggingController extends GetxController {
             decoded["data"]?["leads"]?["tagging"] ??
             decoded["data"]?["taggings"] ??
             [];
-        // listshow = false;
 
-        if (taggings.isNotEmpty) {
-          final first = taggings[0];
-          debugPrint("=== TAGGING API RESPONSE (first lead) ===");
-          debugPrint("sumInsuredCow: ${first['sumInsuredCow']}");
-          debugPrint("sumInsuredBuffalo: ${first['sumInsuredBuffalo']}");
-          debugPrint("numberOfCow: ${first['numberOfCow']}");
-          debugPrint("numberOfBuffalo: ${first['numberOfBuffalo']}");
-          debugPrint("All keys: ${first.keys.toList()}");
-          debugPrint("=========================================");
-        }
+        listshow = false;
+        hasMoreData = false;
       }
     } catch (e) {
       debugPrint("Initial tagging fetch error: $e");

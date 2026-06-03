@@ -17,12 +17,12 @@ class SplashController extends GetxController {
   }
 
   Future<void> _startSplash() async {
-    try {
-      await _audioPlayer.setVolume(1);
-      await _audioPlayer.play(AssetSource('sounds/cow.mp3'));
-    } catch (e) {
-      print("Sound error: $e");
-    }
+    // try {
+    //   await _audioPlayer.setVolume(1);
+    //   await _audioPlayer.play(AssetSource('sounds/cow.mp3'));
+    // } catch (e) {
+    //   print("Sound error: $e");
+    // }
 
     await Future.delayed(const Duration(seconds: 3));
 

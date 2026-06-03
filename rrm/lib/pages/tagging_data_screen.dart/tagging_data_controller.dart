@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/cancel_lead_service.dart';
 // import 'package:rrm/services/claim_service.dart';
@@ -52,11 +53,38 @@ class TaggingdataController extends GetxController {
   String? selectedReasonDropdown;
   bool _fieldsInitialized = false;
   List<Uint8List> imageBytesList = [];
+
   void setInitialData(Map<String, dynamic> args) {
     if (data != null) return;
 
-    data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+    manualtagging = args["manualtagging"] ?? false;
+
+    if (manualtagging == true) {
+      data = {
+        "ownerName": "",
+        "mobileNo": "",
+        "address": "",
+        "village": "",
+        "taluko": "",
+        "district": "",
+        "bankName": "",
+        "branchOfBank": "",
+        "loanAccountNo": "",
+        "insuranceCompanyName": "",
+        "numberOfBuffalo": "",
+        "numberOfCow": "",
+        "sumInsuredBuffalo": "",
+        "sumInsuredCow": "",
+      };
+    } else {
+      data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+    }
   }
+  // void setInitialData(Map<String, dynamic> args) {
+  //   if (data != null) return;
+
+  //   data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+  // }
 
   void initFieldsFromData(Map<String, dynamic> dataMap, BuildContext context) {
     if (_fieldsInitialized) return;
@@ -313,7 +341,13 @@ class TaggingdataController extends GetxController {
     try {
       // ✅ ONLY ONE LOADER
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierColor: Colors.black45,
         barrierDismissible: false,
       );
 

@@ -10,7 +10,9 @@ class RetaggingService {
 
   Future<http.Response> listAssigned({required String token}) {
     return _client.get(
-      Uri.parse("$baseUrl/field-worker/my-leads?leadType=retagging"),
+      Uri.parse(
+        "$baseUrl/field-worker/my-leads?status=Pending&leadType=retagging",
+      ),
       headers: _authHeaders(token),
     );
   }

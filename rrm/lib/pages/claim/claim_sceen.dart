@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rrm/pages/claim/claim_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
@@ -32,10 +33,9 @@ class ClaimScreen extends StatelessWidget {
           ),
           body: controller.isLoading
               ? Center(
-                  child: Lottie.asset(
-                    'assets/animations/cow.json',
-                    width: wp(30),
-                    height: hp(30),
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.white,
+                    size: 60,
                   ),
                 )
               : controller.leads.isEmpty

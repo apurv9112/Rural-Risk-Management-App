@@ -10,7 +10,7 @@ class ClaimService {
 
   Future<http.Response> listAssigned({required String token}) {
     return _client.get(
-      Uri.parse("$baseUrl/field-worker/my-leads?leadType=claim"),
+      Uri.parse("$baseUrl/field-worker/my-leads?status=Pending&leadType=claim"),
       headers: _authHeaders(token),
     );
   }
@@ -41,7 +41,8 @@ class ClaimService {
     return _client
         .get(
           Uri.parse(
-            "$baseUrl/field-worker/my-leads?leadType=claim&status=$status",
+            // "$baseUrl/field-worker/my-leads?leadType=claim&status=$status",
+            "$baseUrl/field-worker/database?database=all&page=1&limit=50&searchString=",
           ),
           headers: _authHeaders(token),
         )
