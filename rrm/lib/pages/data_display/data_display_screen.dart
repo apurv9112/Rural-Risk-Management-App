@@ -69,7 +69,7 @@ class Datadisplaypage extends StatelessWidget {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: () => controller.downloadAllCertificates(),
+                          // onTap: () => controller.downloadAllCertificates(),
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: wp(4),
@@ -214,8 +214,7 @@ class Datadisplaypage extends StatelessWidget {
                                             ),
                                             SizedBox(height: hp(0.5)),
                                             Text(
-                                              (lead["insuranceCompanyName"] ??
-                                                      lead["Insurance"] ??
+                                              (lead["insuranceCompanyNameAddress"] ??
                                                       "")
                                                   .toString(),
                                               overflow: TextOverflow.ellipsis,
@@ -227,10 +226,10 @@ class Datadisplaypage extends StatelessWidget {
                                       GestureDetector(
                                         onTap: () {
                                           final id =
-                                              (lead["_id"] ?? lead["id"] ?? "")
+                                              (lead["id"] ?? lead["_id"] ?? "")
                                                   .toString();
                                           if (id.isNotEmpty) {
-                                            controller.downloadCertificate(id);
+                                            // controller.downloadCertificate(id);
                                           }
                                         },
                                         child: Icon(

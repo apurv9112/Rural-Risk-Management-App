@@ -36,13 +36,12 @@ class ClaimService {
 
   Future<http.Response> completed({
     required String token,
-    String status = "Attended",
+    String database = "claim",
   }) {
     return _client
         .get(
           Uri.parse(
-            // "$baseUrl/field-worker/my-leads?leadType=claim&status=$status",
-            "$baseUrl/field-worker/database?database=all&page=1&limit=50&searchString=",
+            "$baseUrl/field-worker/database?database=$database&page=1&limit=50&searchString=",
           ),
           headers: _authHeaders(token),
         )
@@ -52,32 +51,16 @@ class ClaimService {
   Future<http.Response> searchCompleted({
     required String token,
     required String searchString,
+    String database = "claim",
   }) {
     return _client
         .get(
           Uri.parse(
-            "$baseUrl/field-worker/my-leads?leadType=claim&status=Attended",
+            "$baseUrl/field-worker/database?database=$database&page=1&limit=50&searchString=$searchString",
           ),
           headers: _authHeaders(token),
         )
         .timeout(const Duration(seconds: 30));
-  }
-
-  Future<http.Response> downloadCertificate({
-    required String token,
-    required String id,
-  }) {
-    return _client.get(
-      Uri.parse("$baseUrl/claim/claim-certificate/$id"),
-      headers: _authHeaders(token),
-    );
-  }
-
-  Future<http.Response> downloadAllCertificates({required String token}) {
-    return _client.get(
-      Uri.parse("$baseUrl/claim/claim-certificate/all"),
-      headers: _authHeaders(token),
-    );
   }
 
   Map<String, String> _authHeaders(String token) => {

@@ -65,13 +65,12 @@ class TaggingService {
 
   Future<http.Response> completed({
     required String token,
-    String status = "Attended",
+    String database = "tagging",
   }) {
     return _client
         .get(
-          // Uri.parse("$baseUrl/tagging/search"),
           Uri.parse(
-            "$baseUrl/field-worker/database?database=all&page=1&limit=50&searchString=Tagging",
+            "$baseUrl/field-worker/database?database=$database&page=1&limit=50&searchString=",
           ),
           headers: _authHeaders(token),
         )
@@ -81,38 +80,16 @@ class TaggingService {
   Future<http.Response> searchCompleted({
     required String token,
     required String searchString,
+    String database = "tagging",
   }) {
     return _client
-        .post(
+        .get(
           Uri.parse(
-            "$baseUrl/field-worker/database?database=all&page=1&limit=50&searchString=$searchString",
+            "$baseUrl/field-worker/database?database=$database&page=1&limit=50&searchString=$searchString",
           ),
           headers: _authHeaders(token),
-          body: jsonEncode({
-            "searchString": searchString,
-            "status": "Attended",
-            "page": 1,
-            "limit": 50,
-          }),
         )
         .timeout(const Duration(seconds: 30));
-  }
-
-  Future<http.Response> downloadHealthCertificate({
-    required String token,
-    required String id,
-  }) {
-    return _client.get(
-      Uri.parse("$baseUrl/tagging/health-certificate/$id"),
-      headers: _authHeaders(token),
-    );
-  }
-
-  Future<http.Response> downloadAllHealthCertificates({required String token}) {
-    return _client.get(
-      Uri.parse("$baseUrl/tagging/health-certificate/all"),
-      headers: _authHeaders(token),
-    );
   }
 
   Map<String, String> _authHeaders(String token) => {

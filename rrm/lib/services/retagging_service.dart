@@ -38,50 +38,31 @@ class RetaggingService {
 
   Future<http.Response> completed({
     required String token,
-    String status = "Attended",
+    String database = "retagging",
   }) {
-    return _client.post(
-      Uri.parse("$baseUrl/retagging/search"),
-      headers: _authHeaders(token),
-      body: jsonEncode({"status": status, "page": 1, "limit": 50}),
-    );
+    return _client
+        .get(
+          Uri.parse(
+            "$baseUrl/field-worker/database?database=$database&page=1&limit=50&searchString=",
+          ),
+          headers: _authHeaders(token),
+        )
+        .timeout(const Duration(seconds: 30));
   }
 
   Future<http.Response> searchCompleted({
     required String token,
     required String searchString,
+    String database = "retagging",
   }) {
-    return _client.post(
-      Uri.parse("$baseUrl/retagging/search"),
-      headers: _authHeaders(token),
-      body: jsonEncode({
-        "searchString": searchString,
-        "status": "Attended",
-        "page": 1,
-        "limit": 50,
-      }),
-    );
-  }
-
-  Future<http.Response> downloadCertificate({
-    required String token,
-    required String id,
-  }) {
-    return _client.post(
-      Uri.parse("$baseUrl/retagging/export"),
-      headers: _authHeaders(token),
-      body: jsonEncode({
-        "ids": [id],
-      }),
-    );
-  }
-
-  Future<http.Response> downloadAllCertificates({required String token}) {
-    return _client.post(
-      Uri.parse("$baseUrl/retagging/export"),
-      headers: _authHeaders(token),
-      body: jsonEncode({"ids": []}),
-    );
+    return _client
+        .get(
+          Uri.parse(
+            "$baseUrl/field-worker/database?database=$database&page=1&limit=50&searchString=$searchString",
+          ),
+          headers: _authHeaders(token),
+        )
+        .timeout(const Duration(seconds: 30));
   }
 
   Map<String, String> _authHeaders(String token) => {

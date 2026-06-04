@@ -49,12 +49,13 @@ class OwnerDatadisplaypage extends StatelessWidget {
                     datarow(
                       context: context,
                       staticdata: "Name - ",
-                      listdata: (dataList["ownerName"] ?? dataList["name"] ?? "").toString(),
+                      listdata: (dataList["nameOfBeneficiary"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Mobile - ",
-                      listdata: (dataList["mobileNo"] ?? dataList["mobile"] ?? "").toString(),
+                      listdata: (dataList["phoneNo"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
@@ -64,32 +65,40 @@ class OwnerDatadisplaypage extends StatelessWidget {
                     datarow(
                       context: context,
                       staticdata: "Taluko - ",
-                      listdata: (dataList["taluko"] ?? "").toString(),
+                      listdata: (dataList["taluka"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Dist - ",
-                      listdata: (dataList["district"] ?? dataList["dist"] ?? "").toString(),
+                      listdata: (dataList["district"] ?? dataList["dist"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Bank - ",
-                      listdata: (dataList["bankName"] ?? dataList["bank"] ?? "").toString(),
+                      listdata: (dataList["insuredNameFinancingBank"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Branch - ",
-                      listdata: (dataList["branchOfBank"] ?? dataList["branch"] ?? "").toString(),
+                      listdata: (dataList["proposalLoanAccountNo"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Loan A/C No - ",
-                      listdata: (dataList["loanAccountNo"] ?? dataList["loan_a/c_no"] ?? "").toString(),
+                      listdata:
+                          (dataList["loanAccountNo"] ??
+                                  dataList["loan_a/c_no"] ??
+                                  "")
+                              .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Insurance - ",
-                      listdata: (dataList["insuranceCompanyName"] ?? dataList["Insurance"] ?? "").toString(),
+                      listdata: (dataList["insuranceCompanyNameAddress"] ?? "")
+                          .toString(),
                     ),
 
                     Row(
@@ -154,126 +163,61 @@ class OwnerDatadisplaypage extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: hp(1)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(width: wp(1)),
-                        SizedBox(
-                          width: wp(5),
-                          child: Text(
-                            "1",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(19),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: (dataList["cattle"] ?? []).length,
+                      itemBuilder: (context, index) {
+                        final cattle = dataList["cattle"][index];
 
-                          child: Text(
-                            "986521\n478945",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: hp(1)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(width: wp(1)),
+                              SizedBox(
+                                width: wp(5),
+                                child: Text(
+                                  "${index + 1}",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(5)),
+                              SizedBox(
+                                width: wp(19),
+                                child: Text(
+                                  (cattle["tagNo"] ?? "").toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(5)),
+                              SizedBox(
+                                width: wp(15),
+                                child: Text(
+                                  (cattle["animalSpecies"] ?? "").toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(4)),
+                              SizedBox(
+                                width: wp(18),
+                                child: Text(
+                                  (cattle["sumInsured"] ?? "").toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(5)),
+                              Image.asset(
+                                "assets/images/download.png",
+                                scale: dp(context, 16),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(15),
-                          child: Text(
-                            "Cow",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(4)),
-                        SizedBox(
-                          width: wp(18),
-                          child: Text(
-                            "45000",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        Image.asset(
-                          "assets/images/download.png",
-                          scale: dp(context, 16),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(1)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(width: wp(1)),
-                        SizedBox(
-                          width: wp(5),
-                          child: Text(
-                            "2",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(19),
-                          child: Text(
-                            "412587\n986325",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(15),
-                          child: Text(
-                            "Buffalo",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(4)),
-                        SizedBox(
-                          width: wp(18),
-                          child: Text(
-                            "50000",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        Image.asset(
-                          "assets/images/download.png",
-                          scale: dp(context, 16),
-                        ),
-                      ],
+                        );
+                      },
                     ),
 
-                    SizedBox(height: hp(15)),
                     customcontainer(
                       padding: EdgeInsets.symmetric(
                         horizontal: wp(0),

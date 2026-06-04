@@ -356,92 +356,92 @@ class DatadisplayController extends GetxController {
     return null;
   }
 
-  Future<void> downloadCertificate(String id) async {
-    final String token = appController.token.value;
-    if (token.isEmpty) return;
+  // Future<void> downloadCertificate(String id) async {
+  //   final String token = appController.token.value;
+  //   if (token.isEmpty) return;
 
-    try {
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
+  //   try {
+  //     Get.dialog(
+  //       const Center(child: CircularProgressIndicator()),
+  //       barrierDismissible: false,
+  //     );
 
-      late final http.Response response;
-      switch (dataType) {
-        case "claimdata":
-          response = await _claimService.downloadCertificate(
-            token: token,
-            id: id,
-          );
-          break;
-        case "retaggingdata":
-          response = await _retaggingService.downloadCertificate(
-            token: token,
-            id: id,
-          );
-          break;
-        default:
-          response = await _taggingService.downloadHealthCertificate(
-            token: token,
-            id: id,
-          );
-      }
+  //     late final http.Response response;
+  //     switch (dataType) {
+  //       case "claimdata":
+  //         response = await _claimService.downloadCertificate(
+  //           token: token,
+  //           id: id,
+  //         );
+  //         break;
+  //       case "retaggingdata":
+  //         response = await _retaggingService.downloadCertificate(
+  //           token: token,
+  //           id: id,
+  //         );
+  //         break;
+  //       default:
+  //         response = await _taggingService.downloadHealthCertificate(
+  //           token: token,
+  //           id: id,
+  //         );
+  //     }
 
-      if (Get.isDialogOpen ?? false) Get.back();
+  //     if (Get.isDialogOpen ?? false) Get.back();
 
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        showSnackBar("Certificate downloaded successfully", SNACK.SUCCESS);
-      } else {
-        final decoded = jsonDecode(response.body);
-        showSnackBar(decoded["message"] ?? "Download failed", SNACK.FAILED);
-      }
-    } catch (e) {
-      if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("Download certificate error: $e");
-      showSnackBar("Download failed. Try again.", SNACK.FAILED);
-    }
-  }
+  //     if (response.statusCode >= 200 && response.statusCode < 300) {
+  //       showSnackBar("Certificate downloaded successfully", SNACK.SUCCESS);
+  //     } else {
+  //       final decoded = jsonDecode(response.body);
+  //       showSnackBar(decoded["message"] ?? "Download failed", SNACK.FAILED);
+  //     }
+  //   } catch (e) {
+  //     if (Get.isDialogOpen ?? false) Get.back();
+  //     debugPrint("Download certificate error: $e");
+  //     showSnackBar("Download failed. Try again.", SNACK.FAILED);
+  //   }
+  // }
 
-  Future<void> downloadAllCertificates() async {
-    final String token = appController.token.value;
-    if (token.isEmpty) return;
+  // Future<void> downloadAllCertificates() async {
+  //   final String token = appController.token.value;
+  //   if (token.isEmpty) return;
 
-    try {
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
+  //   try {
+  //     Get.dialog(
+  //       const Center(child: CircularProgressIndicator()),
+  //       barrierDismissible: false,
+  //     );
 
-      late final http.Response response;
-      switch (dataType) {
-        case "claimdata":
-          response = await _claimService.downloadAllCertificates(token: token);
-          break;
-        case "retaggingdata":
-          response = await _retaggingService.downloadAllCertificates(
-            token: token,
-          );
-          break;
-        default:
-          response = await _taggingService.downloadAllHealthCertificates(
-            token: token,
-          );
-      }
+  //     late final http.Response response;
+  //     switch (dataType) {
+  //       case "claimdata":
+  //         response = await _claimService.downloadAllCertificates(token: token);
+  //         break;
+  //       case "retaggingdata":
+  //         response = await _retaggingService.downloadAllCertificates(
+  //           token: token,
+  //         );
+  //         break;
+  //       default:
+  //         response = await _taggingService.downloadAllHealthCertificates(
+  //           token: token,
+  //         );
+  //     }
 
-      if (Get.isDialogOpen ?? false) Get.back();
+  //   if (Get.isDialogOpen ?? false) Get.back();
 
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        showSnackBar("All certificates downloaded successfully", SNACK.SUCCESS);
-      } else {
-        final decoded = jsonDecode(response.body);
-        showSnackBar(decoded["message"] ?? "Download failed", SNACK.FAILED);
-      }
-    } catch (e) {
-      if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("Download all certificates error: $e");
-      showSnackBar("Download failed. Try again.", SNACK.FAILED);
-    }
-  }
+  //   if (response.statusCode >= 200 && response.statusCode < 300) {
+  //     showSnackBar("All certificates downloaded successfully", SNACK.SUCCESS);
+  //   } else {
+  //     final decoded = jsonDecode(response.body);
+  //     showSnackBar(decoded["message"] ?? "Download failed", SNACK.FAILED);
+  //   }
+  // } catch (e) {
+  //   if (Get.isDialogOpen ?? false) Get.back();
+  //   debugPrint("Download all certificates error: $e");
+  //   showSnackBar("Download failed. Try again.", SNACK.FAILED);
+  // }
+  // }
 
   @override
   void onClose() {
