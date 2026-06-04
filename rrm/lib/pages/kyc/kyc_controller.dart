@@ -12,6 +12,8 @@ import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
+import 'package:rrm/services/image_processing_service.dart';
+import 'package:rrm/services/camera_service.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
@@ -42,8 +44,6 @@ class KycController extends GetxController {
   Rx<File?> selectedOther4 = Rx<File?>(null);
   Rx<File?> selectedOther5 = Rx<File?>(null);
 
-  final ImagePicker _picker = ImagePicker();
-
   @override
   void onInit() {
     super.onInit();
@@ -71,10 +71,20 @@ class KycController extends GetxController {
   // ================= IMAGE PICKER =================
 
   void pickFromCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await CameraService.captureImage();
 
     if (pickedFile != null) {
       File file = File(pickedFile.path);
+
+      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      try {
+        file = await ImageProcessingService.processImage(file);
+      } catch(e) {
+        print("Image processing error: $e");
+      }
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
 
       switch (isimage) {
         case 1:
@@ -120,6 +130,16 @@ class KycController extends GetxController {
 
     if (result != null && result.files.single.path != null) {
       File file = File(result.files.single.path!);
+
+      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      try {
+        file = await ImageProcessingService.processImage(file);
+      } catch(e) {
+        print("Image processing error: $e");
+      }
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
 
       switch (isimage) {
         case 1:

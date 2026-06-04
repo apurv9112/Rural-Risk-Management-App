@@ -10,8 +10,11 @@ import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
-import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
+import 'package:rrm/services/location_service.dart';
+import 'package:rrm/services/image_processing_service.dart';
+import 'package:rrm/services/image_watermark_service.dart';
+import 'package:rrm/services/camera_service.dart';
 
 class CattleController extends GetxController {
   final CattleService _cattleService = CattleService();
@@ -420,32 +423,50 @@ class CattleController extends GetxController {
 
   //image  picker
   void pickFromCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final position = await LocationService.getCurrentLocation();
+    if (position == null) {
+      return;
+    }
+
+    final pickedFile = await CameraService.captureImage();
     if (pickedFile != null) {
+      File file = File(pickedFile.path);
+
+      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      try {
+        file = await ImageProcessingService.processImage(file);
+        file = await ImageWatermarkService.addWatermark(file, position);
+      } catch(e) {
+        print("Image processing error: $e");
+      }
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
       isimage == 1
-          ? selectedeartag.value = File(pickedFile.path)
+          ? selectedeartag.value = file
           : isimage == 2
-          ? selectedheadpose.value = File(pickedFile.path)
+          ? selectedheadpose.value = file
           : isimage == 3
-          ? selectedsideposeleft.value = File(pickedFile.path)
+          ? selectedsideposeleft.value = file
           : isimage == 4
-          ? selectedsideposeright.value = File(pickedFile.path)
+          ? selectedsideposeright.value = file
           : isimage == 5
-          ? selectedbackpose.value = File(pickedFile.path)
+          ? selectedbackpose.value = file
           : isimage == 6
-          ? selectedOther5.value = File(pickedFile.path)
+          ? selectedOther5.value = file
           : isimage == 7
-          ? selectedOther1.value = File(pickedFile.path)
+          ? selectedOther1.value = file
           : isimage == 8
-          ? selectedOther2.value = File(pickedFile.path)
+          ? selectedOther2.value = file
           : isimage == 9
-          ? selectedOther3.value = File(pickedFile.path)
+          ? selectedOther3.value = file
           : isimage == 10
-          ? selectedOther4.value = File(pickedFile.path)
+          ? selectedOther4.value = file
           : isimage == 11
-          ? selectedearcut.value = File(pickedFile.path)
+          ? selectedearcut.value = file
           : isimage == 12
-          ? selectedearbackside.value = File(pickedFile.path)
+          ? selectedearbackside.value = file
           : null;
       // print("controllerimage::::$isimage");
     }
@@ -458,30 +479,42 @@ class CattleController extends GetxController {
       allowMultiple: false, // Only one for dropdown
     );
     if (result != null && result.files.single.path != null) {
+      File file = File(result.files.single.path!);
+
+      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      try {
+        file = await ImageProcessingService.processImage(file);
+      } catch(e) {
+        print("Image processing error: $e");
+      }
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
       isimage == 1
-          ? selectedeartag.value = File(result.files.single.path!)
+          ? selectedeartag.value = file
           : isimage == 2
-          ? selectedheadpose.value = File(result.files.single.path!)
+          ? selectedheadpose.value = file
           : isimage == 3
-          ? selectedsideposeleft.value = File(result.files.single.path!)
+          ? selectedsideposeleft.value = file
           : isimage == 4
-          ? selectedsideposeright.value = File(result.files.single.path!)
+          ? selectedsideposeright.value = file
           : isimage == 5
-          ? selectedbackpose.value = File(result.files.single.path!)
+          ? selectedbackpose.value = file
           : isimage == 6
-          ? selectedOther5.value = File(result.files.single.path!)
+          ? selectedOther5.value = file
           : isimage == 7
-          ? selectedOther1.value = File(result.files.single.path!)
+          ? selectedOther1.value = file
           : isimage == 8
-          ? selectedOther2.value = File(result.files.single.path!)
+          ? selectedOther2.value = file
           : isimage == 9
-          ? selectedOther3.value = File(result.files.single.path!)
+          ? selectedOther3.value = file
           : isimage == 10
-          ? selectedOther4.value = File(result.files.single.path!)
+          ? selectedOther4.value = file
           : isimage == 11
-          ? selectedearcut.value = File(result.files.single.path!)
+          ? selectedearcut.value = file
           : isimage == 12
-          ? selectedearbackside.value = File(result.files.single.path!)
+          ? selectedearbackside.value = file
           : null;
       // print("controllerimage::::$isimage");
     }
