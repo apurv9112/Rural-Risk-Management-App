@@ -39,6 +39,7 @@ class TaggingDataScreen extends StatelessWidget {
         }
         // ignore: unnecessary_non_null_assertion
         controller.initFieldsFromData(dataMap!, context);
+        final bool isReadOnly = !(controller.manualtagging == true);
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.PRIMARY_COLOR,
@@ -67,7 +68,7 @@ class TaggingDataScreen extends StatelessWidget {
                     controller: controller.namecontroller,
                     backgroundColor: AppColors.WHITE,
                     inputtextcolor: AppColors.PRIMARY_COLOR,
-                    readOnly: controller.manualtagging ?? true,
+                    readOnly: isReadOnly,
                   ),
                   SizedBox(height: hp(2)),
                   Row(
@@ -84,7 +85,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.mobilenumbercontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                           suffixIcon: GestureDetector(
                             onTap: () {
                               final number = controller
@@ -118,7 +119,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.addresscontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
@@ -138,7 +139,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.villegcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
@@ -158,7 +159,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.talukcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                       SizedBox(width: wp(2.5)),
@@ -174,7 +175,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.districcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
@@ -194,7 +195,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.banknamecontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
@@ -214,7 +215,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.branchcontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
@@ -234,7 +235,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.loanacnocontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
@@ -254,7 +255,7 @@ class TaggingDataScreen extends StatelessWidget {
                           controller: controller.insurancecontroller,
                           backgroundColor: AppColors.WHITE,
                           inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: controller.manualtagging ?? true,
+                          readOnly: isReadOnly,
                         ),
                       ),
                     ],
