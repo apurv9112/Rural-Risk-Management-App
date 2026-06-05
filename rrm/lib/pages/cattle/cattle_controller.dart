@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
@@ -432,11 +431,14 @@ class CattleController extends GetxController {
     if (pickedFile != null) {
       File file = File(pickedFile.path);
 
-      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
       try {
         file = await ImageProcessingService.processImage(file);
         file = await ImageWatermarkService.addWatermark(file, position);
-      } catch(e) {
+      } catch (e) {
         print("Image processing error: $e");
       }
       if (Get.isDialogOpen ?? false) {
@@ -481,10 +483,13 @@ class CattleController extends GetxController {
     if (result != null && result.files.single.path != null) {
       File file = File(result.files.single.path!);
 
-      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
       try {
         file = await ImageProcessingService.processImage(file);
-      } catch(e) {
+      } catch (e) {
         print("Image processing error: $e");
       }
       if (Get.isDialogOpen ?? false) {
@@ -627,7 +632,7 @@ class CattleController extends GetxController {
 
     if (result != null) {
       galleryFiles.value = result.paths.map((path) => File(path!)).toList();
-      print("Picked files: ${galleryFiles.value.map((f) => f.path)}");
+      // print("Picked files: ${galleryFiles.value.map((f) => f.path)}");
     }
     update();
   }
@@ -710,14 +715,17 @@ class CattleController extends GetxController {
 
         "leadType": leadType,
 
+        // ignore: dead_null_aware_expression
         "cattleIndex": completedCattleCount.toString() ?? "",
 
+        // ignore: dead_null_aware_expression
         "totalCattle": totalCattleCount.toString() ?? "",
 
         "tagNumber": retagging == "retagging"
             ? newtagnumbercontroller.text.trim()
             : tagnumbercontroller.text.trim(),
 
+        // ignore: dead_null_aware_expression
         "taggingDate": taggingdatecontroller.text.trim() ?? "",
 
         "species": selectedSpeciesValue?.toUpperCase() ?? "",
