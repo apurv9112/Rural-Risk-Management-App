@@ -12,7 +12,11 @@ import 'package:rrm/services/cancel_lead_service.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:uuid/uuid.dart';
 import '../../routes/common/common_app_pages.dart';
+import 'package:rrm/data/repositories/lead_repository.dart';
+import 'package:rrm/data/models/lead_model.dart';
+
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
@@ -20,6 +24,11 @@ class TaggingdataController extends GetxController {
   // final RetaggingService _retaggingService = RetaggingService();
   // final ClaimService _claimService = ClaimService();
   final CancelLeadService _cancelLeadService = CancelLeadService();
+  final LeadRepository _leadRepository = LeadRepository();
+  
+  String localLeadUuid = const Uuid().v4();
+  bool draftCreated = false;
+
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -307,6 +316,34 @@ class TaggingdataController extends GetxController {
     if (token.isEmpty) return;
 
     syncDataFromControllers();
+
+    // =============== DRAFT PERSISTENCE ===============
+    try {
+      final leadModel = LeadModel(
+        localUuid: localLeadUuid,
+        serverId: id,
+        ownerName: namecontroller.text.trim(),
+        mobileNumber: mobilenumbercontroller.text.trim(),
+        village: villegcontroller.text.trim(),
+        totalCattleCount: (int.tryParse(buffalocountcontroller.text.trim()) ?? 0) + (int.tryParse(cowcountcontroller.text.trim()) ?? 0),
+        syncStatus: 'DRAFT',
+      );
+
+      if (!draftCreated && namecontroller.text.trim().isNotEmpty && mobilenumbercontroller.text.trim().isNotEmpty) {
+        await _leadRepository.saveDraftLead(leadModel, []);
+        draftCreated = true;
+      } else if (draftCreated) {
+        await _leadRepository.updateDraftLead(leadModel);
+      }
+
+      // Inject localUuid so Cattle screen can pick it up
+      if (data is Map<String, dynamic>) {
+        (data as Map<String, dynamic>)['local_uuid'] = localLeadUuid;
+      }
+    } catch (e) {
+      debugPrint("Failed to persist draft lead: $e");
+    }
+    // =================================================
 
     final body = <String, dynamic>{};
     final buffaloCount = int.tryParse(buffalocountcontroller.text.trim());

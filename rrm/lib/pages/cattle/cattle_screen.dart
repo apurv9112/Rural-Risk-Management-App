@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+
 import 'package:rrm/pages/cattle/cattle_controller.dart';
 import 'package:rrm/pages/cattle/widget/cattle_image.dart';
 import 'package:rrm/pages/cattle/widget/cattle_species.dart';

@@ -11,16 +11,22 @@ import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/image_processing_service.dart';
+import 'package:uuid/uuid.dart';
 import 'package:rrm/services/camera_service.dart';
+import 'package:rrm/data/repositories/media_repository.dart';
+import 'package:rrm/data/models/media_metadata_model.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
+  final MediaRepository _mediaRepository = MediaRepository();
+
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilecontroller = TextEditingController();
   final KycService _kycService = KycService();
   dynamic data;
   String? ischangepage;
   String? retagging;
+  String? localLeadUuid;
 
   String ownerName = '';
   String mobileNo = '';
@@ -56,6 +62,7 @@ class KycController extends GetxController {
 
     ownerName = (tagging?["ownerName"] ?? '').toString();
     mobileNo = (tagging?["mobileNo"] ?? '').toString();
+    localLeadUuid = tagging?["local_uuid"];
 
     namecontroller.text = ownerName;
     mobilecontroller.text = mobileNo;
@@ -86,6 +93,31 @@ class KycController extends GetxController {
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
+
+      // ================= PERSIST MEDIA OFFLINE =================
+      try {
+        final captureType = _getKycCaptureType(isimage);
+        final mediaUuid = const Uuid().v4();
+        
+        final metadata = MediaMetadataModel(
+          localUuid: mediaUuid,
+          cattleUuid: null, // KYC is tied to Lead, not Cattle
+          leadUuid: localLeadUuid,
+          captureType: captureType,
+          mediaType: 'image',
+          syncStatus: 'DRAFT',
+        );
+
+        await _mediaRepository.saveDraftMedia(
+          tempFile: file,
+          workflowType: 'kyc',
+          targetFileName: mediaUuid,
+          metadata: metadata,
+        );
+      } catch (e) {
+        debugPrint("Failed to persist kyc media: $e");
+      }
+      // =========================================================
 
       switch (isimage) {
         case 1:
@@ -145,6 +177,31 @@ class KycController extends GetxController {
         Get.back();
       }
 
+      // ================= PERSIST MEDIA OFFLINE =================
+      try {
+        final captureType = _getKycCaptureType(isimage);
+        final mediaUuid = const Uuid().v4();
+        
+        final metadata = MediaMetadataModel(
+          localUuid: mediaUuid,
+          cattleUuid: null,
+          leadUuid: localLeadUuid,
+          captureType: captureType,
+          mediaType: 'image',
+          syncStatus: 'DRAFT',
+        );
+
+        await _mediaRepository.saveDraftMedia(
+          tempFile: file,
+          workflowType: 'kyc',
+          targetFileName: mediaUuid,
+          metadata: metadata,
+        );
+      } catch (e) {
+        debugPrint("Failed to persist kyc media: $e");
+      }
+      // =========================================================
+
       switch (isimage) {
         case 1:
           selectedAadharfront.value = file;
@@ -179,6 +236,17 @@ class KycController extends GetxController {
       }
     }
     update();
+  }
+
+  String _getKycCaptureType(int? imageType) {
+    switch (imageType) {
+      case 1: return 'aadharFront';
+      case 2: return 'aadharBack';
+      case 3: return 'panFront';
+      case 4: return 'bankDetails1';
+      case 5: return 'bankDetails2';
+      default: return 'otherKyc';
+    }
   }
 
   // ================= SAVE KYC =================

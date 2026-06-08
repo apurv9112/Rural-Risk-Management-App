@@ -13,11 +13,27 @@ import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
-import 'package:rrm/services/image_watermark_service.dart';
+import 'package:uuid/uuid.dart';
 import 'package:rrm/services/camera_service.dart';
+import 'package:rrm/data/repositories/cattle_repository.dart';
+import 'package:rrm/data/repositories/lead_repository.dart';
+import 'package:rrm/data/repositories/media_repository.dart';
+import 'package:rrm/data/models/cattle_model.dart';
+import 'package:rrm/data/models/lead_model.dart';
+import 'package:rrm/data/models/media_metadata_model.dart';
+import 'package:rrm/services/image_watermark_service.dart';
 
 class CattleController extends GetxController {
   final CattleService _cattleService = CattleService();
+  final CattleRepository _cattleRepository = CattleRepository();
+  final LeadRepository _leadRepository = LeadRepository();
+  final MediaRepository _mediaRepository = MediaRepository();
+
+  
+  String localCattleUuid = const Uuid().v4();
+  bool draftCreated = false;
+  String? localLeadUuid; // Can be passed via args if available.
+
 
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
@@ -37,7 +53,6 @@ class CattleController extends GetxController {
   int totalCattleCount = 1;
   int completedCattleCount = 0;
   int currentCattleIndex = 1;
-  bool _isTagFieldsInitialized = false;
   List<Map<String, dynamic>> cattleSequence = [];
 
   @override
@@ -53,6 +68,10 @@ class CattleController extends GetxController {
     data = args["tagging"] ?? data;
     ischangepage = args["ischangepage"] ?? ischangepage;
     retagging = args["retagging"] ?? retagging;
+
+    if (data is Map<String, dynamic>) {
+      localLeadUuid = data["local_uuid"] ?? localLeadUuid;
+    }
 
     completedCattleCount =
         _parseInt(args["completedCattleCount"]) ?? completedCattleCount;
@@ -475,6 +494,34 @@ class CattleController extends GetxController {
         Get.back();
       }
 
+      // ================= PERSIST MEDIA OFFLINE =================
+      try {
+        final captureType = _getCaptureTypeString(isimage);
+        final mediaUuid = const Uuid().v4();
+        
+        final metadata = MediaMetadataModel(
+          localUuid: mediaUuid,
+          cattleUuid: localCattleUuid,
+          leadUuid: localLeadUuid,
+          captureType: captureType,
+          mediaType: 'image',
+          syncStatus: 'DRAFT',
+        );
+
+        await _mediaRepository.saveDraftMedia(
+          tempFile: file,
+          workflowType: 'cattle',
+          targetFileName: mediaUuid,
+          metadata: metadata,
+        );
+        
+        // After successful permanent save, we keep the original file path variable updated for UI,
+        // although ideally the UI would point to the new permanent file. We'll leave the temp file variable for UI for now.
+      } catch (e) {
+        debugPrint("Failed to persist media: $e");
+      }
+      // =========================================================
+
       isimage == 1
           ? selectedeartag.value = file
           : isimage == 2
@@ -525,6 +572,31 @@ class CattleController extends GetxController {
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
+
+      // ================= PERSIST MEDIA OFFLINE =================
+      try {
+        final captureType = _getCaptureTypeString(isimage);
+        final mediaUuid = const Uuid().v4();
+        
+        final metadata = MediaMetadataModel(
+          localUuid: mediaUuid,
+          cattleUuid: localCattleUuid,
+          leadUuid: localLeadUuid,
+          captureType: captureType,
+          mediaType: 'image',
+          syncStatus: 'DRAFT',
+        );
+
+        await _mediaRepository.saveDraftMedia(
+          tempFile: file,
+          workflowType: 'cattle',
+          targetFileName: mediaUuid,
+          metadata: metadata,
+        );
+      } catch (e) {
+        debugPrint("Failed to persist media: $e");
+      }
+      // =========================================================
 
       isimage == 1
           ? selectedeartag.value = file
@@ -667,6 +739,19 @@ class CattleController extends GetxController {
     update();
   }
 
+  String _getCaptureTypeString(int? imageType) {
+    switch (imageType) {
+      case 1: return 'earTagImage';
+      case 2: return 'headPoseImage';
+      case 3: return 'leftPoseImage';
+      case 4: return 'rightPoseImage';
+      case 5: return 'backPoseImage';
+      case 11: return 'cutEarImage';
+      case 12: return 'earTagBackImage';
+      default: return 'otherImage';
+    }
+  }
+
   void savecattle() {
     _submitCattle(isClaimFlow: false);
   }
@@ -747,6 +832,52 @@ class CattleController extends GetxController {
       barrierColor: Colors.black45,
       barrierDismissible: false,
     );
+
+    // ================= DRAFT CATTLE PERSISTENCE =================
+    try {
+      final isCompleted = completedCattleCount + 1 >= totalCattleCount;
+      final status = isCompleted ? 'COMPLETED_LOCALLY' : 'DRAFT';
+
+      final cattleModel = CattleModel(
+        localUuid: localCattleUuid,
+        leadUuid: localLeadUuid ?? taggingId.toString(),
+        serverId: null, // Populated after sync
+        tagNumber: retagging == "retagging" ? newtagnumbercontroller.text.trim() : tagnumbercontroller.text.trim(),
+        species: selectedSpeciesValue?.toUpperCase(),
+        breed: selectedbreedValue?.toUpperCase(),
+        age: selectedAgeValue,
+        syncStatus: status,
+      );
+
+      if (!draftCreated && (selectedSpeciesValue != null || tagnumbercontroller.text.trim().isNotEmpty)) {
+        await _cattleRepository.saveDraftCattle(cattleModel);
+        draftCreated = true;
+      } else if (draftCreated) {
+        await _cattleRepository.updateDraftCattle(cattleModel);
+      }
+
+      // If we finished the sequence, we should ideally mark Lead as COMPLETED_LOCALLY.
+      if (isCompleted && localLeadUuid != null) {
+        final loadedLeadMap = await _leadRepository.loadDraftLead(localLeadUuid!);
+        if (loadedLeadMap != null && loadedLeadMap['lead'] != null) {
+          final oldLead = loadedLeadMap['lead'] as LeadModel;
+          final completedLead = LeadModel(
+            localUuid: oldLead.localUuid,
+            serverId: oldLead.serverId,
+            workflowType: oldLead.workflowType,
+            ownerName: oldLead.ownerName,
+            mobileNumber: oldLead.mobileNumber,
+            village: oldLead.village,
+            totalCattleCount: oldLead.totalCattleCount,
+            syncStatus: 'COMPLETED_LOCALLY',
+          );
+          await _leadRepository.updateDraftLead(completedLead);
+        }
+      }
+    } catch (e) {
+      debugPrint("Failed to persist draft cattle: $e");
+    }
+    // ===========================================================
 
     try {
       final payload = <String, dynamic>{

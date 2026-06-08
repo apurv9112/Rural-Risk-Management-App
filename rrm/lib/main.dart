@@ -11,6 +11,10 @@ import 'utils/colors.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 import 'package:get_storage/get_storage.dart';
+import 'core/database/app_database.dart';
+import 'core/storage/folder_manager.dart';
+import 'core/sync/background_sync_manager.dart';
+import 'core/sync/foreground_sync_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +22,10 @@ void main() async {
   await GetStorage.init(); // ⭐ REQUIRED
 
   await getTemporaryDirectory();
+  await AppDatabase.instance.database; // Initialize SQLite database
+  await FolderManager.initializeStructure(); // Initialize Offline Folders
+  await BackgroundSyncManager.initialize(); // Initialize M9 Workmanager
+  await ForegroundSyncService.initialize(); // Initialize M9 Foreground Service
 
   getIt.registerLazySingleton<FormValidations>(() => FormValidations());
   getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
