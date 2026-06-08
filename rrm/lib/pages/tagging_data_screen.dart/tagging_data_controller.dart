@@ -40,6 +40,13 @@ class TaggingdataController extends GetxController {
   TextEditingController goatcontroller = TextEditingController();
   TextEditingController dateofdeathcontroller = TextEditingController();
   TextEditingController timeofdeathcontroller = TextEditingController();
+
+  final FocusNode dateOfDeathFocusNode = FocusNode();
+  final FocusNode timeOfDeathFocusNode = FocusNode();
+
+  bool showDateError = false;
+  bool showTimeError = false;
+
   String? species;
   String? tagnumberclaim;
   bool? cowreadOnly = false;
@@ -107,12 +114,12 @@ class TaggingdataController extends GetxController {
     cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
     species = dataMap["species"];
     tagnumberclaim = dataMap["tagNumber"] ?? dataMap["oldTagNumber"];
-    dateofdeathcontroller.text = DateFormat(
-      'yyyy-MM-dd',
-    ).format(selectedDate.value!);
-    timeofdeathcontroller.text = retagging != null
-        ? ""
-        : selectedTime.value!.format(context);
+    dateofdeathcontroller.text = dataMap["dateOfDeath"] != null && dataMap["dateOfDeath"].toString().isNotEmpty
+        ? dataMap["dateOfDeath"].toString()
+        : '';
+    timeofdeathcontroller.text = dataMap["timeOfDeath"] != null && dataMap["timeOfDeath"].toString().isNotEmpty
+        ? dataMap["timeOfDeath"].toString()
+        : '';
     final images = dataMap["images"];
 
     if (images != null && images is List) {
@@ -142,6 +149,11 @@ class TaggingdataController extends GetxController {
       if (cowCount != null) map["numberOfCow"] = cowCount;
       if (buffaloSI != null) map["sumInsuredBuffalo"] = buffaloSI;
       if (cowSI != null) map["sumInsuredCow"] = cowSI;
+      
+      if (retagging != null) {
+        map["newTagNumber"] = timeofdeathcontroller.text.trim();
+        map["dateOfReTagging"] = dateofdeathcontroller.text.trim();
+      }
     }
   }
 
@@ -167,7 +179,7 @@ class TaggingdataController extends GetxController {
     "Other",
   ];
   // date picker
-  Rx<DateTime?> selectedDate = Rx<DateTime?>(DateTime.now());
+  Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
 
   void pickDate(BuildContext context, {required controller}) async {
     final DateTime today = DateTime.now();
@@ -199,13 +211,14 @@ class TaggingdataController extends GetxController {
       controller.dateofdeathcontroller.text = DateFormat(
         'yyyy-MM-dd',
       ).format(picked);
+      controller.showDateError = false;
       controller.update();
       // print("Formatted date: ${controller.dateofdeathcontroller.text}");
     }
   }
 
   // time picker
-  Rx<TimeOfDay?> selectedTime = Rx<TimeOfDay?>(TimeOfDay.now());
+  Rx<TimeOfDay?> selectedTime = Rx<TimeOfDay?>(null);
 
   void pickTime(BuildContext context, {required controller}) async {
     final TimeOfDay now = TimeOfDay.now();
@@ -234,6 +247,7 @@ class TaggingdataController extends GetxController {
     if (picked != null) {
       selectedTime.value = picked;
       timeofdeathcontroller.text = picked.format(context);
+      showTimeError = false;
       update();
       // print("Selected Time: ${picked.format(context)}");
     }
@@ -421,5 +435,12 @@ class TaggingdataController extends GetxController {
       // ❌ NO SNACKBAR HERE
       debugPrint("Something went wrong");
     }
+  }
+
+  @override
+  void onClose() {
+    dateOfDeathFocusNode.dispose();
+    timeOfDeathFocusNode.dispose();
+    super.onClose();
   }
 }

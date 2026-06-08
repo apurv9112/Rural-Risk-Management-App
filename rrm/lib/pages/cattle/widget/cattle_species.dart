@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customcontainer.dart';
@@ -51,6 +52,12 @@ iscattlevalue({required BuildContext context, required controller}) {
                     keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
                     controller: controller.marketValueController,
+                    focusNode: controller.marketValueFocusNode,
+                    validator: controller.isSuccessfullyTagging
+                        ? MultiValidator([
+                            RequiredValidator(errorText: "Required")
+                          ])
+                        : null,
                     backgroundColor: AppColors.WHITE,
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:rrm/pages/cattle/widget/custom_dropdown.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
@@ -95,6 +96,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedAgeValue = value.toString();
               },
               value: controller.selectedAgeValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.ageFocusNode,
             ),
           ),
         ],
@@ -162,6 +165,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedbreedValue = value.toString();
               },
               value: controller.selectedbreedValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.breedFocusNode,
             ),
           ),
           SizedBox(width: wp(2)),
@@ -223,6 +228,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedbodycolorValue = value.toString();
               },
               value: controller.selectedbodycolorValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.bodyColorFocusNode,
             ),
           ),
         ],
@@ -290,6 +297,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedrighthornValue = value.toString();
               },
               value: controller.selectedrighthornValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.rightHornFocusNode,
             ),
           ),
           SizedBox(width: wp(2)),
@@ -351,6 +360,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedlefthornValue = value.toString();
               },
               value: controller.selectedlefthornValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.leftHornFocusNode,
             ),
           ),
         ],
@@ -377,6 +388,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedtailcolorValue = value.toString();
               },
               value: controller.selectedtailcolorValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.tailColorFocusNode,
             ),
           ),
           SizedBox(width: wp(2)),
@@ -398,6 +411,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedidmarkValue = value.toString();
               },
               value: controller.selectedidmarkValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.idMarkFocusNode,
             ),
           ),
         ],
@@ -412,7 +427,12 @@ iscattlespecifications({required BuildContext context, required controller}) {
               height: hp(5.5),
               child: CustomTextField(
                 controller: controller.milklittercontroller,
-
+                focusNode: controller.milkLitterFocusNode,
+                validator: controller.isSuccessfullyTagging
+                    ? MultiValidator([
+                        RequiredValidator(errorText: "Required")
+                      ])
+                    : null,
                 hint: "Milk L/Day",
                 hintStyle: TextStyle(
                   color: AppColors.DARK,
@@ -450,6 +470,8 @@ iscattlespecifications({required BuildContext context, required controller}) {
                 controller.selectedlactationValue = value.toString();
               },
               value: controller.selectedlactationValue,
+              validator: (value) => controller.isSuccessfullyTagging && (value == null || value.isEmpty) ? "Required" : null,
+              focusNode: controller.lactationFocusNode,
             ),
           ),
         ],

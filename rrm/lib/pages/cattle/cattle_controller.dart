@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
@@ -131,20 +132,31 @@ class CattleController extends GetxController {
   }
 
   void _initializeTagFields() {
-    if (_isTagFieldsInitialized || data is! Map<String, dynamic>) return;
+    if (data is! Map<String, dynamic>) return;
     final lead = data as Map<String, dynamic>;
 
     if (ischangepage == null && retagging == null) {
       // Tagging flow: user enters new tag number for each cattle.
       tagnumbercontroller.clear();
       newtagnumbercontroller.clear();
+      taggingdatecontroller.text = DateFormat(
+        'yyyy-MM-dd',
+      ).format(DateTime.now());
     } else {
       // Retagging/claim flow: prefill from lead.
       tagnumbercontroller.text =
           (lead["tagNumber"] ?? lead["oldTagNumber"] ?? "").toString();
-      newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
+
+      if (retagging != null) {
+        taggingdatecontroller.text =
+            (lead["taggingDate"] ?? lead["oldTagDate"] ?? "").toString();
+        newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
+        newtaggingdatecontroller.text = (lead["dateOfReTagging"] ?? "")
+            .toString();
+      } else {
+        newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
+      }
     }
-    _isTagFieldsInitialized = true;
   }
 
   // cattle page
@@ -363,6 +375,24 @@ class CattleController extends GetxController {
   TextEditingController newtagnumbercontroller = TextEditingController();
   TextEditingController taggingdatecontroller = TextEditingController();
   TextEditingController newtaggingdatecontroller = TextEditingController();
+
+  bool get isSuccessfullyTagging {
+    return selectedspeciesnotavailable == null ||
+        selectedspeciesnotavailable == 'Successfully Tagging';
+  }
+
+  final FocusNode tagNumberFocusNode = FocusNode();
+  final FocusNode newTagNumberFocusNode = FocusNode();
+  final FocusNode breedFocusNode = FocusNode();
+  final FocusNode rightHornFocusNode = FocusNode();
+  final FocusNode tailColorFocusNode = FocusNode();
+  final FocusNode milkLitterFocusNode = FocusNode();
+  final FocusNode ageFocusNode = FocusNode();
+  final FocusNode bodyColorFocusNode = FocusNode();
+  final FocusNode leftHornFocusNode = FocusNode();
+  final FocusNode idMarkFocusNode = FocusNode();
+  final FocusNode lactationFocusNode = FocusNode();
+  final FocusNode marketValueFocusNode = FocusNode();
 
   // date picker
 
@@ -648,6 +678,14 @@ class CattleController extends GetxController {
   Future<void> _submitCattle({required bool isClaimFlow}) async {
     if (isSubmitting) return;
 
+    if (isSuccessfullyTagging) {
+      final isValid = formKey.currentState?.validate() ?? false;
+      if (!isValid) {
+        _focusFirstInvalidField();
+        return;
+      }
+    }
+
     final token = appController.token.value;
 
     if (token.isEmpty) {
@@ -670,17 +708,19 @@ class CattleController extends GetxController {
       return;
     }
 
-    final hasMandatoryImages =
-        selectedeartag.value != null &&
-        selectedheadpose.value != null &&
-        selectedsideposeleft.value != null &&
-        selectedsideposeright.value != null &&
-        selectedbackpose.value != null;
+    if (isSuccessfullyTagging) {
+      final hasMandatoryImages =
+          selectedeartag.value != null &&
+          selectedheadpose.value != null &&
+          selectedsideposeleft.value != null &&
+          selectedsideposeright.value != null &&
+          selectedbackpose.value != null;
 
-    if (!hasMandatoryImages) {
-      showSnackBar("Please add all 5 mandatory cattle photos.", SNACK.FAILED);
+      if (!hasMandatoryImages) {
+        showSnackBar("Please add all 5 mandatory cattle photos.", SNACK.FAILED);
 
-      return;
+        return;
+      }
     }
 
     // ================= LEAD TYPE =================
@@ -979,6 +1019,62 @@ class CattleController extends GetxController {
       selectedSpeciesValue = current["species"];
 
       sumInsuredController.text = current["sumInsured"] ?? "";
+    }
+  }
+
+  void _focusFirstInvalidField() {
+    if (tagnumbercontroller.text.trim().isEmpty) {
+      tagNumberFocusNode.requestFocus();
+      return;
+    }
+    if (retagging != null && newtagnumbercontroller.text.trim().isEmpty) {
+      newTagNumberFocusNode.requestFocus();
+      return;
+    }
+    if (selectedAgeValue == null || selectedAgeValue!.trim().isEmpty) {
+      ageFocusNode.requestFocus();
+      return;
+    }
+    if (selectedbreedValue == null || selectedbreedValue!.trim().isEmpty) {
+      breedFocusNode.requestFocus();
+      return;
+    }
+    if (selectedbodycolorValue == null ||
+        selectedbodycolorValue!.trim().isEmpty) {
+      bodyColorFocusNode.requestFocus();
+      return;
+    }
+    if (selectedrighthornValue == null ||
+        selectedrighthornValue!.trim().isEmpty) {
+      rightHornFocusNode.requestFocus();
+      return;
+    }
+    if (selectedlefthornValue == null ||
+        selectedlefthornValue!.trim().isEmpty) {
+      leftHornFocusNode.requestFocus();
+      return;
+    }
+    if (selectedtailcolorValue == null ||
+        selectedtailcolorValue!.trim().isEmpty) {
+      tailColorFocusNode.requestFocus();
+      return;
+    }
+    if (selectedidmarkValue == null || selectedidmarkValue!.trim().isEmpty) {
+      idMarkFocusNode.requestFocus();
+      return;
+    }
+    if (milklittercontroller.text.trim().isEmpty) {
+      milkLitterFocusNode.requestFocus();
+      return;
+    }
+    if (selectedlactationValue == null ||
+        selectedlactationValue!.trim().isEmpty) {
+      lactationFocusNode.requestFocus();
+      return;
+    }
+    if (marketValueController.text.trim().isEmpty) {
+      marketValueFocusNode.requestFocus();
+      return;
     }
   }
 }

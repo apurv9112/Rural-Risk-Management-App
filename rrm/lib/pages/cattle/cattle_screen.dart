@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:rrm/pages/cattle/cattle_controller.dart';
@@ -25,9 +26,6 @@ class Cattlescreen extends StatelessWidget {
           controller.syncFromArgs(args);
         }
 
-        controller.taggingdatecontroller.text = DateFormat(
-          'yyyy-MM-dd',
-        ).format(controller.selectedDate.value!);
 
         return Scaffold(
           resizeToAvoidBottomInset: true,
@@ -74,6 +72,7 @@ class Cattlescreen extends StatelessWidget {
                               // print(
                               //   "aaaa ::: ${controller.selectedspeciesnotavailable}",
                               // );
+                              controller.formKey.currentState?.validate();
                               controller.update();
                             },
                           )
@@ -97,6 +96,12 @@ class Cattlescreen extends StatelessWidget {
                           child: CustomTextField(
                             keyboardType: TextInputType.text,
                             controller: controller.tagnumbercontroller,
+                            focusNode: controller.tagNumberFocusNode,
+                            validator: controller.isSuccessfullyTagging
+                                ? MultiValidator([
+                                    RequiredValidator(errorText: "Tag Number is required")
+                                  ])
+                                : null,
                             backgroundColor: AppColors.WHITE,
                             inputtextcolor: AppColors.PRIMARY_COLOR,
                             readOnly: controller.ischangepage != null,
@@ -118,13 +123,15 @@ class Cattlescreen extends StatelessWidget {
                               SizedBox(width: wp(2.5)),
                               Expanded(
                                 flex: 2,
-                                child: CustomTextField(
-                                  keyboardType: TextInputType.number,
-                                  controller: controller.newtagnumbercontroller,
-                                  backgroundColor: AppColors.WHITE,
-                                  inputtextcolor: AppColors.PRIMARY_COLOR,
-                                  readOnly: false,
-                                ),
+                                    child: CustomTextField(
+                                      keyboardType: TextInputType.number,
+                                      controller: controller.newtagnumbercontroller,
+                                      focusNode: controller.newTagNumberFocusNode,
+                                      validator: null,
+                                      backgroundColor: AppColors.WHITE,
+                                      inputtextcolor: AppColors.PRIMARY_COLOR,
+                                      readOnly: controller.retagging != null ? true : false,
+                                    ),
                               ),
                             ],
                           ),
@@ -180,29 +187,16 @@ class Cattlescreen extends StatelessWidget {
                                 text: "New Tagging Date:",
                               ),
                               SizedBox(width: wp(2.5)),
-                              Expanded(
-                                flex: 2,
-                                child: CustomTextField(
-                                  controller: controller.taggingdatecontroller,
-                                  inputtextcolor: AppColors.PRIMARY_COLOR,
-                                  readOnly: true,
-                                  backgroundColor: AppColors.WHITE,
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      controller.taggingdate = true;
-                                      controller.pickDate(
-                                        controller: controller,
-                                        context,
-                                      );
-                                      controller.update();
-                                    },
-                                    child: Icon(
-                                      Icons.calendar_month_outlined,
-                                      color: AppColors.PRIMARY_COLOR,
-                                    ),
+                                Expanded(
+                                  flex: 2,
+                                  child: CustomTextField(
+                                    controller: controller.newtaggingdatecontroller,
+                                    inputtextcolor: AppColors.PRIMARY_COLOR,
+                                    readOnly: true,
+                                    backgroundColor: AppColors.WHITE,
+                                    suffixIcon: SizedBox(),
                                   ),
                                 ),
-                              ),
                             ],
                           )
                         : SizedBox(),

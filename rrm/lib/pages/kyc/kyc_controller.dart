@@ -305,7 +305,7 @@ class KycController extends GetxController {
           Get.back();
         }
 
-        Get.offNamed(
+        Get.toNamed(
           routecattlepage,
           arguments: {
             "tagging": data,
@@ -324,7 +324,7 @@ class KycController extends GetxController {
           Get.back();
         }
 
-        Get.offNamed(
+        Get.toNamed(
           routecattlepage,
           arguments: {
             "tagging": data,

@@ -12,6 +12,8 @@ customdropdown({
   void Function(String?)? onSaved,
   void Function(String?)? onChanged,
   String? value,
+  String? Function(String?)? validator,
+  FocusNode? focusNode,
 }) {
   final availableValues = (items ?? [])
       .map((e) => e.value)
@@ -23,6 +25,8 @@ customdropdown({
 
   return DropdownButtonFormField2<String>(
     value: safeValue,
+    validator: validator,
+    focusNode: focusNode,
     isExpanded: true,
     decoration: InputDecoration(
       filled: true,

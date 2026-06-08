@@ -343,9 +343,26 @@ class TaggingDataScreen extends StatelessWidget {
                               flex: 2,
                               child: CustomTextField(
                                 controller: controller.dateofdeathcontroller,
+                                focusNode: controller.dateOfDeathFocusNode,
                                 inputtextcolor: AppColors.PRIMARY_COLOR,
                                 readOnly: true,
                                 backgroundColor: AppColors.WHITE,
+                                bordercolor:
+                                    (((controller.ischangepage != null &&
+                                                controller.retagging == null) ||
+                                            controller.retagging != null) &&
+                                        controller
+                                            .dateofdeathcontroller
+                                            .text
+                                            .isEmpty &&
+                                        !controller.showDateError)
+                                    ? Colors.yellow
+                                    : AppColors.WHITE,
+                                errorText: controller.showDateError
+                                    ? (controller.retagging != null
+                                          ? "Date of Retagging Required"
+                                          : "Date of Death Required")
+                                    : null,
                                 suffixIcon: GestureDetector(
                                   onTap: () {
                                     controller.pickDate(
@@ -381,11 +398,34 @@ class TaggingDataScreen extends StatelessWidget {
                               child: CustomTextField(
                                 keyboardType: TextInputType.number,
                                 controller: controller.timeofdeathcontroller,
+                                focusNode: controller.timeOfDeathFocusNode,
                                 inputtextcolor: AppColors.PRIMARY_COLOR,
                                 readOnly: controller.retagging != null
                                     ? false
                                     : true,
+                                onchange: (val) {
+                                  if (controller.showTimeError) {
+                                    controller.showTimeError = false;
+                                    controller.update();
+                                  }
+                                },
                                 backgroundColor: AppColors.WHITE,
+                                bordercolor:
+                                    (((controller.ischangepage != null &&
+                                                controller.retagging == null) ||
+                                            controller.retagging != null) &&
+                                        controller
+                                            .timeofdeathcontroller
+                                            .text
+                                            .isEmpty &&
+                                        !controller.showTimeError)
+                                    ? Colors.yellow
+                                    : AppColors.WHITE,
+                                errorText: controller.showTimeError
+                                    ? (controller.retagging != null
+                                          ? "New Tag Number Required"
+                                          : "Time of Death Required")
+                                    : null,
                                 suffixIcon: controller.retagging != null
                                     ? null
                                     : GestureDetector(
@@ -428,6 +468,32 @@ class TaggingDataScreen extends StatelessWidget {
                       SizedBox(width: wp(3)),
                       Customcontainer(
                         onTap: () async {
+                          bool isClaim =
+                              controller.ischangepage != null &&
+                              controller.retagging == null;
+                          bool isRetagging = controller.retagging != null;
+
+                          if (isClaim || isRetagging) {
+                            controller.showDateError =
+                                controller.dateofdeathcontroller.text.isEmpty;
+                            controller.showTimeError = controller
+                                .timeofdeathcontroller
+                                .text
+                                .trim()
+                                .isEmpty;
+
+                            if (controller.showDateError ||
+                                controller.showTimeError) {
+                              controller.update();
+                              if (controller.showDateError) {
+                                controller.dateOfDeathFocusNode.requestFocus();
+                              } else if (controller.showTimeError) {
+                                controller.timeOfDeathFocusNode.requestFocus();
+                              }
+                              return;
+                            }
+                          }
+
                           controller.syncDataFromControllers();
 
                           Get.dialog(
