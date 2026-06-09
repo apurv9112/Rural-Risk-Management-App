@@ -25,13 +25,7 @@ class MediaManager {
       throw Exception('Temporary file missing extension: ${tempFile.path}');
     }
 
-    final targetFolder = await FolderManager.getFolderPath('media/$workflowType');
-    
-    // Ensure the folder exists just in case it was deleted during runtime
-    final directory = Directory(targetFolder);
-    if (!(await directory.exists())) {
-      await directory.create(recursive: true);
-    }
+    final targetFolder = await FolderManager.getPartitionedMediaFolder(workflowType, DateTime.now());
 
     final destinationPath = p.join(targetFolder, targetFileName);
     final destinationFile = File(destinationPath);

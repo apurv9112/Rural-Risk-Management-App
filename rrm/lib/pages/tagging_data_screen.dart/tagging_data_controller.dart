@@ -17,7 +17,9 @@ import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/data/repositories/lead_repository.dart';
 import 'package:rrm/data/models/lead_model.dart';
 import 'package:rrm/data/repositories/draft_repository.dart';
-
+import 'package:rrm/data/repositories/master_data_repository.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
+import 'package:rrm/services/offline/media_extraction_helper.dart';
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
@@ -25,8 +27,10 @@ class TaggingdataController extends GetxController {
   // final RetaggingService _retaggingService = RetaggingService();
   // final ClaimService _claimService = ClaimService();
   final CancelLeadService _cancelLeadService = CancelLeadService();
+  final QueueInsertionService _queueInsertionService = QueueInsertionService();
   final LeadRepository _leadRepository = LeadRepository();
   final DraftRepository _draftRepository = DraftRepository();
+  final MasterDataRepository _masterDataRepo = MasterDataRepository();
   
   String localLeadUuid = const Uuid().v4();
   bool draftCreated = false;
@@ -71,6 +75,12 @@ class TaggingdataController extends GetxController {
   String? selectedReasonDropdown;
   bool _fieldsInitialized = false;
   List<Uint8List> imageBytesList = [];
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadMasterData();
+  }
 
   void setInitialData(Map<String, dynamic> args) async {
     if (data != null) return;
@@ -183,27 +193,16 @@ class TaggingdataController extends GetxController {
     }
   }
 
-  final List<String> taggingreasons = [
-    "Not Purchased",
-    "Unhealthy Cattle",
-    "Unproductive Cattle",
-    "Under Value Cattle",
-    "Insured Not Cooperating",
-    "Insured Not Available",
-    "Other",
-  ];
-  final List<String> retaggingreasons = [
-    "Cattle Not Matching",
-    "False Request",
-    "Cattle Sold Out",
-    "Other",
-  ];
-  final List<String> claimreasons = [
-    "Cattle Alive",
-    "False Intimation",
-    "Cattle Discarded",
-    "Other",
-  ];
+  List<String> taggingreasons = [];
+  List<String> retaggingreasons = [];
+  List<String> claimreasons = [];
+
+  Future<void> _loadMasterData() async {
+    taggingreasons = await _masterDataRepo.getCancelReasons('tagging');
+    retaggingreasons = await _masterDataRepo.getCancelReasons('retagging');
+    claimreasons = await _masterDataRepo.getCancelReasons('claim');
+    update(['cancelDialog']); // Update any open dialogs that use these reasons
+  }
   // date picker
   Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
 
@@ -454,13 +453,22 @@ class TaggingdataController extends GetxController {
         images.add(selectedOther3.value!);
       }
 
-      final response = await _cancelLeadService.cancelLead(
-        token: token,
-        leadId: id,
-        leadType: leadType,
-        reason: selectedReasonDropdown!,
-        otherReason: selectedReasonDropdown == "Other" ? "Custom Reason" : null,
-        images: images,
+      final extraction = await MediaExtractionHelper.extractMediaFields(
+        {
+          "leadId": id,
+          "leadType": leadType,
+          "reason": selectedReasonDropdown!,
+          "otherReason": selectedReasonDropdown == "Other" ? "Custom Reason" : null,
+          "cancellationImages": images,
+        },
+        'cancel_lead',
+      );
+
+      await _queueInsertionService.enqueueSubmission(
+        operationType: 'cancel_lead',
+        entityType: 'cancel_lead',
+        metadata: extraction.metadata,
+        mediaItems: extraction.mediaItems,
       );
 
       // ✅ CLOSE LOADER SAFELY
@@ -468,26 +476,11 @@ class TaggingdataController extends GetxController {
         Get.back();
       }
 
-      final responseBody = await response.stream.bytesToString();
-
-      print("========= CANCEL RESPONSE =========");
-      print(response.statusCode);
-      print(responseBody);
-
-      final decoded = jsonDecode(responseBody);
-
       // ✅ SUCCESS
-      if (response.statusCode >= 200 &&
-          response.statusCode < 300 &&
-          decoded["status"] == "success") {
-        Get.offAllNamed(
-          routehomepage,
-          arguments: {"success": "Lead cancelled successfully"},
-        );
-      } else {
-        // ❌ NO SNACKBAR HERE
-        debugPrint(decoded["message"] ?? "Cancel failed");
-      }
+      Get.offAllNamed(
+        routehomepage,
+        arguments: {"success": "Lead cancelled queued successfully"},
+      );
     } catch (e) {
       if (Get.isDialogOpen ?? false) {
         Get.back();

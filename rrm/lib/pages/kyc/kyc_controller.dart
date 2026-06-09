@@ -18,6 +18,8 @@ import 'package:rrm/data/models/media_metadata_model.dart';
 import 'package:rrm/data/repositories/draft_repository.dart';
 import 'package:rrm/data/repositories/lead_repository.dart';
 import 'package:rrm/data/models/lead_model.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
+import 'package:rrm/services/offline/media_extraction_helper.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
@@ -28,6 +30,7 @@ class KycController extends GetxController {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilecontroller = TextEditingController();
   final KycService _kycService = KycService();
+  final QueueInsertionService _queueInsertionService = QueueInsertionService();
   dynamic data;
   String? ischangepage;
   String? retagging;
@@ -97,7 +100,8 @@ class KycController extends GetxController {
   // ================= IMAGE PICKER =================
 
   void pickFromCamera() async {
-    final pickedFile = await CameraService.captureImage();
+    final mediaUuid = const Uuid().v4();
+    final pickedFile = await CameraService.captureImage('kyc', mediaUuid);
 
     if (pickedFile != null) {
       File file = File(pickedFile.path);
@@ -107,7 +111,7 @@ class KycController extends GetxController {
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file);
+        file = await ImageProcessingService.processImage(file, 'kyc', mediaUuid);
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -118,7 +122,7 @@ class KycController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getKycCaptureType(isimage);
-        final mediaUuid = const Uuid().v4();
+        
         
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
@@ -185,12 +189,14 @@ class KycController extends GetxController {
     if (result != null && result.files.single.path != null) {
       File file = File(result.files.single.path!);
 
+      final mediaUuid = const Uuid().v4();
+
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file);
+        file = await ImageProcessingService.processImage(file, 'kyc', mediaUuid);
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -201,7 +207,7 @@ class KycController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getKycCaptureType(isimage);
-        final mediaUuid = const Uuid().v4();
+        
         
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
@@ -362,100 +368,52 @@ class KycController extends GetxController {
     );
 
     try {
-      final response = await _kycService.uploadKyc(
-        token: token,
-        leadId: data["id"].toString(),
-        leadType: leadType,
-        files: uploadFiles,
+      final extraction = await MediaExtractionHelper.extractMediaFields(
+        {
+          "leadId": data["id"].toString(),
+          "leadType": leadType,
+          "files": uploadFiles,
+        },
+        'kyc',
       );
 
-      final statusCode = response["statusCode"];
+      await _queueInsertionService.enqueueSubmission(
+        operationType: 'upload_kyc',
+        entityType: 'kyc',
+        metadata: extraction.metadata,
+        mediaItems: extraction.mediaItems,
+      );
 
-      final decoded =
-          response["body"] != null && response["body"].toString().isNotEmpty
-          ? jsonDecode(response["body"])
-          : {};
+      final message = "KYC upload queued successfully";
+      showSnackBar(message, SNACK.SUCCESS);
 
-      print("========== RESPONSE ==========");
-      print("STATUS CODE => $statusCode");
-      print("BODY => $decoded");
-      print("==============================");
-
-      final message = decoded["message"] ?? "Something went wrong";
-
-      // ================= SUCCESS =================
-
-      if (statusCode >= 200 && statusCode < 300) {
-        showSnackBar(message, SNACK.SUCCESS);
-
-        // Save draft progress
-        try {
-          await _draftRepository.saveDraftProgress(
-            entityUuid: localLeadUuid ?? data["id"].toString(),
-            workflowType: retagging == "retagging" ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
-            currentStep: 3, // Step 3: KYC
-            lastScreenRoute: routekycpage,
-            completionPercentage: 80.0,
-          );
-        } catch (e) {
-          debugPrint("Failed to save KYC progress: $e");
-        }
-
-        await Future.delayed(const Duration(seconds: 1));
-
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-
-        Get.toNamed(
-          routecattlepage,
-          arguments: {
-            "tagging": data,
-            "ischangepage": ischangepage,
-            "retagging": retagging,
-          },
+      // Save draft progress
+      try {
+        await _draftRepository.saveDraftProgress(
+          entityUuid: localLeadUuid ?? data["id"].toString(),
+          workflowType: retagging == "retagging" ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
+          currentStep: 3, // Step 3: KYC
+          lastScreenRoute: routekycpage,
+          completionPercentage: 80.0,
         );
+      } catch (e) {
+        debugPrint("Failed to save KYC progress: $e");
       }
-      // ================= ALREADY UPLOADED =================
-      else if (message.toString().toLowerCase().contains("already uploaded")) {
-        showSnackBar(message, SNACK.FAILED);
 
-        // Save draft progress
-        try {
-          await _draftRepository.saveDraftProgress(
-            entityUuid: localLeadUuid ?? data["id"].toString(),
-            workflowType: retagging == "retagging" ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
-            currentStep: 3, // Step 3: KYC
-            lastScreenRoute: routekycpage,
-            completionPercentage: 80.0,
-          );
-        } catch (e) {
-          debugPrint("Failed to save KYC progress: $e");
-        }
+      await Future.delayed(const Duration(seconds: 1));
 
-        await Future.delayed(const Duration(seconds: 2));
-
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-
-        Get.toNamed(
-          routecattlepage,
-          arguments: {
-            "tagging": data,
-            "ischangepage": ischangepage,
-            "retagging": retagging,
-          },
-        );
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
       }
-      // ================= OTHER ERRORS =================
-      else {
-        showSnackBar(message, SNACK.FAILED);
 
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-      }
+      Get.toNamed(
+        routecattlepage,
+        arguments: {
+          "tagging": data,
+          "ischangepage": ischangepage,
+          "retagging": retagging,
+        },
+      );
     } catch (e) {
       print("========== KYC ERROR ==========");
       print(e.toString());

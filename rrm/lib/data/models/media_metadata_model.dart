@@ -64,4 +64,36 @@ class MediaMetadataModel {
       'deleted_at': deletedAt,
     };
   }
+
+  MediaMetadataModel copyWith({
+    String? localUuid,
+    String? cattleUuid,
+    String? leadUuid,
+    String? serverId,
+    String? captureType,
+    String? mediaType,
+    String? absoluteLocalPath,
+    int? fileSizeBytes,
+    String? md5Checksum,
+    String? syncStatus,
+    String? syncedAt,
+    String? createdAt,
+    String? deletedAt,
+  }) {
+    return MediaMetadataModel(
+      localUuid: localUuid ?? this.localUuid,
+      cattleUuid: cattleUuid ?? this.cattleUuid,
+      leadUuid: leadUuid ?? this.leadUuid,
+      serverId: serverId ?? this.serverId,
+      captureType: captureType ?? this.captureType,
+      mediaType: mediaType ?? this.mediaType,
+      absoluteLocalPath: absoluteLocalPath ?? this.absoluteLocalPath,
+      fileSizeBytes: fileSizeBytes ?? this.fileSizeBytes,
+      md5Checksum: md5Checksum ?? this.md5Checksum,
+      syncStatus: syncStatus ?? this.syncStatus,
+      syncedAt: syncedAt ?? this.syncedAt,
+      createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
 }

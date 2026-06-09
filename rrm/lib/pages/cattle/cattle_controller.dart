@@ -18,14 +18,20 @@ import 'package:rrm/services/camera_service.dart';
 import 'package:rrm/data/repositories/cattle_repository.dart';
 import 'package:rrm/data/repositories/lead_repository.dart';
 import 'package:rrm/data/repositories/media_repository.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
+import 'package:rrm/services/offline/media_extraction_helper.dart';
 import 'package:rrm/data/models/cattle_model.dart';
 import 'package:rrm/data/models/lead_model.dart';
 import 'package:rrm/data/models/media_metadata_model.dart';
 import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/data/repositories/draft_repository.dart';
+import 'package:rrm/data/repositories/master_data_repository.dart';
 
 class CattleController extends GetxController {
+  final AppController appController = Get.find();
+  final MasterDataRepository _masterDataRepo = MasterDataRepository();
   final CattleService _cattleService = CattleService();
+  final QueueInsertionService _queueInsertionService = QueueInsertionService();
   final CattleRepository _cattleRepository = CattleRepository();
   final LeadRepository _leadRepository = LeadRepository();
   final MediaRepository _mediaRepository = MediaRepository();
@@ -49,7 +55,10 @@ class CattleController extends GetxController {
   TextEditingController buffalocountcontroller = TextEditingController();
   TextEditingController milklittercontroller = TextEditingController();
   TextEditingController buffalomoneycontroller = TextEditingController();
-  final AppController appController = Get.find();
+  TextEditingController tagnumbercontroller = TextEditingController();
+  TextEditingController newtagnumbercontroller = TextEditingController();
+  TextEditingController taggingdatecontroller = TextEditingController();
+  TextEditingController newtaggingdatecontroller = TextEditingController();
   bool isSubmitting = false;
   GlobalKey<FormState> formKey = GlobalKey();
   int totalCattleCount = 1;
@@ -59,10 +68,11 @@ class CattleController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
+    _loadMasterData();
     final Map<String, dynamic> args =
         (Get.arguments as Map<String, dynamic>?) ?? {};
     _initAsync(args);
-    super.onInit();
   }
 
   Future<void> _initAsync(Map<String, dynamic> args) async {
@@ -197,203 +207,64 @@ class CattleController extends GetxController {
   }
 
   // cattle page
-  final List<String> speciesnotavailable = [
-    'Not Purchased',
-    'Unhealthy Cattle',
-    'Unproductive Cattle',
-    'Under Value Cattle',
-  ];
+  List<String> speciesnotavailable = [];
+  List<String> speciesItems = [];
+  List<String> ageBuffaloCow = [];
+  List<String> ageSheepGoat = [];
+  List<String> breedItemsBuffalo = [];
+  List<String> breedItemsCow = [];
+  List<String> breedItemsSheep = [];
+  List<String> breedItemsGoat = [];
+  List<String> bodycolorItemsBuffalo = [];
+  List<String> bodycolorItemsCow = [];
+  List<String> bodycolorItemsSheep = [];
+  List<String> bodycolorItemsGoat = [];
+  List<String> righthornItemsBuffalo = [];
+  List<String> righthornItemsCow = [];
+  List<String> righthornItemsSheep = [];
+  List<String> righthornItemsGoat = [];
+  List<String> lefthornItemsBuffalo = [];
+  List<String> lefthornItemsCow = [];
+  List<String> lefthornItemsSheep = [];
+  List<String> lefthornItemsGoat = [];
+  List<String> tailcolorItems = [];
+  List<String> idmarkItems = [];
+  List<String> milkdayItems = [];
+  List<String> lactationItems = [];
 
-  final List<String> speciesItems = ['Buffalo', 'Cow', 'Sheep', 'Goat'];
-  final List<String> ageBuffaloCow = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    '11',
-    '12',
-  ];
-  final List<String> ageSheepGoat = [
-    '1',
-    '1.5',
-    '2',
-    '2.5',
-    '3',
-    '3.5',
-    '4',
-    '5',
-    '6',
-    '7',
-  ];
-  final List<String> breedItemsBuffalo = [
-    'Mehsani',
-    'Surati',
-    'Jafrabadi',
-    'Murrah',
-    'Banni',
-  ];
-  final List<String> breedItemsCow = [
-    'HF.Cross',
-    'Jr.Cross',
-    'Kankrej',
-    'Gir',
-    'Rathi',
-    'Nagori',
-    'Shahiwal',
-  ];
-  final List<String> breedItemsSheep = [
-    'Marwari',
-    'Magra',
-    'Chokla',
-    'Nali',
-    'Pugal',
-    'Jaisalmeri',
-    'Malpura',
-    'Sonadi',
-    'Patanwadi',
-  ];
-  final List<String> breedItemsGoat = [
-    'Kutchi',
-    'Surti',
-    'Zalawadi',
-    'Mehsana',
-    'Gohilwadi',
-    'Kahmi',
-    'Sirohi',
-    'Marwari',
-    'Jakhrana',
-    'Sojat',
-    'Karauli',
-    'Gujari',
-    "Jamunapari",
-    "Barbari",
-  ];
-  final List<String> bodycolorItemsBuffalo = ['Black', 'G.Black', 'Grey'];
-  final List<String> bodycolorItemsCow = [
-    'Black',
-    'Brown',
-    'Br&Bl',
-    'Bl&Wt',
-    'O.White',
-    'Br&Wt',
-    'WHITE',
-  ];
-  final List<String> bodycolorItemsSheep = [
-    'Black',
-    'Brown',
-    'Br&Bl',
-    'Bl&Wt',
-    'O.White',
-    'Br&Wt',
-    'Tan',
-    'WHITE',
-  ];
-  final List<String> bodycolorItemsGoat = [
-    'Black',
-    'Brown',
-    'Br&Bl',
-    'Bl&Wt',
-    'O.White',
-    'Br&Wt',
-    'Tan',
-    'WHITE',
-  ];
-  final List<String> righthornItemsBuffalo = [
-    'Sideward',
-    'Downward',
-    'Rolled',
-    'Curved',
-    'Broken',
-    'Sickle',
-  ];
-  final List<String> righthornItemsCow = [
-    'Dehorned',
-    'Forward',
-    'Short',
-    'Crescent',
-    'Downward',
-  ];
-  final List<String> righthornItemsSheep = [
-    'Polled',
-    'Curved',
-    'Twisted',
-    'Spiral',
-    'Button',
-  ];
-  final List<String> righthornItemsGoat = [
-    'Polled',
-    'Curved',
-    'Upward',
-    'Spiral',
-    'Sideward',
-    'Scurs',
-  ];
-  final List<String> lefthornItemsBuffalo = [
-    'Sideward',
-    'Downward',
-    'Rolled',
-    'Curved',
-    'Broken',
-    'Sickle',
-  ];
-  final List<String> lefthornItemsCow = [
-    'Dehorned',
-    'Forward',
-    'Short',
-    'Crescent',
-    'Downward',
-  ];
-  final List<String> lefthornItemsSheep = [
-    'Polled',
-    'Curved',
-    'Twisted',
-    'Spiral',
-    'Button',
-  ];
-  final List<String> lefthornItemsGoat = [
-    'Polled',
-    'Curved',
-    'Upward',
-    'Spiral',
-    'Sideward',
-    'Scurs',
-  ];
-  final List<String> tailcolorItems = ['Black', 'Gray', 'White', 'brown'];
-  final List<String> idmarkItems = ['Star', 'Nil'];
-  final List<String> milkdayItems = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    '11',
-    '12',
-    '13',
-    '14',
-    '15',
-  ];
-  final List<String> lactationItems = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-  ];
+  Future<void> _loadMasterData() async {
+    speciesnotavailable = await _masterDataRepo.getSpeciesNotAvailable();
+    speciesItems = await _masterDataRepo.getSpecies();
+    
+    ageBuffaloCow = await _masterDataRepo.getAges('Buffalo');
+    ageSheepGoat = await _masterDataRepo.getAges('Sheep');
+
+    breedItemsBuffalo = await _masterDataRepo.getBreeds('Buffalo');
+    breedItemsCow = await _masterDataRepo.getBreeds('Cow');
+    breedItemsSheep = await _masterDataRepo.getBreeds('Sheep');
+    breedItemsGoat = await _masterDataRepo.getBreeds('Goat');
+
+    bodycolorItemsBuffalo = await _masterDataRepo.getBodyColors('Buffalo');
+    bodycolorItemsCow = await _masterDataRepo.getBodyColors('Cow');
+    bodycolorItemsSheep = await _masterDataRepo.getBodyColors('Sheep');
+    bodycolorItemsGoat = await _masterDataRepo.getBodyColors('Goat');
+
+    righthornItemsBuffalo = await _masterDataRepo.getHornTypes('Buffalo');
+    righthornItemsCow = await _masterDataRepo.getHornTypes('Cow');
+    righthornItemsSheep = await _masterDataRepo.getHornTypes('Sheep');
+    righthornItemsGoat = await _masterDataRepo.getHornTypes('Goat');
+
+    lefthornItemsBuffalo = await _masterDataRepo.getHornTypes('Buffalo');
+    lefthornItemsCow = await _masterDataRepo.getHornTypes('Cow');
+    lefthornItemsSheep = await _masterDataRepo.getHornTypes('Sheep');
+    lefthornItemsGoat = await _masterDataRepo.getHornTypes('Goat');
+
+    tailcolorItems = await _masterDataRepo.getTailColors();
+    idmarkItems = await _masterDataRepo.getIdMarks();
+    milkdayItems = await _masterDataRepo.getMilkDays();
+    lactationItems = await _masterDataRepo.getLactations();
+    update(); // Rebuild UI once lists are loaded
+  }
   String? selectedspeciesnotavailable;
   String? selectedSpeciesValue;
   String? selectedAgeValue;
@@ -408,10 +279,7 @@ class CattleController extends GetxController {
   Rx<DateTime?> selectedDate = Rx<DateTime?>(DateTime.now());
   Rx<DateTime?> selectedDatenew = Rx<DateTime?>(DateTime.now());
 
-  TextEditingController tagnumbercontroller = TextEditingController();
-  TextEditingController newtagnumbercontroller = TextEditingController();
-  TextEditingController taggingdatecontroller = TextEditingController();
-  TextEditingController newtaggingdatecontroller = TextEditingController();
+
 
   bool get isSuccessfullyTagging {
     return selectedspeciesnotavailable == null ||
@@ -494,7 +362,8 @@ class CattleController extends GetxController {
       return;
     }
 
-    final pickedFile = await CameraService.captureImage();
+    final mediaUuid = const Uuid().v4();
+    final pickedFile = await CameraService.captureImage('cattle', mediaUuid);
     if (pickedFile != null) {
       File file = File(pickedFile.path);
 
@@ -503,7 +372,7 @@ class CattleController extends GetxController {
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file);
+        file = await ImageProcessingService.processImage(file, 'cattle', mediaUuid);
         file = await ImageWatermarkService.addWatermark(file, position);
       } catch (e) {
         print("Image processing error: $e");
@@ -515,7 +384,7 @@ class CattleController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getCaptureTypeString(isimage);
-        final mediaUuid = const Uuid().v4();
+        
         
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
@@ -578,12 +447,14 @@ class CattleController extends GetxController {
     if (result != null && result.files.single.path != null) {
       File file = File(result.files.single.path!);
 
+      final mediaUuid = const Uuid().v4();
+
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file);
+        file = await ImageProcessingService.processImage(file, 'cattle', mediaUuid);
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -594,7 +465,7 @@ class CattleController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getCaptureTypeString(isimage);
-        final mediaUuid = const Uuid().v4();
+        
         
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
@@ -1029,54 +900,37 @@ class CattleController extends GetxController {
 
       print("================================");
 
-      final resp = await _cattleService.submitCattle(
-        token: token,
-        payload: payload,
+      final extraction = await MediaExtractionHelper.extractMediaFields(payload, 'cattle');
+
+      await _queueInsertionService.enqueueSubmission(
+        operationType: isClaimFlow ? 'claim_cattle' : 'save_cattle',
+        entityType: 'cattle',
+        metadata: extraction.metadata,
+        mediaItems: extraction.mediaItems,
       );
 
-      final responseBody = await resp.stream.bytesToString();
+      final nextCompleted = completedCattleCount + 1;
 
-      final decoded = responseBody.isNotEmpty ? jsonDecode(responseBody) : {};
+      completedCattleCount = nextCompleted;
 
-      print("========== RESPONSE ==========");
-      print("STATUS => ${resp.statusCode}");
-      print("STATUS11111 => ${resp.stream}");
-      print("BODY => $decoded");
-      print("==============================");
+      if (nextCompleted < totalCattleCount) {
+        showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
 
-      if (resp.statusCode >= 200 &&
-          resp.statusCode < 300 &&
-          decoded['status'] == 'success') {
-        final nextCompleted = completedCattleCount + 1;
+        currentCattleIndex = nextCompleted + 1;
 
-        completedCattleCount = nextCompleted;
+        _resetCattleCaptureFormForNextStep();
 
-        if (nextCompleted < totalCattleCount) {
-          showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
-
-          currentCattleIndex = nextCompleted + 1;
-
-          print("STATUS11111 resp  :::::  => $resp");
-
-          _resetCattleCaptureFormForNextStep();
-
-          update();
-        } else {
-          showSnackBar("All cattle completed.", SNACK.SUCCESS);
-
-          Get.offNamed(
-            routesignaturepage,
-            arguments: {
-              "tagging": data,
-              "ischangepage": ischangepage,
-              "retagging": retagging,
-            },
-          );
-        }
+        update();
       } else {
-        showSnackBar(
-          decoded['message'] ?? 'Failed to save cattle.',
-          SNACK.FAILED,
+        showSnackBar("All cattle completed.", SNACK.SUCCESS);
+
+        Get.offNamed(
+          routesignaturepage,
+          arguments: {
+            "tagging": data,
+            "ischangepage": ischangepage,
+            "retagging": retagging,
+          },
         );
       }
     } catch (e) {

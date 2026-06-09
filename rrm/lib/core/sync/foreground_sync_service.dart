@@ -8,6 +8,7 @@ import 'queue_processor.dart';
 import 'connectivity_monitor.dart';
 import 'sync_coordinator.dart';
 import '../database/app_database.dart';
+import 'queue_cleanup_service.dart';
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
@@ -50,7 +51,9 @@ void onStart(ServiceInstance service) async {
 
   try {
     await coordinator.recoverCrashLocks();
+    await coordinator.recoverDeadLetters();
     await coordinator.syncNow();
+    await QueueCleanupService.executeCleanup();
   } catch (e) {
     debugPrint('Foreground Sync Error: $e');
   }

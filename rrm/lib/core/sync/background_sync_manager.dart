@@ -7,6 +7,7 @@ import 'connectivity_monitor.dart';
 import '../../data/repositories/sync_queue_repository.dart';
 import 'executors/http_queue_executor.dart';
 import '../database/app_database.dart';
+import 'queue_cleanup_service.dart';
 
 const syncTaskName = 'rrm_background_sync';
 
@@ -29,14 +30,16 @@ void callbackDispatcher() {
         connectivityMonitor: connectivityMonitor,
       );
 
-      // 3. Recover any crash locks
+      // 3. Recover any crash locks and dead letters
       await coordinator.recoverCrashLocks();
+      await coordinator.recoverDeadLetters();
 
       // 4. Force a sync
       await coordinator.syncNow();
 
       // 5. Storage Cleanup Task
       await _cleanupOldMedia(AppDatabase.instance);
+      await QueueCleanupService.executeCleanup();
 
       return Future.value(true);
     } catch (err) {

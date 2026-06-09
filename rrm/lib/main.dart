@@ -15,6 +15,7 @@ import 'core/database/app_database.dart';
 import 'core/storage/folder_manager.dart';
 import 'core/sync/background_sync_manager.dart';
 import 'core/sync/foreground_sync_service.dart';
+import 'core/master_data/master_data_seeder.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ void main() async {
 
   await getTemporaryDirectory();
   await AppDatabase.instance.database; // Initialize SQLite database
+  await MasterDataSeeder.seedIfNeeded(); // Seed static lookup data if needed
   await FolderManager.initializeStructure(); // Initialize Offline Folders
   await BackgroundSyncManager.initialize(); // Initialize M9 Workmanager
   await ForegroundSyncService.initialize(); // Initialize M9 Foreground Service

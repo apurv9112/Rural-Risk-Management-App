@@ -16,12 +16,33 @@ class V1InitialSchema {
     '''
     CREATE TABLE master_data (
       local_uuid TEXT PRIMARY KEY,
-      category TEXT,
+      server_id TEXT,
+      category TEXT NOT NULL,
       key TEXT,
-      value TEXT,
+      value TEXT NOT NULL,
       parent_key TEXT,
-      is_active INTEGER,
-      server_updated_at TEXT
+      sort_order INTEGER DEFAULT 0,
+      version INTEGER DEFAULT 1,
+      is_active INTEGER DEFAULT 1,
+      sync_source TEXT DEFAULT 'SEED',
+      server_updated_at TEXT,
+      updated_at TEXT,
+      deleted_at TEXT
+    )
+    ''',
+    '''
+    CREATE TABLE master_data_sync_state (
+        category TEXT PRIMARY KEY,
+        sync_session_id TEXT,
+        last_server_updated_at TEXT,
+        current_page INTEGER DEFAULT 1,
+        total_pages INTEGER DEFAULT 1,
+        sync_status TEXT,
+        last_successful_sync_at TEXT,
+        last_error TEXT,
+        started_at TEXT,
+        completed_at TEXT,
+        updated_at TEXT
     )
     ''',
     '''
@@ -98,7 +119,31 @@ class V1InitialSchema {
       idempotency_key TEXT NOT NULL,
       processing_started_at TEXT,
       created_at TEXT,
-      updated_at TEXT
+      updated_at TEXT,
+      media_status TEXT DEFAULT 'COMPLETED'
+    )
+    ''',
+    '''
+    CREATE TABLE media_queue (
+      media_uuid TEXT PRIMARY KEY,
+      queue_uuid TEXT NOT NULL,
+      workflow_type TEXT,
+      priority INTEGER DEFAULT 0,
+      local_file_path TEXT NOT NULL,
+      file_name TEXT NOT NULL,
+      mime_type TEXT,
+      file_size INTEGER NOT NULL,
+      checksum TEXT,
+      media_key_name TEXT NOT NULL,
+      remote_asset_id TEXT,
+      remote_upload_id TEXT,
+      uploaded_bytes INTEGER DEFAULT 0,
+      upload_status TEXT DEFAULT 'PENDING',
+      upload_attempts INTEGER DEFAULT 0,
+      last_error TEXT,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      FOREIGN KEY(queue_uuid) REFERENCES sync_queue(queue_uuid) ON DELETE CASCADE
     )
     ''',
     '''
@@ -147,6 +192,12 @@ class V1InitialSchema {
     'CREATE INDEX idx_cattle_tag ON cattle(tag_number);',
     'CREATE INDEX idx_leads_status ON leads(sync_status, deleted_at);',
     'CREATE INDEX idx_media_archive ON media_metadata(sync_status, created_at);',
-    'CREATE INDEX idx_queue_poll ON sync_queue(status, next_retry_at, dependency_queue_uuid);'
+    'CREATE INDEX idx_queue_poll ON sync_queue(status, next_retry_at, dependency_queue_uuid);',
+    'CREATE INDEX idx_queue_sort ON sync_queue(status, created_at);',
+    'CREATE INDEX idx_master_data_lookup ON master_data(category, parent_key, is_active, deleted_at);',
+    'CREATE INDEX idx_master_data_server ON master_data(server_id);',
+    'CREATE INDEX idx_master_data_updated ON master_data(server_updated_at);',
+    'CREATE INDEX idx_media_queue_uuid ON media_queue(queue_uuid);',
+    'CREATE INDEX idx_media_upload_status ON media_queue(upload_status);'
   ];
 }

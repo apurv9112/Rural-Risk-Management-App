@@ -29,7 +29,7 @@ class SyncQueueRepository extends BaseRepository {
       payloadJson: payloadJson,
       status: status,
       attemptCount: 0,
-      idempotencyKey: _uuid.v4(),
+      idempotencyKey: '$entityType:$entityUuid:$operationType',
       createdAt: now,
       updatedAt: now,
     );
@@ -105,6 +105,31 @@ class SyncQueueRepository extends BaseRepository {
     );
 
     return maps.map((e) => SyncQueueModel.fromMap(e)).toList();
+  }
+
+  /// Returns the total number of jobs with 'PENDING' status
+  Future<int> getPendingCount() async {
+    final database = await db;
+    final result = await database.rawQuery('SELECT COUNT(*) as c FROM $queueTable WHERE status = ?', ['PENDING']);
+    return (result.first['c'] as int?) ?? 0;
+  }
+
+  /// Returns the total number of jobs with 'DEAD_LETTER' status
+  Future<int> getDeadLetterCount() async {
+    final database = await db;
+    final result = await database.rawQuery('SELECT COUNT(*) as c FROM $queueTable WHERE status = ?', ['DEAD_LETTER']);
+    return (result.first['c'] as int?) ?? 0;
+  }
+
+  /// Returns the age in hours of the oldest 'PENDING' job
+  Future<int> getOldestPendingAge() async {
+    final database = await db;
+    final result = await database.rawQuery('SELECT MIN(created_at) as oldest FROM $queueTable WHERE status = ?', ['PENDING']);
+    final oldestStr = result.first['oldest'] as String?;
+    if (oldestStr == null) return 0;
+    
+    final oldestDate = DateTime.parse(oldestStr);
+    return DateTime.now().difference(oldestDate).inHours;
   }
 
   /// Internal logic verifying State Machine transitions

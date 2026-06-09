@@ -3,20 +3,36 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
+import '../core/storage/folder_manager.dart';
 
 class ImageProcessingService {
-  static Future<File> processImage(File sourceImage) async {
+  static Future<File> processImage(File sourceImage, String workflowType, String mediaUuid) async {
     final bytes = await sourceImage.readAsBytes();
     
     // Process image in a separate isolate to avoid UI jank
     final processedBytes = await compute(_processImageSync, bytes);
     
-    // Save to temp directory
+    // Save to temp directory first
     final tempDir = await getTemporaryDirectory();
     final tempPath = '${tempDir.path}/processed_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final resultFile = File(tempPath);
-    await resultFile.writeAsBytes(processedBytes);
-    return resultFile;
+    final tempFile = File(tempPath);
+    await tempFile.writeAsBytes(processedBytes);
+
+    // Move to persistent storage using FolderManager
+    final persistentFile = await FolderManager.moveFromCache(tempFile, workflowType, mediaUuid, 'jpg');
+    
+    // Delete original source image if it was in cache
+    if (sourceImage.path.contains('/cache/') || sourceImage.path.contains('/tmp/')) {
+      if (await sourceFileExists(sourceImage)) {
+        await sourceImage.delete();
+      }
+    }
+
+    return persistentFile;
+  }
+
+  static Future<bool> sourceFileExists(File file) async {
+    return await file.exists();
   }
 
   static List<int> _processImageSync(List<int> bytes) {
