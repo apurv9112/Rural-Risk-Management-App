@@ -416,6 +416,41 @@ class Homepage extends StatelessWidget {
                 name: "CATTLE \nRETAGGING",
                 context: context,
               ),
+
+              SizedBox(height: hp(3)),
+
+              // DRAFTS & SYNC BUTTON
+              Obx(() => Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  customcontainer(
+                    onTap: () async {
+                      await Get.toNamed('/drafts');
+                      controller.updateDraftCount(); // refresh on return
+                    },
+                    logo: 'assets/images/home_logo_1.png', // Fallback, could use custom icon
+                    rowwidth: wp(10),
+                    name: "DRAFTS &\nSYNC",
+                    context: context,
+                  ),
+                  if (controller.draftCount.value > 0)
+                    Positioned(
+                      top: -10,
+                      right: 15,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          controller.draftCount.value.toString(),
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                ],
+              )),
             ],
           ),
         );

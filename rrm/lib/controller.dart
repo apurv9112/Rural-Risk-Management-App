@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:rrm/core/master_data/master_data_manager.dart';
 
 class AppController extends GetxController {
   final _box = GetStorage();
@@ -10,11 +11,17 @@ class AppController extends GetxController {
     super.onInit();
     loadUserData();
     token.value = _box.read('token') ?? '';
+    
+    // Attempt offline cache sync if token exists
+    if (token.value.isNotEmpty) {
+      MasterDataManager().syncMasterDataIfNeeded(token.value);
+    }
   }
 
   void setToken(String value) {
     token.value = value;
     _box.write('token', value);
+    MasterDataManager().syncMasterDataIfNeeded(value);
   }
 
   Future<void> clearToken() async {

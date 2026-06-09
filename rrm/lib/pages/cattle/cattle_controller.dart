@@ -22,12 +22,14 @@ import 'package:rrm/data/models/cattle_model.dart';
 import 'package:rrm/data/models/lead_model.dart';
 import 'package:rrm/data/models/media_metadata_model.dart';
 import 'package:rrm/services/image_watermark_service.dart';
+import 'package:rrm/data/repositories/draft_repository.dart';
 
 class CattleController extends GetxController {
   final CattleService _cattleService = CattleService();
   final CattleRepository _cattleRepository = CattleRepository();
   final LeadRepository _leadRepository = LeadRepository();
   final MediaRepository _mediaRepository = MediaRepository();
+  final DraftRepository _draftRepository = DraftRepository();
 
   
   String localCattleUuid = const Uuid().v4();
@@ -59,17 +61,37 @@ class CattleController extends GetxController {
   void onInit() {
     final Map<String, dynamic> args =
         (Get.arguments as Map<String, dynamic>?) ?? {};
-    syncFromArgs(args);
-    selectedSpeciesValue ??= speciesItems.first; // Set default to first item
+    _initAsync(args);
     super.onInit();
   }
 
-  void syncFromArgs(Map<String, dynamic> args) {
+  Future<void> _initAsync(Map<String, dynamic> args) async {
+    await syncFromArgs(args);
+    selectedSpeciesValue ??= speciesItems.first; // Set default to first item
+    update();
+  }
+
+  Future<void> syncFromArgs(Map<String, dynamic> args) async {
     data = args["tagging"] ?? data;
     ischangepage = args["ischangepage"] ?? ischangepage;
     retagging = args["retagging"] ?? retagging;
 
-    if (data is Map<String, dynamic>) {
+    if (args.containsKey("leadUuid")) {
+      localLeadUuid = args["leadUuid"];
+      final loadedData = await _leadRepository.loadDraftLead(localLeadUuid!);
+      if (loadedData != null && loadedData['lead'] != null) {
+        final LeadModel draftLead = loadedData['lead'];
+        data = {
+          "id": draftLead.serverId,
+          "local_uuid": draftLead.localUuid,
+          "numberOfBuffalo": 0, // Should be calculated
+          "numberOfCow": 0, // Should be calculated
+          "sumInsuredBuffalo": 0,
+          "sumInsuredCow": 0,
+        };
+        totalCattleCount = draftLead.totalCattleCount ?? 1;
+      }
+    } else if (data is Map<String, dynamic>) {
       localLeadUuid = data["local_uuid"] ?? localLeadUuid;
     }
 
@@ -80,12 +102,8 @@ class CattleController extends GetxController {
     if (totalCattleCount < 1) totalCattleCount = 1;
     currentCattleIndex =
         _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
-    _initializeTagFields();
-    currentCattleIndex =
-        _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
-
+    
     _prepareCattleSequence();
-
     _initializeTagFields();
   }
 
@@ -874,6 +892,15 @@ class CattleController extends GetxController {
           await _leadRepository.updateDraftLead(completedLead);
         }
       }
+
+      // Save draft progress
+      await _draftRepository.saveDraftProgress(
+        entityUuid: localLeadUuid ?? taggingId.toString(),
+        workflowType: retagging == "retagging" ? 'Retagging' : (isClaimFlow ? 'Claim' : 'Tagging'),
+        currentStep: 2, // Step 2: Cattle
+        lastScreenRoute: routecattlepage,
+        completionPercentage: 50.0 + (50.0 * (completedCattleCount / totalCattleCount)),
+      );
     } catch (e) {
       debugPrint("Failed to persist draft cattle: $e");
     }

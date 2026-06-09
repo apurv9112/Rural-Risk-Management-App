@@ -76,6 +76,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rrm/controller.dart';
 import 'package:signature/signature.dart';
+import 'package:rrm/data/repositories/draft_repository.dart';
+import 'package:sqflite/sqflite.dart';
 
 class HomeController extends GetxController {
   String? retagging = "retagging";
@@ -83,6 +85,9 @@ class HomeController extends GetxController {
   AppController appController = Get.find();
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final DraftRepository _draftRepository = DraftRepository();
+
+  RxInt draftCount = 0.obs;
 
   /// SIGNATURE FILE PATH
   RxString signaturePath = "".obs;
@@ -102,6 +107,27 @@ class HomeController extends GetxController {
 
     /// LOAD SAVED SIGNATURE
     loadSavedSignature();
+    
+    /// LOAD DRAFT COUNT
+    updateDraftCount();
+  }
+
+  Future<void> updateDraftCount() async {
+    try {
+      final database = await _draftRepository.db;
+      
+      final int draftsCount = (Sqflite.firstIntValue(
+          await database.rawQuery("SELECT COUNT(*) FROM leads WHERE sync_status IN ('DRAFT', 'COMPLETED_LOCALLY') AND deleted_at IS NULL")
+      ) ?? 0);
+
+      final int queueCount = (Sqflite.firstIntValue(
+          await database.rawQuery("SELECT COUNT(*) FROM sync_queue WHERE status IN ('PENDING', 'DEAD_LETTER', 'CONFLICT')")
+      ) ?? 0);
+
+      draftCount.value = draftsCount + queueCount;
+    } catch (e) {
+      print("Error fetching draft count: $e");
+    }
   }
 
   /// SAVE SIGNATURE

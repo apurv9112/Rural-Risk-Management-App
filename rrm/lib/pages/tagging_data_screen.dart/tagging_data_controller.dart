@@ -13,9 +13,10 @@ import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
-import '../../routes/common/common_app_pages.dart';
+import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/data/repositories/lead_repository.dart';
 import 'package:rrm/data/models/lead_model.dart';
+import 'package:rrm/data/repositories/draft_repository.dart';
 
 
 class TaggingdataController extends GetxController {
@@ -25,6 +26,7 @@ class TaggingdataController extends GetxController {
   // final ClaimService _claimService = ClaimService();
   final CancelLeadService _cancelLeadService = CancelLeadService();
   final LeadRepository _leadRepository = LeadRepository();
+  final DraftRepository _draftRepository = DraftRepository();
   
   String localLeadUuid = const Uuid().v4();
   bool draftCreated = false;
@@ -70,10 +72,30 @@ class TaggingdataController extends GetxController {
   bool _fieldsInitialized = false;
   List<Uint8List> imageBytesList = [];
 
-  void setInitialData(Map<String, dynamic> args) {
+  void setInitialData(Map<String, dynamic> args) async {
     if (data != null) return;
 
     manualtagging = args["manualtagging"] ?? false;
+
+    if (args.containsKey("leadUuid")) {
+      final leadUuid = args["leadUuid"];
+      localLeadUuid = leadUuid;
+      final loadedData = await _leadRepository.loadDraftLead(leadUuid);
+      if (loadedData != null && loadedData['lead'] != null) {
+        final LeadModel draftLead = loadedData['lead'];
+        data = {
+          "id": draftLead.serverId,
+          "local_uuid": draftLead.localUuid,
+          "ownerName": draftLead.ownerName,
+          "mobileNo": draftLead.mobileNumber,
+          "village": draftLead.village,
+        };
+        draftCreated = true;
+        initFieldsFromData(data as Map<String, dynamic>, Get.context!);
+        update();
+        return;
+      }
+    }
 
     if (manualtagging == true) {
       data = {
@@ -96,11 +118,6 @@ class TaggingdataController extends GetxController {
       data = args["tagging"] ?? args["retagging"] ?? args["claim"];
     }
   }
-  // void setInitialData(Map<String, dynamic> args) {
-  //   if (data != null) return;
-
-  //   data = args["tagging"] ?? args["retagging"] ?? args["claim"];
-  // }
 
   void initFieldsFromData(Map<String, dynamic> dataMap, BuildContext context) {
     if (_fieldsInitialized) return;
@@ -335,6 +352,15 @@ class TaggingdataController extends GetxController {
       } else if (draftCreated) {
         await _leadRepository.updateDraftLead(leadModel);
       }
+
+      // Save draft progress
+      await _draftRepository.saveDraftProgress(
+        entityUuid: localLeadUuid,
+        workflowType: retagging != null ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
+        currentStep: 1, // Step 1: Farmer/Lead Details
+        lastScreenRoute: routetaggingdatapage,
+        completionPercentage: 20.0,
+      );
 
       // Inject localUuid so Cattle screen can pick it up
       if (data is Map<String, dynamic>) {

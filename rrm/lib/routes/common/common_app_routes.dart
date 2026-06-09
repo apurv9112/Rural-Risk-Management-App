@@ -22,6 +22,8 @@ import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_binding.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_screen.dart';
 import 'package:rrm/pages/tagging/tagging_screen.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
+import 'package:rrm/pages/drafts/draft_dashboard_screen.dart';
+import 'package:rrm/pages/drafts/draft_dashboard_binding.dart';
 
 //COMMON APP ROUTE HERE
 
@@ -82,6 +84,11 @@ class CommonRoutes {
       name: routesignaturepage,
       page: () => SignaturePage(),
       binding: SignatureBinding(),
+    ),
+    GetPage(
+      name: routedraftspage,
+      page: () => const DraftDashboardScreen(),
+      binding: DraftDashboardBinding(),
     ),
   ];
 }

@@ -15,10 +15,15 @@ import 'package:uuid/uuid.dart';
 import 'package:rrm/services/camera_service.dart';
 import 'package:rrm/data/repositories/media_repository.dart';
 import 'package:rrm/data/models/media_metadata_model.dart';
+import 'package:rrm/data/repositories/draft_repository.dart';
+import 'package:rrm/data/repositories/lead_repository.dart';
+import 'package:rrm/data/models/lead_model.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
   final MediaRepository _mediaRepository = MediaRepository();
+  final DraftRepository _draftRepository = DraftRepository();
+  final LeadRepository _leadRepository = LeadRepository();
 
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilecontroller = TextEditingController();
@@ -51,18 +56,34 @@ class KycController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
     final args = (Get.arguments as Map<String, dynamic>?) ?? {};
+    _initAsync(args);
+  }
 
+  Future<void> _initAsync(Map<String, dynamic> args) async {
     data = args["tagging"];
     ischangepage = args["ischangepage"];
     retagging = args["retagging"];
+
+    if (args.containsKey("leadUuid")) {
+      localLeadUuid = args["leadUuid"];
+      final loadedData = await _leadRepository.loadDraftLead(localLeadUuid!);
+      if (loadedData != null && loadedData['lead'] != null) {
+        final LeadModel draftLead = loadedData['lead'];
+        data = {
+          "id": draftLead.serverId,
+          "local_uuid": draftLead.localUuid,
+          "ownerName": draftLead.ownerName,
+          "mobileNo": draftLead.mobileNumber,
+        };
+      }
+    }
 
     final tagging = data as Map<String, dynamic>?;
 
     ownerName = (tagging?["ownerName"] ?? '').toString();
     mobileNo = (tagging?["mobileNo"] ?? '').toString();
-    localLeadUuid = tagging?["local_uuid"];
+    localLeadUuid ??= tagging?["local_uuid"];
 
     namecontroller.text = ownerName;
     mobilecontroller.text = mobileNo;
@@ -70,7 +91,7 @@ class KycController extends GetxController {
     debugPrint("KYC INIT → ID: ${data?["id"]}");
     debugPrint("Flow → ischangepage: $ischangepage, retagging: $retagging");
 
-    // checkKycStatus();
+    update();
   }
 
   // ================= IMAGE PICKER =================
@@ -367,6 +388,19 @@ class KycController extends GetxController {
       if (statusCode >= 200 && statusCode < 300) {
         showSnackBar(message, SNACK.SUCCESS);
 
+        // Save draft progress
+        try {
+          await _draftRepository.saveDraftProgress(
+            entityUuid: localLeadUuid ?? data["id"].toString(),
+            workflowType: retagging == "retagging" ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
+            currentStep: 3, // Step 3: KYC
+            lastScreenRoute: routekycpage,
+            completionPercentage: 80.0,
+          );
+        } catch (e) {
+          debugPrint("Failed to save KYC progress: $e");
+        }
+
         await Future.delayed(const Duration(seconds: 1));
 
         if (Get.isDialogOpen ?? false) {
@@ -385,6 +419,19 @@ class KycController extends GetxController {
       // ================= ALREADY UPLOADED =================
       else if (message.toString().toLowerCase().contains("already uploaded")) {
         showSnackBar(message, SNACK.FAILED);
+
+        // Save draft progress
+        try {
+          await _draftRepository.saveDraftProgress(
+            entityUuid: localLeadUuid ?? data["id"].toString(),
+            workflowType: retagging == "retagging" ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
+            currentStep: 3, // Step 3: KYC
+            lastScreenRoute: routekycpage,
+            completionPercentage: 80.0,
+          );
+        } catch (e) {
+          debugPrint("Failed to save KYC progress: $e");
+        }
 
         await Future.delayed(const Duration(seconds: 2));
 

@@ -128,6 +128,16 @@ class V1InitialSchema {
       resolved_at TEXT,
       created_at TEXT
     )
+    ''',
+    '''
+    CREATE TABLE draft_progress (
+      entity_uuid TEXT PRIMARY KEY,
+      workflow_type TEXT,
+      current_step INTEGER,
+      last_screen_route TEXT,
+      completion_percentage REAL,
+      updated_at TEXT
+    )
     '''
   ];
 
