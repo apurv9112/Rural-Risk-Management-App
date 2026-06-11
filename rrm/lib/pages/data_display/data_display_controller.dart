@@ -60,62 +60,6 @@ class DatadisplayController extends GetxController {
     fetchCompletedLeads();
   }
 
-  // Future<void> fetchCompletedLeads() async {
-  //   if (isLoading) return;
-
-  //   final String token = appController.token.value;
-  //   if (token.isEmpty) {
-  //     showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
-  //     return;
-  //   }
-
-  //   try {
-  //     isLoading = true;
-  //     update();
-
-  //     late final http.Response response;
-  //     switch (dataType) {
-  //       case "claimdata":
-  //         response = await _claimService.completed(token: token);
-  //         break;
-  //       case "retaggingdata":
-  //         response = await _retaggingService.completed(token: token);
-  //         break;
-  //       default:
-  //         response = await _taggingService.completed(token: token);
-  //     }
-
-  //     debugPrint("$dataType completed response: "
-  //         "status=${response.statusCode}, body=${response.body}");
-
-  //     final decoded = jsonDecode(response.body);
-  //     final bool isOk = response.statusCode >= 200 && response.statusCode < 300;
-
-  //     if (isOk && decoded["status"] == "success") {
-  //       final data = decoded["data"];
-  //       // API may return data under different keys
-  //       completedLeads = data is List
-  //           ? data
-  //           : (data?["taggings"] ?? data?["retaggings"] ?? data?["claims"] ?? data?["leads"] ?? []);
-  //       filteredLeads = List.from(completedLeads);
-  //     } else {
-  //       final msg = decoded["message"] ?? "Failed to fetch data";
-  //       if (response.statusCode == 401) {
-  //         appController.clearToken();
-  //         showSnackBar("Session expired. Please log in again.", SNACK.FAILED);
-  //       } else {
-  //         showSnackBar(msg, SNACK.FAILED);
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Fetch completed leads error: $e");
-  //     showSnackBar("Unable to fetch data. Check connection and retry.", SNACK.FAILED);
-  //   } finally {
-  //     isLoading = false;
-  //     update();
-  //   }
-  // }
-
   Future<void> fetchCompletedLeads() async {
     if (isLoading) return;
 
@@ -194,55 +138,6 @@ class DatadisplayController extends GetxController {
       update();
     }
   }
-
-  // Future<void> searchLeads(String searchString) async {
-  //   if (searchString.trim().isEmpty) {
-  //     filteredLeads = List.from(completedLeads);
-  //     update();
-  //     return;
-  //   }
-
-  //   final String token = appController.token.value;
-  //   if (token.isEmpty) return;
-
-  //   try {
-  //     isSearching = true;
-  //     update();
-
-  //     late final http.Response response;
-  //     switch (dataType) {
-  //       case "claimdata":
-  //         response = await _claimService.searchCompleted(
-  //             token: token, searchString: searchString.trim());
-  //         break;
-  //       case "retaggingdata":
-  //         response = await _retaggingService.searchCompleted(
-  //             token: token, searchString: searchString.trim());
-  //         break;
-  //       default:
-  //         response = await _taggingService.searchCompleted(
-  //             token: token, searchString: searchString.trim());
-  //     }
-
-  //     final decoded = jsonDecode(response.body);
-  //     final bool isOk = response.statusCode >= 200 && response.statusCode < 300;
-
-  //     if (isOk && decoded["status"] == "success") {
-  //       final data = decoded["data"];
-  //       filteredLeads = data is List
-  //           ? data
-  //           : (data?["taggings"] ?? data?["retaggings"] ?? data?["claims"] ?? data?["leads"] ?? []);
-  //     } else {
-  //       showSnackBar(decoded["message"] ?? "Search failed", SNACK.FAILED);
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Search error: $e");
-  //     showSnackBar("Search failed. Try again.", SNACK.FAILED);
-  //   } finally {
-  //     isSearching = false;
-  //     update();
-  //   }
-  // }
 
   Future<void> searchLeads(String searchString) async {
     if (searchString.trim().isEmpty) {
@@ -356,92 +251,66 @@ class DatadisplayController extends GetxController {
     return null;
   }
 
-  // Future<void> downloadCertificate(String id) async {
-  //   final String token = appController.token.value;
-  //   if (token.isEmpty) return;
+  Future<void> debugDownloadCertificate(String tagNo) async {
+    final token = appController.token.value;
 
-  //   try {
-  //     Get.dialog(
-  //       const Center(child: CircularProgressIndicator()),
-  //       barrierDismissible: false,
-  //     );
+    try {
+      final response = await _taggingService.downloadHealthCertificate(
+        token: token,
+        tagNo: tagNo,
+      );
 
-  //     late final http.Response response;
-  //     switch (dataType) {
-  //       case "claimdata":
-  //         response = await _claimService.downloadCertificate(
-  //           token: token,
-  //           id: id,
-  //         );
-  //         break;
-  //       case "retaggingdata":
-  //         response = await _retaggingService.downloadCertificate(
-  //           token: token,
-  //           id: id,
-  //         );
-  //         break;
-  //       default:
-  //         response = await _taggingService.downloadHealthCertificate(
-  //           token: token,
-  //           id: id,
-  //         );
-  //     }
+      debugPrint("");
+      debugPrint("================================");
+      debugPrint("CERTIFICATE DOWNLOAD RESPONSE");
+      debugPrint("================================");
 
-  //     if (Get.isDialogOpen ?? false) Get.back();
+      debugPrint("STATUS : ${response.statusCode}");
+      debugPrint("HEADERS : ${response.headers}");
+      debugPrint("BODY LENGTH : ${response.bodyBytes.length}");
 
-  //     if (response.statusCode >= 200 && response.statusCode < 300) {
-  //       showSnackBar("Certificate downloaded successfully", SNACK.SUCCESS);
-  //     } else {
-  //       final decoded = jsonDecode(response.body);
-  //       showSnackBar(decoded["message"] ?? "Download failed", SNACK.FAILED);
-  //     }
-  //   } catch (e) {
-  //     if (Get.isDialogOpen ?? false) Get.back();
-  //     debugPrint("Download certificate error: $e");
-  //     showSnackBar("Download failed. Try again.", SNACK.FAILED);
-  //   }
-  // }
+      try {
+        debugPrint(
+          "BODY : ${response.body.substring(0, response.body.length > 500 ? 500 : response.body.length)}",
+        );
+      } catch (_) {}
 
-  // Future<void> downloadAllCertificates() async {
-  //   final String token = appController.token.value;
-  //   if (token.isEmpty) return;
+      debugPrint("================================");
+    } catch (e) {
+      debugPrint("DOWNLOAD ERROR : $e");
+    }
+  }
 
-  //   try {
-  //     Get.dialog(
-  //       const Center(child: CircularProgressIndicator()),
-  //       barrierDismissible: false,
-  //     );
+  Future<void> debugDownloadAllCertificates(String taggingId) async {
+    debugPrint("TAGGING ID SENT = $taggingId");
+    final token = appController.token.value;
 
-  //     late final http.Response response;
-  //     switch (dataType) {
-  //       case "claimdata":
-  //         response = await _claimService.downloadAllCertificates(token: token);
-  //         break;
-  //       case "retaggingdata":
-  //         response = await _retaggingService.downloadAllCertificates(
-  //           token: token,
-  //         );
-  //         break;
-  //       default:
-  //         response = await _taggingService.downloadAllHealthCertificates(
-  //           token: token,
-  //         );
-  //     }
+    try {
+      final response = await _taggingService.downloadAllHealthCertificates(
+        token: token,
+        taggingId: taggingId,
+      );
 
-  //   if (Get.isDialogOpen ?? false) Get.back();
+      debugPrint("");
+      debugPrint("================================");
+      debugPrint("DOWNLOAD ALL RESPONSE");
+      debugPrint("================================");
 
-  //   if (response.statusCode >= 200 && response.statusCode < 300) {
-  //     showSnackBar("All certificates downloaded successfully", SNACK.SUCCESS);
-  //   } else {
-  //     final decoded = jsonDecode(response.body);
-  //     showSnackBar(decoded["message"] ?? "Download failed", SNACK.FAILED);
-  //   }
-  // } catch (e) {
-  //   if (Get.isDialogOpen ?? false) Get.back();
-  //   debugPrint("Download all certificates error: $e");
-  //   showSnackBar("Download failed. Try again.", SNACK.FAILED);
-  // }
-  // }
+      debugPrint("STATUS : ${response.statusCode}");
+      debugPrint("HEADERS : ${response.headers}");
+      debugPrint("BODY LENGTH : ${response.bodyBytes.length}");
+
+      try {
+        debugPrint(
+          "BODY : ${response.body.substring(0, response.body.length > 500 ? 500 : response.body.length)}",
+        );
+      } catch (_) {}
+
+      debugPrint("================================");
+    } catch (e) {
+      debugPrint("DOWNLOAD ALL ERROR : $e");
+    }
+  }
 
   @override
   void onClose() {

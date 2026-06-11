@@ -67,4 +67,14 @@ class ClaimService {
     "Content-Type": "application/json",
     "Authorization": "Bearer $token",
   };
+
+  Future<http.Response> downloadHealthCertificate({
+    required String token,
+    required String tagNo,
+  }) {
+    return _client.get(
+      Uri.parse("$baseUrl/field-worker/health-certificates/$tagNo/download"),
+      headers: _authHeaders(token),
+    );
+  }
 }
