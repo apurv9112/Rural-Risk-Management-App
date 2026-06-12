@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rrm/core/storage/folder_manager.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
@@ -13,11 +14,14 @@ import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
+
+import 'package:rrm/dependency_injection.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
 import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/services/camera_service.dart';
 
 class CattleController extends GetxController {
-  final CattleService _cattleService = CattleService();
+
 
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
@@ -37,7 +41,7 @@ class CattleController extends GetxController {
   int totalCattleCount = 1;
   int completedCattleCount = 0;
   int currentCattleIndex = 1;
-  bool _isTagFieldsInitialized = false;
+
   List<Map<String, dynamic>> cattleSequence = [];
 
   @override
@@ -511,7 +515,7 @@ class CattleController extends GetxController {
       allowMultiple: false, // Only one for dropdown
     );
     if (result != null && result.files.single.path != null) {
-      File file = File(result.files.single.path!);
+      File file = await FolderManager.moveFromCache(File(result.files.single.path!), workflow: 'temp');
 
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
@@ -611,10 +615,11 @@ class CattleController extends GetxController {
     final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
 
     if (pickedVideo != null) {
+      final persistentFile = await FolderManager.moveFromCache(File(pickedVideo.path), workflow: 'temp');
       isvideo == 1
-          ? videopath1 = pickedVideo.path
+          ? videopath1 = persistentFile.path
           : isvideo == 2
-          ? videopath2 = pickedVideo.path
+          ? videopath2 = persistentFile.path
           : null;
     }
 
@@ -631,10 +636,11 @@ class CattleController extends GetxController {
     );
 
     if (result != null && result.files.single.path != null) {
+      final persistentFile = await FolderManager.moveFromCache(File(result.files.single.path!), workflow: 'temp');
       isvideo == 1
-          ? videopath1 = result.files.single.path!
+          ? videopath1 = persistentFile.path
           : isvideo == 2
-          ? videopath2 = result.files.single.path!
+          ? videopath2 = persistentFile.path
           : null;
     }
     print("galleryVideo 1 => $videopath1");
@@ -661,8 +667,14 @@ class CattleController extends GetxController {
     );
 
     if (result != null) {
-      galleryFiles.value = result.paths.map((path) => File(path!)).toList();
-      // print("Picked files: ${galleryFiles.value.map((f) => f.path)}");
+      List<File> processedFiles = [];
+      for (var path in result.paths) {
+        if (path != null) {
+          final persistentFile = await FolderManager.moveFromCache(File(path), workflow: 'temp');
+          processedFiles.add(persistentFile);
+        }
+      }
+      galleryFiles.value = processedFiles;
     }
     update();
   }
@@ -871,54 +883,37 @@ class CattleController extends GetxController {
 
       print("================================");
 
-      final resp = await _cattleService.submitCattle(
-        token: token,
-        payload: payload,
+      final queueService = getIt<QueueInsertionService>();
+      await queueService.enqueuePayload(
+        payload,
+        endpoint: "/field-worker/save-cattle",
       );
 
-      final responseBody = await resp.stream.bytesToString();
+      // Simulate a small delay for smooth UI transition
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      final decoded = responseBody.isNotEmpty ? jsonDecode(responseBody) : {};
+      final nextCompleted = completedCattleCount + 1;
 
-      print("========== RESPONSE ==========");
-      print("STATUS => ${resp.statusCode}");
-      print("STATUS11111 => ${resp.stream}");
-      print("BODY => $decoded");
-      print("==============================");
+      completedCattleCount = nextCompleted;
 
-      if (resp.statusCode >= 200 &&
-          resp.statusCode < 300 &&
-          decoded['status'] == 'success') {
-        final nextCompleted = completedCattleCount + 1;
+      if (nextCompleted < totalCattleCount) {
+        showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
 
-        completedCattleCount = nextCompleted;
+        currentCattleIndex = nextCompleted + 1;
 
-        if (nextCompleted < totalCattleCount) {
-          showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
+        _resetCattleCaptureFormForNextStep();
 
-          currentCattleIndex = nextCompleted + 1;
-
-          print("STATUS11111 resp  :::::  => $resp");
-
-          _resetCattleCaptureFormForNextStep();
-
-          update();
-        } else {
-          showSnackBar("All cattle completed.", SNACK.SUCCESS);
-
-          Get.offNamed(
-            routesignaturepage,
-            arguments: {
-              "tagging": data,
-              "ischangepage": ischangepage,
-              "retagging": retagging,
-            },
-          );
-        }
+        update();
       } else {
-        showSnackBar(
-          decoded['message'] ?? 'Failed to save cattle.',
-          SNACK.FAILED,
+        showSnackBar("All cattle completed.", SNACK.SUCCESS);
+
+        Get.offNamed(
+          routesignaturepage,
+          arguments: {
+            "tagging": data,
+            "ischangepage": ischangepage,
+            "retagging": retagging,
+          },
         );
       }
     } catch (e) {

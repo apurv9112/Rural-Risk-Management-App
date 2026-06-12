@@ -13,13 +13,15 @@ import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../routes/common/common_app_pages.dart';
+import 'package:rrm/dependency_injection.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
   // final RetaggingService _retaggingService = RetaggingService();
   // final ClaimService _claimService = ClaimService();
-  final CancelLeadService _cancelLeadService = CancelLeadService();
+
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -391,40 +393,28 @@ class TaggingdataController extends GetxController {
         images.add(selectedOther3.value!);
       }
 
-      final response = await _cancelLeadService.cancelLead(
-        token: token,
-        leadId: id,
-        leadType: leadType,
-        reason: selectedReasonDropdown!,
-        otherReason: selectedReasonDropdown == "Other" ? "Custom Reason" : null,
-        images: images,
-      );
+      final payload = <String, dynamic>{
+        "leadId": id,
+        "leadType": leadType,
+        "reason": selectedReasonDropdown!,
+        "otherReason": selectedReasonDropdown == "Other" ? "Custom Reason" : null,
+        "cancellationImages": images,
+      };
+
+      final queueService = getIt<QueueInsertionService>();
+      await queueService.enqueuePayload(payload, endpoint: "/field-worker/cancel-lead");
+
+      await Future.delayed(const Duration(milliseconds: 500));
 
       // ✅ CLOSE LOADER SAFELY
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
 
-      final responseBody = await response.stream.bytesToString();
-
-      print("========= CANCEL RESPONSE =========");
-      print(response.statusCode);
-      print(responseBody);
-
-      final decoded = jsonDecode(responseBody);
-
-      // ✅ SUCCESS
-      if (response.statusCode >= 200 &&
-          response.statusCode < 300 &&
-          decoded["status"] == "success") {
-        Get.offAllNamed(
-          routehomepage,
-          arguments: {"success": "Lead cancelled successfully"},
-        );
-      } else {
-        // ❌ NO SNACKBAR HERE
-        debugPrint(decoded["message"] ?? "Cancel failed");
-      }
+      Get.offAllNamed(
+        routehomepage,
+        arguments: {"success": "Lead cancelled successfully"},
+      );
     } catch (e) {
       if (Get.isDialogOpen ?? false) {
         Get.back();

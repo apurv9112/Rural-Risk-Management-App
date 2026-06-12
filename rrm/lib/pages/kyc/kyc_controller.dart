@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +8,19 @@ import 'package:rrm/controller.dart';
 import 'package:rrm/services/kyc_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/utils/responsive.dart';
-import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/image_processing_service.dart';
 import 'package:rrm/services/camera_service.dart';
+import 'package:rrm/dependency_injection.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
+import 'package:rrm/widgets/snackbar_widget.dart';
+import 'package:rrm/core/storage/folder_manager.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilecontroller = TextEditingController();
-  final KycService _kycService = KycService();
+
   dynamic data;
   String? ischangepage;
   String? retagging;
@@ -130,7 +133,7 @@ class KycController extends GetxController {
     );
 
     if (result != null && result.files.single.path != null) {
-      File file = File(result.files.single.path!);
+      File file = await FolderManager.moveFromCache(File(result.files.single.path!), workflow: 'temp');
 
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
@@ -273,74 +276,31 @@ class KycController extends GetxController {
     );
 
     try {
-      final response = await _kycService.uploadKyc(
-        token: token,
-        leadId: data["id"].toString(),
-        leadType: leadType,
-        files: uploadFiles,
+      final payload = <String, dynamic>{
+        "leadId": data["id"].toString(),
+        "leadType": leadType,
+        "files": uploadFiles,
+      };
+
+      final queueService = getIt<QueueInsertionService>();
+      await queueService.enqueuePayload(payload, endpoint: "/field-worker/save-kyc");
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      showSnackBar("KYC Saved Successfully", SNACK.SUCCESS);
+
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      Get.toNamed(
+        routecattlepage,
+        arguments: {
+          "tagging": data,
+          "ischangepage": ischangepage,
+          "retagging": retagging,
+        },
       );
-
-      final statusCode = response["statusCode"];
-
-      final decoded =
-          response["body"] != null && response["body"].toString().isNotEmpty
-          ? jsonDecode(response["body"])
-          : {};
-
-      print("========== RESPONSE ==========");
-      print("STATUS CODE => $statusCode");
-      print("BODY => $decoded");
-      print("==============================");
-
-      final message = decoded["message"] ?? "Something went wrong";
-
-      // ================= SUCCESS =================
-
-      if (statusCode >= 200 && statusCode < 300) {
-        showSnackBar(message, SNACK.SUCCESS);
-
-        await Future.delayed(const Duration(seconds: 1));
-
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-
-        Get.toNamed(
-          routecattlepage,
-          arguments: {
-            "tagging": data,
-            "ischangepage": ischangepage,
-            "retagging": retagging,
-          },
-        );
-      }
-      // ================= ALREADY UPLOADED =================
-      else if (message.toString().toLowerCase().contains("already uploaded")) {
-        showSnackBar(message, SNACK.FAILED);
-
-        await Future.delayed(const Duration(seconds: 2));
-
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-
-        Get.toNamed(
-          routecattlepage,
-          arguments: {
-            "tagging": data,
-            "ischangepage": ischangepage,
-            "retagging": retagging,
-          },
-        );
-      }
-      // ================= OTHER ERRORS =================
-      else {
-        showSnackBar(message, SNACK.FAILED);
-
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-      }
     } catch (e) {
       print("========== KYC ERROR ==========");
       print(e.toString());

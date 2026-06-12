@@ -11,6 +11,7 @@ import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
+import 'package:rrm/widgets/sync_dashboard_widget.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -376,47 +377,56 @@ class Homepage extends StatelessWidget {
 
           drawer: customdrawer(context: context),
 
-          body: Column(
-            children: [
-              SizedBox(height: hp(12)),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: hp(2)),
 
-              customcontainer(
-                onTap: () {
-                  Get.toNamed(routetaggingpage);
-                },
-                context: context,
-                logo: 'assets/images/home_logo_1.png',
-                rowwidth: wp(10),
-                name: "CATTLE \nTAGGING",
-              ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: wp(6)),
+                  child: const SyncDashboardWidget(),
+                ),
 
-              SizedBox(height: hp(3)),
+                SizedBox(height: hp(3)),
 
-              customcontainer(
-                onTap: () {
-                  Get.toNamed(routeclaimpage);
-                },
-                logo: 'assets/images/home_logo_2.png',
-                rowwidth: wp(15),
-                name: 'CATTLE \nCLAIM',
-                context: context,
-              ),
+                customcontainer(
+                  onTap: () {
+                    Get.toNamed(routetaggingpage);
+                  },
+                  context: context,
+                  logo: 'assets/images/home_logo_1.png',
+                  rowwidth: wp(10),
+                  name: "CATTLE \nTAGGING",
+                ),
 
-              SizedBox(height: hp(3)),
+                SizedBox(height: hp(3)),
 
-              customcontainer(
-                onTap: () {
-                  Get.toNamed(
-                    routeclaimpage,
-                    arguments: {"retagging": controller.retagging},
-                  );
-                },
-                logo: 'assets/images/home_logo_3.png',
-                rowwidth: wp(7),
-                name: "CATTLE \nRETAGGING",
-                context: context,
-              ),
-            ],
+                customcontainer(
+                  onTap: () {
+                    Get.toNamed(routeclaimpage);
+                  },
+                  logo: 'assets/images/home_logo_2.png',
+                  rowwidth: wp(15),
+                  name: 'CATTLE \nCLAIM',
+                  context: context,
+                ),
+
+                SizedBox(height: hp(3)),
+
+                customcontainer(
+                  onTap: () {
+                    Get.toNamed(
+                      routeclaimpage,
+                      arguments: {"retagging": controller.retagging},
+                    );
+                  },
+                  logo: 'assets/images/home_logo_3.png',
+                  rowwidth: wp(7),
+                  name: "CATTLE \nRETAGGING",
+                  context: context,
+                ),
+              ],
+            ),
           ),
         );
       },

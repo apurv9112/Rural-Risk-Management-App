@@ -77,7 +77,7 @@ class LocationService {
     if (status.isGranted) {
       try {
         Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
+            locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
         return position;
       } catch (e) {
         return await Geolocator.getLastKnownPosition();
