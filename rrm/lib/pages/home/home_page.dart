@@ -11,7 +11,7 @@ import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
-import 'package:rrm/widgets/sync_dashboard_widget.dart';
+
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -382,10 +382,7 @@ class Homepage extends StatelessWidget {
               children: [
                 SizedBox(height: hp(2)),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: wp(6)),
-                  child: const SyncDashboardWidget(),
-                ),
+
 
                 SizedBox(height: hp(3)),
 

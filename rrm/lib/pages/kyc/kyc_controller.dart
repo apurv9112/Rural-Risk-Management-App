@@ -11,8 +11,8 @@ import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/image_processing_service.dart';
 import 'package:rrm/services/camera_service.dart';
-import 'package:rrm/dependency_injection.dart';
-import 'package:rrm/services/offline/queue_insertion_service.dart';
+
+
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/core/storage/folder_manager.dart';
 
@@ -276,14 +276,17 @@ class KycController extends GetxController {
     );
 
     try {
-      final payload = <String, dynamic>{
-        "leadId": data["id"].toString(),
-        "leadType": leadType,
-        "files": uploadFiles,
-      };
+      final kycService = KycService();
+      final response = await kycService.uploadKyc(
+        token: token,
+        leadId: data["id"].toString(),
+        leadType: leadType,
+        files: uploadFiles,
+      );
 
-      final queueService = getIt<QueueInsertionService>();
-      await queueService.enqueuePayload(payload, endpoint: "/field-worker/save-kyc");
+      if (response["statusCode"] != 200 && response["statusCode"] != 201) {
+        throw Exception("Failed to upload KYC: ${response["body"]}");
+      }
 
       await Future.delayed(const Duration(milliseconds: 500));
 

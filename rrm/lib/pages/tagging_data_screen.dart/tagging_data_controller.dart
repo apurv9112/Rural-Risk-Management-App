@@ -13,8 +13,8 @@ import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../routes/common/common_app_pages.dart';
-import 'package:rrm/dependency_injection.dart';
-import 'package:rrm/services/offline/queue_insertion_service.dart';
+
+
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
@@ -393,16 +393,19 @@ class TaggingdataController extends GetxController {
         images.add(selectedOther3.value!);
       }
 
-      final payload = <String, dynamic>{
-        "leadId": id,
-        "leadType": leadType,
-        "reason": selectedReasonDropdown!,
-        "otherReason": selectedReasonDropdown == "Other" ? "Custom Reason" : null,
-        "cancellationImages": images,
-      };
+      final cancelService = CancelLeadService();
+      final response = await cancelService.cancelLead(
+        token: token,
+        leadId: id,
+        leadType: leadType,
+        reason: selectedReasonDropdown!,
+        otherReason: selectedReasonDropdown == "Other" ? "Custom Reason" : null,
+        images: images,
+      );
 
-      final queueService = getIt<QueueInsertionService>();
-      await queueService.enqueuePayload(payload, endpoint: "/field-worker/cancel-lead");
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception("Failed to cancel lead");
+      }
 
       await Future.delayed(const Duration(milliseconds: 500));
 

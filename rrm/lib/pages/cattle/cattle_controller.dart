@@ -15,8 +15,8 @@ import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
 
-import 'package:rrm/dependency_injection.dart';
-import 'package:rrm/services/offline/queue_insertion_service.dart';
+
+
 import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/services/camera_service.dart';
 
@@ -883,11 +883,15 @@ class CattleController extends GetxController {
 
       print("================================");
 
-      final queueService = getIt<QueueInsertionService>();
-      await queueService.enqueuePayload(
-        payload,
-        endpoint: "/field-worker/save-cattle",
+      final cattleService = CattleService();
+      final response = await cattleService.submitCattle(
+        token: token,
+        payload: payload,
       );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception("Failed to save cattle. Server responded with ${response.statusCode}");
+      }
 
       // Simulate a small delay for smooth UI transition
       await Future.delayed(const Duration(milliseconds: 500));

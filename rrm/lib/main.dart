@@ -7,9 +7,6 @@ import 'package:rrm/routes/common/common_app_pages.dart';
 
 import 'controller.dart';
 import 'utils/colors.dart';
-import 'package:rrm/services/offline/sync_coordinator.dart';
-import 'package:rrm/services/offline/connectivity_service.dart';
-import 'package:rrm/services/offline/background_sync_manager.dart';
 import 'package:get_storage/get_storage.dart';
 
 void main() async {
@@ -19,13 +16,6 @@ void main() async {
 
   initDependencies();
   
-  // Initialize Background Sync Infrastructure
-  final coordinator = getIt<SyncCoordinator>();
-  await coordinator.init(); // Recovers stale locks & runs if needed
-  
-  getIt<ConnectivityService>().init();
-  getIt<BackgroundSyncManager>().init();
-  getIt<BackgroundSyncManager>().registerRecoveryTask();
   Get.put(AppController());
   Get.put(DeviceController());
 
