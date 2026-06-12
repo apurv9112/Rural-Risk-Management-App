@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rrm/pages/data_display/data_display_controller.dart';
@@ -208,9 +210,16 @@ class OwnerDatadisplaypage extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(width: wp(5)),
-                              Image.asset(
-                                "assets/images/download.png",
-                                scale: dp(context, 16),
+                              GestureDetector(
+                                onTap: () {
+                                  controller.debugDownloadCertificate(
+                                    (cattle["tagNo"] ?? "").toString(),
+                                  );
+                                },
+                                child: Image.asset(
+                                  "assets/images/download.png",
+                                  scale: dp(context, 16),
+                                ),
                               ),
                             ],
                           ),
@@ -224,7 +233,17 @@ class OwnerDatadisplaypage extends StatelessWidget {
                         vertical: hp(1),
                       ),
                       margin: EdgeInsets.symmetric(horizontal: wp(0)),
-                      onTap: () {},
+                      onTap: () {
+                        debugPrint("DATA LIST = ${jsonEncode(dataList)}");
+
+                        controller.debugDownloadAllCertificates(
+                          (dataList["id"] ??
+                                  dataList["_id"] ??
+                                  dataList["taggingId"] ??
+                                  "")
+                              .toString(),
+                        );
+                      },
                       logo: 'assets/images/download.png',
                       imgheight: hp(5),
 
@@ -251,6 +270,7 @@ datarow({
 }) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
         staticdata,
@@ -259,11 +279,13 @@ datarow({
           fontWeight: FontWeight.w500,
         ),
       ),
-      Text(
-        listdata,
-        style: TextStyle(
-          fontSize: dp(context, 18),
-          fontWeight: FontWeight.w300,
+      Expanded(
+        child: Text(
+          listdata,
+          style: TextStyle(
+            fontSize: dp(context, 18),
+            fontWeight: FontWeight.w300,
+          ),
         ),
       ),
     ],

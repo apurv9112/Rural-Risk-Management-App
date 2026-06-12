@@ -1,36 +1,32 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
-import 'package:rrm/services/kyc_service.dart';
+import 'package:rrm/data/models/lead_model.dart';
+import 'package:rrm/data/models/media_metadata_model.dart';
+import 'package:rrm/data/repositories/lead_repository.dart';
+import 'package:rrm/data/repositories/media_repository.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/utils/responsive.dart';
-import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/image_processing_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:rrm/services/camera_service.dart';
-import 'package:rrm/data/repositories/media_repository.dart';
-import 'package:rrm/data/models/media_metadata_model.dart';
-import 'package:rrm/data/repositories/draft_repository.dart';
-import 'package:rrm/data/repositories/lead_repository.dart';
-import 'package:rrm/data/models/lead_model.dart';
+import 'package:rrm/dependency_injection.dart';
 import 'package:rrm/services/offline/queue_insertion_service.dart';
-import 'package:rrm/services/offline/media_extraction_helper.dart';
+import 'package:rrm/widgets/snackbar_widget.dart';
+import 'package:rrm/core/storage/folder_manager.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
   final MediaRepository _mediaRepository = MediaRepository();
-  final DraftRepository _draftRepository = DraftRepository();
+  
   final LeadRepository _leadRepository = LeadRepository();
 
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilecontroller = TextEditingController();
-  final KycService _kycService = KycService();
-  final QueueInsertionService _queueInsertionService = QueueInsertionService();
   dynamic data;
   String? ischangepage;
   String? retagging;
@@ -111,7 +107,11 @@ class KycController extends GetxController {
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file, 'kyc', mediaUuid);
+        file = await ImageProcessingService.processImage(
+          file,
+          'kyc',
+          mediaUuid,
+        );
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -122,8 +122,7 @@ class KycController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getKycCaptureType(isimage);
-        
-        
+
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
           cattleUuid: null, // KYC is tied to Lead, not Cattle
@@ -187,7 +186,10 @@ class KycController extends GetxController {
     );
 
     if (result != null && result.files.single.path != null) {
-      File file = File(result.files.single.path!);
+      File file = await FolderManager.moveFromCache(
+        File(result.files.single.path!),
+        workflow: 'temp',
+      );
 
       final mediaUuid = const Uuid().v4();
 
@@ -196,7 +198,11 @@ class KycController extends GetxController {
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file, 'kyc', mediaUuid);
+        file = await ImageProcessingService.processImage(
+          file,
+          'kyc',
+          mediaUuid,
+        );
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -207,8 +213,7 @@ class KycController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getKycCaptureType(isimage);
-        
-        
+
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
           cattleUuid: null,
@@ -267,12 +272,18 @@ class KycController extends GetxController {
 
   String _getKycCaptureType(int? imageType) {
     switch (imageType) {
-      case 1: return 'aadharFront';
-      case 2: return 'aadharBack';
-      case 3: return 'panFront';
-      case 4: return 'bankDetails1';
-      case 5: return 'bankDetails2';
-      default: return 'otherKyc';
+      case 1:
+        return 'aadharFront';
+      case 2:
+        return 'aadharBack';
+      case 3:
+        return 'panFront';
+      case 4:
+        return 'bankDetails1';
+      case 5:
+        return 'bankDetails2';
+      default:
+        return 'otherKyc';
     }
   }
 
@@ -368,39 +379,21 @@ class KycController extends GetxController {
     );
 
     try {
-      final extraction = await MediaExtractionHelper.extractMediaFields(
-        {
-          "leadId": data["id"].toString(),
-          "leadType": leadType,
-          "files": uploadFiles,
-        },
-        'kyc',
+      final payload = <String, dynamic>{
+        "leadId": data["id"].toString(),
+        "leadType": leadType,
+        "files": uploadFiles,
+      };
+
+      final queueService = getIt<QueueInsertionService>();
+      await queueService.enqueuePayload(
+        payload,
+        endpoint: "/field-worker/save-kyc",
       );
 
-      await _queueInsertionService.enqueueSubmission(
-        operationType: 'upload_kyc',
-        entityType: 'kyc',
-        metadata: extraction.metadata,
-        mediaItems: extraction.mediaItems,
-      );
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      final message = "KYC upload queued successfully";
-      showSnackBar(message, SNACK.SUCCESS);
-
-      // Save draft progress
-      try {
-        await _draftRepository.saveDraftProgress(
-          entityUuid: localLeadUuid ?? data["id"].toString(),
-          workflowType: retagging == "retagging" ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
-          currentStep: 3, // Step 3: KYC
-          lastScreenRoute: routekycpage,
-          completionPercentage: 80.0,
-        );
-      } catch (e) {
-        debugPrint("Failed to save KYC progress: $e");
-      }
-
-      await Future.delayed(const Duration(seconds: 1));
+      showSnackBar("KYC Saved Successfully", SNACK.SUCCESS);
 
       if (Get.isDialogOpen ?? false) {
         Get.back();

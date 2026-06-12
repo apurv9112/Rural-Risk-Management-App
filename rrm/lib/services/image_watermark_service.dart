@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
+import 'package:rrm/core/storage/folder_manager.dart';
 
 class ImageWatermarkService {
   static Future<File> addWatermark(File sourceImage, Position? position) async {
@@ -28,10 +28,24 @@ class ImageWatermarkService {
     
     final processedBytes = await compute(_addWatermarkSync, watermarkData);
     
-    final tempDir = await getTemporaryDirectory();
-    final tempPath = '${tempDir.path}/watermarked_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final resultFile = File(tempPath);
+    final targetDir = await FolderManager.getDirectoryForWorkflow('temp');
+    final fileName = FolderManager.generateFileName('temp', 'jpg');
+    final targetPath = '$targetDir/$fileName';
+    final resultFile = File(targetPath);
+    
     await resultFile.writeAsBytes(processedBytes);
+    
+    // Service-level cleanup: Delete source only after successful generation
+    if (await resultFile.exists() && await resultFile.length() > 0) {
+      try {
+        if (await sourceImage.exists()) {
+          await sourceImage.delete();
+        }
+      } catch (e) {
+        debugPrint("Failed to clean up source image in watermark service: $e");
+      }
+    }
+    
     return resultFile;
   }
 

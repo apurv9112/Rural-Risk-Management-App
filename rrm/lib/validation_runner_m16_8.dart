@@ -20,7 +20,7 @@ void main() async {
 
   print("--- STEP 1: Image Cache Migration ---");
   print("Initial cache path: ${tempFile.path}");
-  final persistentFile = await FolderManager.moveFromCache(tempFile, 'tagging', uuid, 'jpg');
+  final persistentFile = await FolderManager.moveFromCache(tempFile, workflow: 'tagging', uuid: uuid, extension: 'jpg');
   print("Persistent path: ${persistentFile.path}");
 
   if (await persistentFile.exists()) {
@@ -89,7 +89,7 @@ void main() async {
     final restartTemp = File(p.join(tempDir.path, 'cache_restart.jpg'));
     await restartTemp.writeAsString("restart_test_data_123");
     
-    final restartPersistent = await FolderManager.moveFromCache(restartTemp, 'claim', const Uuid().v4(), 'jpg');
+    final restartPersistent = await FolderManager.moveFromCache(restartTemp, workflow: 'claim', uuid: const Uuid().v4(), extension: 'jpg');
     
     await restartStateFile.writeAsString(restartPersistent.path);
     print("Test image created at: ${restartPersistent.path}");

@@ -203,7 +203,7 @@ class DraftDashboardScreen extends GetView<DraftDashboardController> {
     try {
       final date = DateTime.parse(isoString).toLocal();
       // Simple format for now
-      return "\${date.day}/\${date.month} \${date.hour}:\${date.minute.toString().padLeft(2, '0')}";
+      return "${date.day}/${date.month} ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
     } catch (e) {
       return '';
     }

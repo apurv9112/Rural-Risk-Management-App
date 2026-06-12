@@ -96,4 +96,26 @@ class TaggingService {
     "Content-Type": "application/json",
     "Authorization": "Bearer $token",
   };
+
+  Future<http.Response> downloadHealthCertificate({
+    required String token,
+    required String tagNo,
+  }) {
+    return _client.get(
+      Uri.parse("$baseUrl/field-worker/health-certificates/$tagNo/download"),
+      headers: _authHeaders(token),
+    );
+  }
+
+  Future<http.Response> downloadAllHealthCertificates({
+    required String token,
+    required String taggingId,
+  }) {
+    return _client.get(
+      Uri.parse(
+        "$baseUrl/field-worker/owner-cattle/$taggingId/health-certificates/download-all",
+      ),
+      headers: _authHeaders(token),
+    );
+  }
 }

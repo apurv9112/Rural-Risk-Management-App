@@ -1,88 +1,90 @@
-import 'dart:convert';
-import 'package:sqflite/sqflite.dart';
-import 'package:uuid/uuid.dart';
-
-import '../../core/database/app_database.dart';
-
-class MediaQueueItem {
-  final String mediaUuid;
-  final String localFilePath;
-  final String fileName;
-  final String mimeType;
-  final int fileSizeBytes;
-  final String checksum;
-  final String mediaKeyName;
-
-  MediaQueueItem({
-    required this.mediaUuid,
-    required this.localFilePath,
-    required this.fileName,
-    required this.mimeType,
-    required this.fileSizeBytes,
-    required this.checksum,
-    required this.mediaKeyName,
-  });
-}
+import 'dart:io';
+import 'package:rrm/core/database/repositories/sync_queue_repository.dart';
+import 'package:rrm/core/database/repositories/media_queue_repository.dart';
+import 'queue_models.dart';
 
 class QueueInsertionService {
-  final Database? db;
+  final SyncQueueRepository syncQueueRepository;
+  final MediaQueueRepository mediaQueueRepository;
 
-  QueueInsertionService({this.db});
+  QueueInsertionService({
+    required this.syncQueueRepository,
+    required this.mediaQueueRepository,
+  });
 
-  Future<Database> get _db async => db ?? await AppDatabase.instance.database;
-
-  Future<String> enqueueSubmission({
-    required String operationType,
-    required String entityType,
-    required Map<String, dynamic> metadata,
-    required List<MediaQueueItem> mediaItems,
-    String dependencyQueueUuid = '',
-    String? entityUuid,
+  /// Inserts a generic payload containing a mix of JSON fields and File objects.
+  /// Automatically partitions Files into `media_queue` and the rest into `sync_queue`.
+  Future<String> enqueuePayload(
+    Map<String, dynamic> rawPayload, {
+    required String endpoint,
   }) async {
-    final database = await _db;
-    final uuid = const Uuid();
-    final queueUuid = uuid.v4();
+    final String syncQueueId = 'sync_${DateTime.now().microsecondsSinceEpoch}';
 
-    await database.transaction((txn) async {
-      // 1. Create Parent sync_queue row
-      final hasMedia = mediaItems.isNotEmpty;
-      final payloadJson = jsonEncode(metadata);
+    final Map<String, dynamic> jsonPayload = {};
+    final List<MediaQueue> mediaTasks = [];
 
-      await txn.insert('sync_queue', {
-        'queue_uuid': queueUuid,
-        'dependency_queue_uuid': dependencyQueueUuid.isEmpty ? null : dependencyQueueUuid,
-        'entity_type': entityType,
-        'entity_uuid': entityUuid,
-        'operation_type': operationType,
-        'payload_json': payloadJson,
-        'status': hasMedia ? 'BLOCKED_BY_MEDIA' : 'PENDING',
-        'media_status': hasMedia ? 'PENDING' : 'COMPLETED',
-        'idempotency_key': 'idem_$queueUuid',
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      });
-
-      // 2. Create Child media_queue rows
-      for (int i = 0; i < mediaItems.length; i++) {
-        final item = mediaItems[i];
-        await txn.insert('media_queue', {
-          'media_uuid': item.mediaUuid,
-          'queue_uuid': queueUuid,
-          'workflow_type': entityType,
-          'priority': mediaItems.length - i, // First items have higher priority
-          'local_file_path': item.localFilePath,
-          'file_name': item.fileName,
-          'mime_type': item.mimeType,
-          'file_size': item.fileSizeBytes,
-          'checksum': item.checksum,
-          'media_key_name': item.mediaKeyName,
-          'upload_status': 'PENDING',
-          'created_at': DateTime.now().millisecondsSinceEpoch,
-          'updated_at': DateTime.now().millisecondsSinceEpoch,
-        });
+    rawPayload.forEach((key, value) {
+      if (value is File) {
+        mediaTasks.add(_createMediaQueue(syncQueueId, key, value));
+      } else if (value is List) {
+        // Handle array of files
+        if (value.isNotEmpty && value.first is File) {
+          for (int i = 0; i < value.length; i++) {
+            mediaTasks.add(
+              _createMediaQueue(
+                syncQueueId,
+                key,
+                value[i] as File,
+                arrayIndex: i,
+              ),
+            );
+          }
+        } else {
+          // Standard JSON array
+          jsonPayload[key] = value;
+        }
+      } else {
+        // Standard JSON primitive
+        jsonPayload[key] = value;
       }
     });
 
-    return queueUuid;
+    final syncQueue = SyncQueue(
+      id: syncQueueId,
+      state: SyncState.PENDING,
+      payload: jsonPayload,
+    );
+    // Add endpoint or tag to payload if needed by transport later.
+    jsonPayload['_endpoint'] = endpoint;
+
+    await syncQueueRepository.insert(syncQueue);
+
+    for (var media in mediaTasks) {
+      await mediaQueueRepository.insert(media);
+    }
+
+    return syncQueueId;
+  }
+
+  MediaQueue _createMediaQueue(
+    String syncQueueId,
+    String fieldName,
+    File file, {
+    int? arrayIndex,
+  }) {
+    final String mediaId =
+        'media_${DateTime.now().microsecondsSinceEpoch}_${file.path.hashCode}';
+
+    final int sizeBytes = file.existsSync() ? file.lengthSync() : 0;
+
+    return MediaQueue(
+      id: mediaId,
+      syncQueueId: syncQueueId,
+      filePath: file.path,
+      totalSizeBytes: sizeBytes,
+      state: MediaState.PENDING,
+      fieldName: fieldName,
+      arrayIndex: arrayIndex,
+    );
   }
 }

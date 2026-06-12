@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rrm/core/database/app_database.dart';
 import 'package:rrm/core/storage/media_cleanup_service.dart';
-import 'package:rrm/data/dao/media_dao.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

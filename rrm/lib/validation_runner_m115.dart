@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rrm/core/database/app_database.dart';
-import 'package:rrm/core/master_data/master_data_seeder.dart';
 import 'package:rrm/data/repositories/master_data_repository.dart';
 
 void main() async {

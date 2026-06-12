@@ -1,11 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
+import 'package:uuid/uuid.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rrm/core/storage/folder_manager.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
@@ -13,35 +15,31 @@ import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
-import 'package:uuid/uuid.dart';
+import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/services/camera_service.dart';
 import 'package:rrm/data/repositories/cattle_repository.dart';
 import 'package:rrm/data/repositories/lead_repository.dart';
 import 'package:rrm/data/repositories/media_repository.dart';
-import 'package:rrm/services/offline/queue_insertion_service.dart';
-import 'package:rrm/services/offline/media_extraction_helper.dart';
+
 import 'package:rrm/data/models/cattle_model.dart';
 import 'package:rrm/data/models/lead_model.dart';
 import 'package:rrm/data/models/media_metadata_model.dart';
-import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/data/repositories/draft_repository.dart';
 import 'package:rrm/data/repositories/master_data_repository.dart';
 
 class CattleController extends GetxController {
-  final AppController appController = Get.find();
-  final MasterDataRepository _masterDataRepo = MasterDataRepository();
   final CattleService _cattleService = CattleService();
-  final QueueInsertionService _queueInsertionService = QueueInsertionService();
-  final CattleRepository _cattleRepository = CattleRepository();
-  final LeadRepository _leadRepository = LeadRepository();
-  final MediaRepository _mediaRepository = MediaRepository();
-  final DraftRepository _draftRepository = DraftRepository();
 
-  
+  String? localLeadUuid;
   String localCattleUuid = const Uuid().v4();
   bool draftCreated = false;
-  String? localLeadUuid; // Can be passed via args if available.
 
+  final LeadRepository _leadRepository = LeadRepository();
+  final MasterDataRepository _masterDataRepo = MasterDataRepository();
+  final MediaRepository _mediaRepository = MediaRepository();
+  final CattleRepository _cattleRepository = CattleRepository();
+  final DraftRepository _draftRepository = DraftRepository();
+  final AppController appController = Get.find<AppController>();
 
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
@@ -112,7 +110,7 @@ class CattleController extends GetxController {
     if (totalCattleCount < 1) totalCattleCount = 1;
     currentCattleIndex =
         _parseInt(args["cattleIndex"]) ?? (completedCattleCount + 1);
-    
+
     _prepareCattleSequence();
     _initializeTagFields();
   }
@@ -235,7 +233,7 @@ class CattleController extends GetxController {
   Future<void> _loadMasterData() async {
     speciesnotavailable = await _masterDataRepo.getSpeciesNotAvailable();
     speciesItems = await _masterDataRepo.getSpecies();
-    
+
     ageBuffaloCow = await _masterDataRepo.getAges('Buffalo');
     ageSheepGoat = await _masterDataRepo.getAges('Sheep');
 
@@ -265,6 +263,7 @@ class CattleController extends GetxController {
     lactationItems = await _masterDataRepo.getLactations();
     update(); // Rebuild UI once lists are loaded
   }
+
   String? selectedspeciesnotavailable;
   String? selectedSpeciesValue;
   String? selectedAgeValue;
@@ -278,8 +277,6 @@ class CattleController extends GetxController {
   String? selectedlactationValue;
   Rx<DateTime?> selectedDate = Rx<DateTime?>(DateTime.now());
   Rx<DateTime?> selectedDatenew = Rx<DateTime?>(DateTime.now());
-
-
 
   bool get isSuccessfullyTagging {
     return selectedspeciesnotavailable == null ||
@@ -372,7 +369,11 @@ class CattleController extends GetxController {
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file, 'cattle', mediaUuid);
+        file = await ImageProcessingService.processImage(
+          file,
+          'cattle',
+          mediaUuid,
+        );
         file = await ImageWatermarkService.addWatermark(file, position);
       } catch (e) {
         print("Image processing error: $e");
@@ -384,8 +385,7 @@ class CattleController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getCaptureTypeString(isimage);
-        
-        
+
         final metadata = MediaMetadataModel(
           localUuid: mediaUuid,
           cattleUuid: localCattleUuid,
@@ -401,7 +401,7 @@ class CattleController extends GetxController {
           targetFileName: mediaUuid,
           metadata: metadata,
         );
-        
+
         // After successful permanent save, we keep the original file path variable updated for UI,
         // although ideally the UI would point to the new permanent file. We'll leave the temp file variable for UI for now.
       } catch (e) {
@@ -447,14 +447,17 @@ class CattleController extends GetxController {
     if (result != null && result.files.single.path != null) {
       File file = File(result.files.single.path!);
 
-      final mediaUuid = const Uuid().v4();
-
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
       try {
-        file = await ImageProcessingService.processImage(file, 'cattle', mediaUuid);
+        final mediaUuid = const Uuid().v4();
+        file = await ImageProcessingService.processImage(
+          file,
+          'cattle',
+          mediaUuid,
+        );
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -465,10 +468,9 @@ class CattleController extends GetxController {
       // ================= PERSIST MEDIA OFFLINE =================
       try {
         final captureType = _getCaptureTypeString(isimage);
-        
-        
+
         final metadata = MediaMetadataModel(
-          localUuid: mediaUuid,
+          localUuid: const Uuid().v4(),
           cattleUuid: localCattleUuid,
           leadUuid: localLeadUuid,
           captureType: captureType,
@@ -479,7 +481,7 @@ class CattleController extends GetxController {
         await _mediaRepository.saveDraftMedia(
           tempFile: file,
           workflowType: 'cattle',
-          targetFileName: mediaUuid,
+          targetFileName: const Uuid().v4(),
           metadata: metadata,
         );
       } catch (e) {
@@ -572,10 +574,14 @@ class CattleController extends GetxController {
     final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
 
     if (pickedVideo != null) {
+      final persistentFile = await FolderManager.moveFromCache(
+        File(pickedVideo.path),
+        workflow: 'temp',
+      );
       isvideo == 1
-          ? videopath1 = pickedVideo.path
+          ? videopath1 = persistentFile.path
           : isvideo == 2
-          ? videopath2 = pickedVideo.path
+          ? videopath2 = persistentFile.path
           : null;
     }
 
@@ -592,10 +598,14 @@ class CattleController extends GetxController {
     );
 
     if (result != null && result.files.single.path != null) {
+      final persistentFile = await FolderManager.moveFromCache(
+        File(result.files.single.path!),
+        workflow: 'temp',
+      );
       isvideo == 1
-          ? videopath1 = result.files.single.path!
+          ? videopath1 = persistentFile.path
           : isvideo == 2
-          ? videopath2 = result.files.single.path!
+          ? videopath2 = persistentFile.path
           : null;
     }
     print("galleryVideo 1 => $videopath1");
@@ -622,22 +632,39 @@ class CattleController extends GetxController {
     );
 
     if (result != null) {
-      galleryFiles.value = result.paths.map((path) => File(path!)).toList();
-      // print("Picked files: ${galleryFiles.value.map((f) => f.path)}");
+      List<File> processedFiles = [];
+      for (var path in result.paths) {
+        if (path != null) {
+          final persistentFile = await FolderManager.moveFromCache(
+            File(path),
+            workflow: 'temp',
+          );
+          processedFiles.add(persistentFile);
+        }
+      }
+      galleryFiles.value = processedFiles;
     }
     update();
   }
 
   String _getCaptureTypeString(int? imageType) {
     switch (imageType) {
-      case 1: return 'earTagImage';
-      case 2: return 'headPoseImage';
-      case 3: return 'leftPoseImage';
-      case 4: return 'rightPoseImage';
-      case 5: return 'backPoseImage';
-      case 11: return 'cutEarImage';
-      case 12: return 'earTagBackImage';
-      default: return 'otherImage';
+      case 1:
+        return 'earTagImage';
+      case 2:
+        return 'headPoseImage';
+      case 3:
+        return 'leftPoseImage';
+      case 4:
+        return 'rightPoseImage';
+      case 5:
+        return 'backPoseImage';
+      case 11:
+        return 'cutEarImage';
+      case 12:
+        return 'earTagBackImage';
+      default:
+        return 'otherImage';
     }
   }
 
@@ -731,14 +758,18 @@ class CattleController extends GetxController {
         localUuid: localCattleUuid,
         leadUuid: localLeadUuid ?? taggingId.toString(),
         serverId: null, // Populated after sync
-        tagNumber: retagging == "retagging" ? newtagnumbercontroller.text.trim() : tagnumbercontroller.text.trim(),
+        tagNumber: retagging == "retagging"
+            ? newtagnumbercontroller.text.trim()
+            : tagnumbercontroller.text.trim(),
         species: selectedSpeciesValue?.toUpperCase(),
         breed: selectedbreedValue?.toUpperCase(),
         age: selectedAgeValue,
         syncStatus: status,
       );
 
-      if (!draftCreated && (selectedSpeciesValue != null || tagnumbercontroller.text.trim().isNotEmpty)) {
+      if (!draftCreated &&
+          (selectedSpeciesValue != null ||
+              tagnumbercontroller.text.trim().isNotEmpty)) {
         await _cattleRepository.saveDraftCattle(cattleModel);
         draftCreated = true;
       } else if (draftCreated) {
@@ -747,7 +778,9 @@ class CattleController extends GetxController {
 
       // If we finished the sequence, we should ideally mark Lead as COMPLETED_LOCALLY.
       if (isCompleted && localLeadUuid != null) {
-        final loadedLeadMap = await _leadRepository.loadDraftLead(localLeadUuid!);
+        final loadedLeadMap = await _leadRepository.loadDraftLead(
+          localLeadUuid!,
+        );
         if (loadedLeadMap != null && loadedLeadMap['lead'] != null) {
           final oldLead = loadedLeadMap['lead'] as LeadModel;
           final completedLead = LeadModel(
@@ -767,10 +800,13 @@ class CattleController extends GetxController {
       // Save draft progress
       await _draftRepository.saveDraftProgress(
         entityUuid: localLeadUuid ?? taggingId.toString(),
-        workflowType: retagging == "retagging" ? 'Retagging' : (isClaimFlow ? 'Claim' : 'Tagging'),
+        workflowType: retagging == "retagging"
+            ? 'Retagging'
+            : (isClaimFlow ? 'Claim' : 'Tagging'),
         currentStep: 2, // Step 2: Cattle
         lastScreenRoute: routecattlepage,
-        completionPercentage: 50.0 + (50.0 * (completedCattleCount / totalCattleCount)),
+        completionPercentage:
+            50.0 + (50.0 * (completedCattleCount / totalCattleCount)),
       );
     } catch (e) {
       debugPrint("Failed to persist draft cattle: $e");
@@ -900,38 +936,48 @@ class CattleController extends GetxController {
 
       print("================================");
 
-      final extraction = await MediaExtractionHelper.extractMediaFields(payload, 'cattle');
-
-      await _queueInsertionService.enqueueSubmission(
-        operationType: isClaimFlow ? 'claim_cattle' : 'save_cattle',
-        entityType: 'cattle',
-        metadata: extraction.metadata,
-        mediaItems: extraction.mediaItems,
+      final resp = await _cattleService.submitCattle(
+        token: token,
+        payload: payload,
       );
 
-      final nextCompleted = completedCattleCount + 1;
+      final responseBody = await resp.stream.bytesToString();
 
-      completedCattleCount = nextCompleted;
+      final decoded = responseBody.isNotEmpty ? jsonDecode(responseBody) : {};
 
-      if (nextCompleted < totalCattleCount) {
-        showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
+      print("========== RESPONSE ==========");
+      print("STATUS => ${resp.statusCode}");
+      print("STATUS11111 => ${resp.stream}");
+      print("BODY => $decoded");
+      print("==============================");
 
-        currentCattleIndex = nextCompleted + 1;
+      if (resp.statusCode >= 200 &&
+          resp.statusCode < 300 &&
+          decoded['status'] == 'success') {
+        final nextCompleted = completedCattleCount + 1;
 
-        _resetCattleCaptureFormForNextStep();
+        completedCattleCount = nextCompleted;
 
-        update();
-      } else {
-        showSnackBar("All cattle completed.", SNACK.SUCCESS);
+        if (nextCompleted < totalCattleCount) {
+          showSnackBar("Cattle saved. Next cattle...", SNACK.SUCCESS);
 
-        Get.offNamed(
-          routesignaturepage,
-          arguments: {
-            "tagging": data,
-            "ischangepage": ischangepage,
-            "retagging": retagging,
-          },
-        );
+          currentCattleIndex = nextCompleted + 1;
+
+          _resetCattleCaptureFormForNextStep();
+
+          update();
+        } else {
+          showSnackBar("All cattle completed.", SNACK.SUCCESS);
+
+          Get.offNamed(
+            routesignaturepage,
+            arguments: {
+              "tagging": data,
+              "ischangepage": ischangepage,
+              "retagging": retagging,
+            },
+          );
+        }
       }
     } catch (e) {
       print("========== ERROR ==========");

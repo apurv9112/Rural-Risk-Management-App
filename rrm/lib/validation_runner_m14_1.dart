@@ -1,13 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:rrm/core/database/app_database.dart';
 import 'package:rrm/data/repositories/master_data_repository.dart';
-import 'package:rrm/core/database/migrations/migration_manager.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
-import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_controller.dart';
 import 'package:rrm/core/master_data/master_data_seeder.dart';
 
 void main() async {

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 
 import 'core/database/app_database.dart';
@@ -21,7 +19,7 @@ void main() async {
   final qUuid = uuid.v4();
   await db.insert('sync_queue', {
     'queue_uuid': qUuid,
-    'idempotency_key': 'idem_${qUuid}',
+    'idempotency_key': 'idem_$qUuid',
     'entity_type': 'test',
     'status': 'PENDING',
     'created_at': DateTime.now().toIso8601String(),

@@ -6,35 +6,32 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
-import 'package:rrm/services/cancel_lead_service.dart';
 // import 'package:rrm/services/claim_service.dart';
 // import 'package:rrm/services/retagging_service.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import '../../routes/common/common_app_pages.dart';
+import 'package:rrm/dependency_injection.dart';
+import 'package:rrm/services/offline/queue_insertion_service.dart';
 import 'package:uuid/uuid.dart';
-import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/data/repositories/lead_repository.dart';
 import 'package:rrm/data/models/lead_model.dart';
 import 'package:rrm/data/repositories/draft_repository.dart';
 import 'package:rrm/data/repositories/master_data_repository.dart';
-import 'package:rrm/services/offline/queue_insertion_service.dart';
-import 'package:rrm/services/offline/media_extraction_helper.dart';
 
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
   // final RetaggingService _retaggingService = RetaggingService();
   // final ClaimService _claimService = ClaimService();
-  final CancelLeadService _cancelLeadService = CancelLeadService();
-  final QueueInsertionService _queueInsertionService = QueueInsertionService();
+
   final LeadRepository _leadRepository = LeadRepository();
   final DraftRepository _draftRepository = DraftRepository();
   final MasterDataRepository _masterDataRepo = MasterDataRepository();
-  
+
   String localLeadUuid = const Uuid().v4();
   bool draftCreated = false;
-
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -150,10 +147,14 @@ class TaggingdataController extends GetxController {
     cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
     species = dataMap["species"];
     tagnumberclaim = dataMap["tagNumber"] ?? dataMap["oldTagNumber"];
-    dateofdeathcontroller.text = dataMap["dateOfDeath"] != null && dataMap["dateOfDeath"].toString().isNotEmpty
+    dateofdeathcontroller.text =
+        dataMap["dateOfDeath"] != null &&
+            dataMap["dateOfDeath"].toString().isNotEmpty
         ? dataMap["dateOfDeath"].toString()
         : '';
-    timeofdeathcontroller.text = dataMap["timeOfDeath"] != null && dataMap["timeOfDeath"].toString().isNotEmpty
+    timeofdeathcontroller.text =
+        dataMap["timeOfDeath"] != null &&
+            dataMap["timeOfDeath"].toString().isNotEmpty
         ? dataMap["timeOfDeath"].toString()
         : '';
     final images = dataMap["images"];
@@ -185,7 +186,7 @@ class TaggingdataController extends GetxController {
       if (cowCount != null) map["numberOfCow"] = cowCount;
       if (buffaloSI != null) map["sumInsuredBuffalo"] = buffaloSI;
       if (cowSI != null) map["sumInsuredCow"] = cowSI;
-      
+
       if (retagging != null) {
         map["newTagNumber"] = timeofdeathcontroller.text.trim();
         map["dateOfReTagging"] = dateofdeathcontroller.text.trim();
@@ -203,6 +204,7 @@ class TaggingdataController extends GetxController {
     claimreasons = await _masterDataRepo.getCancelReasons('claim');
     update(['cancelDialog']); // Update any open dialogs that use these reasons
   }
+
   // date picker
   Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
 
@@ -341,11 +343,15 @@ class TaggingdataController extends GetxController {
         ownerName: namecontroller.text.trim(),
         mobileNumber: mobilenumbercontroller.text.trim(),
         village: villegcontroller.text.trim(),
-        totalCattleCount: (int.tryParse(buffalocountcontroller.text.trim()) ?? 0) + (int.tryParse(cowcountcontroller.text.trim()) ?? 0),
+        totalCattleCount:
+            (int.tryParse(buffalocountcontroller.text.trim()) ?? 0) +
+            (int.tryParse(cowcountcontroller.text.trim()) ?? 0),
         syncStatus: 'DRAFT',
       );
 
-      if (!draftCreated && namecontroller.text.trim().isNotEmpty && mobilenumbercontroller.text.trim().isNotEmpty) {
+      if (!draftCreated &&
+          namecontroller.text.trim().isNotEmpty &&
+          mobilenumbercontroller.text.trim().isNotEmpty) {
         await _leadRepository.saveDraftLead(leadModel, []);
         draftCreated = true;
       } else if (draftCreated) {
@@ -355,7 +361,9 @@ class TaggingdataController extends GetxController {
       // Save draft progress
       await _draftRepository.saveDraftProgress(
         entityUuid: localLeadUuid,
-        workflowType: retagging != null ? 'Retagging' : (ischangepage != null ? 'Claim' : 'Tagging'),
+        workflowType: retagging != null
+            ? 'Retagging'
+            : (ischangepage != null ? 'Claim' : 'Tagging'),
         currentStep: 1, // Step 1: Farmer/Lead Details
         lastScreenRoute: routetaggingdatapage,
         completionPercentage: 20.0,
@@ -453,33 +461,32 @@ class TaggingdataController extends GetxController {
         images.add(selectedOther3.value!);
       }
 
-      final extraction = await MediaExtractionHelper.extractMediaFields(
-        {
-          "leadId": id,
-          "leadType": leadType,
-          "reason": selectedReasonDropdown!,
-          "otherReason": selectedReasonDropdown == "Other" ? "Custom Reason" : null,
-          "cancellationImages": images,
-        },
-        'cancel_lead',
+      final payload = <String, dynamic>{
+        "leadId": id,
+        "leadType": leadType,
+        "reason": selectedReasonDropdown!,
+        "otherReason": selectedReasonDropdown == "Other"
+            ? "Custom Reason"
+            : null,
+        "cancellationImages": images,
+      };
+
+      final queueService = getIt<QueueInsertionService>();
+      await queueService.enqueuePayload(
+        payload,
+        endpoint: "/field-worker/cancel-lead",
       );
 
-      await _queueInsertionService.enqueueSubmission(
-        operationType: 'cancel_lead',
-        entityType: 'cancel_lead',
-        metadata: extraction.metadata,
-        mediaItems: extraction.mediaItems,
-      );
+      await Future.delayed(const Duration(milliseconds: 500));
 
       // ✅ CLOSE LOADER SAFELY
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
 
-      // ✅ SUCCESS
       Get.offAllNamed(
         routehomepage,
-        arguments: {"success": "Lead cancelled queued successfully"},
+        arguments: {"success": "Lead cancelled successfully"},
       );
     } catch (e) {
       if (Get.isDialogOpen ?? false) {

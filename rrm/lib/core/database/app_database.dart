@@ -1,6 +1,7 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'migrations/migration_manager.dart';
+import 'package:sqflite/sqflite.dart';
+import 'migration_manager.dart';
+import 'migrations/v1_initial_schema.dart';
 
 class AppDatabase {
   static final AppDatabase instance = AppDatabase._init();
@@ -10,7 +11,7 @@ class AppDatabase {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('rrm.db');
+    _database = await _initDB('rrm_sync.db');
     return _database!;
   }
 
@@ -20,29 +21,21 @@ class AppDatabase {
 
     return await openDatabase(
       path,
-      version: 8,
-      onCreate: _createDB,
-      onUpgrade: _upgradeDB,
+      version: V1InitialSchema.version,
+      onCreate: MigrationManager.onCreate,
+      onUpgrade: MigrationManager.onUpgrade,
       onConfigure: _onConfigure,
     );
   }
 
   Future<void> _onConfigure(Database db) async {
+    // Enable foreign keys
     await db.execute('PRAGMA foreign_keys = ON');
-    await db.rawQuery('PRAGMA journal_mode = WAL');
-  }
-
-  Future<void> _createDB(Database db, int version) async {
-    await MigrationManager.createInitialSchema(db);
-  }
-
-  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    await MigrationManager.performUpgrades(db, oldVersion, newVersion);
   }
 
   Future<void> close() async {
     final db = await instance.database;
-    await db.close();
+    db.close();
     _database = null;
   }
 }

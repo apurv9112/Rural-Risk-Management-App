@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:rrm/core/database/app_database.dart';
 import 'package:rrm/data/repositories/sync_queue_repository.dart';
 import 'package:rrm/core/sync/queue_cleanup_service.dart';
@@ -8,7 +6,6 @@ import 'package:rrm/core/sync/sync_coordinator.dart';
 import 'package:rrm/core/sync/queue_processor.dart';
 import 'package:rrm/core/sync/executors/http_queue_executor.dart';
 import 'package:rrm/core/sync/connectivity_monitor.dart';
-import 'package:rrm/core/database/migrations/migration_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
