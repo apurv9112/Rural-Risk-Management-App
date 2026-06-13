@@ -212,7 +212,7 @@ class OwnerDatadisplaypage extends StatelessWidget {
                               SizedBox(width: wp(5)),
                               GestureDetector(
                                 onTap: () {
-                                  controller.debugDownloadCertificate(
+                                  controller.downloadHealthCertificate(
                                     (cattle["tagNo"] ?? "").toString(),
                                   );
                                 },
@@ -234,9 +234,7 @@ class OwnerDatadisplaypage extends StatelessWidget {
                       ),
                       margin: EdgeInsets.symmetric(horizontal: wp(0)),
                       onTap: () {
-                        debugPrint("DATA LIST = ${jsonEncode(dataList)}");
-
-                        controller.debugDownloadAllCertificates(
+                        controller.downloadAllCertificates(
                           (dataList["id"] ??
                                   dataList["_id"] ??
                                   dataList["taggingId"] ??
@@ -270,6 +268,7 @@ datarow({
 }) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
         staticdata,
@@ -278,15 +277,15 @@ datarow({
           fontWeight: FontWeight.w500,
         ),
       ),
-      Text(
-        listdata,
-        style: TextStyle(
-          fontSize: dp(context, 18),
-          fontWeight: FontWeight.w300,
+      Expanded(
+        child: Text(
+          listdata,
+          style: TextStyle(
+            fontSize: dp(context, 18),
+            fontWeight: FontWeight.w300,
+          ),
         ),
       ),
     ],
   );
 }
-
-// https://chatgpt.com/share/69241d76-b204-8002-93a8-18072ecf9c9d for line divide code

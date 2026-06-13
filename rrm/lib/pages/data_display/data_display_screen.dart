@@ -64,45 +64,7 @@ class Datadisplaypage extends StatelessWidget {
                       },
                     ),
                     SizedBox(height: hp(2)),
-                    // Download all button
-                    if (controller.filteredLeads.isNotEmpty)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          // onTap: () => controller.downloadAllCertificates(),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: wp(4),
-                              vertical: hp(1),
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.WHITE,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.DARK),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.download,
-                                  color: AppColors.PRIMARY_COLOR,
-                                  size: dp(context, 18),
-                                ),
-                                SizedBox(width: wp(1)),
-                                Text(
-                                  "Download All",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 14),
-                                    color: AppColors.PRIMARY_COLOR,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    SizedBox(height: hp(1)),
+
                     if (controller.isLoading || controller.isSearching)
                       const Center(
                         child: Padding(

@@ -1,13 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'package:rrm/services/retagging_service.dart';
 import 'package:rrm/services/claim_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DatadisplayController extends GetxController {
   final AppController appController = Get.find();
@@ -251,64 +255,266 @@ class DatadisplayController extends GetxController {
     return null;
   }
 
-  Future<void> debugDownloadCertificate(String tagNo) async {
+  Future<void> downloadHealthCertificate(String tagNo) async {
     final token = appController.token.value;
 
     try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
       final response = await _taggingService.downloadHealthCertificate(
         token: token,
         tagNo: tagNo,
       );
 
-      debugPrint("");
-      debugPrint("================================");
-      debugPrint("CERTIFICATE DOWNLOAD RESPONSE");
-      debugPrint("================================");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
 
-      debugPrint("STATUS : ${response.statusCode}");
-      debugPrint("HEADERS : ${response.headers}");
-      debugPrint("BODY LENGTH : ${response.bodyBytes.length}");
+      if (response.statusCode == 200) {
+        final directory = await getApplicationDocumentsDirectory();
 
-      try {
-        debugPrint(
-          "BODY : ${response.body.substring(0, response.body.length > 500 ? 500 : response.body.length)}",
+        String fileName = "HealthCertificate.pdf";
+
+        final disposition = response.headers["content-disposition"];
+
+        if (disposition != null && disposition.contains("filename=")) {
+          fileName = disposition.split("filename=")[1].replaceAll('"', '');
+        }
+
+        final file = File("${directory.path}/$fileName");
+
+        await file.writeAsBytes(response.bodyBytes, flush: true);
+
+        debugPrint("PDF SAVED : ${file.path}");
+
+        if (!await file.exists()) {
+          showSnackBar("Failed to save certificate", SNACK.FAILED);
+          return;
+        }
+
+        Get.bottomSheet(
+          SafeArea(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Color(0xffffffff),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Wrap(
+                children: [
+                  const Center(
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Color(0xff4CAF50),
+                      size: 60,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  const Center(
+                    child: Text(
+                      "Certificate Downloaded",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Center(child: Text(fileName, textAlign: TextAlign.center)),
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.picture_as_pdf),
+                      label: const Text("Open PDF"),
+                      onPressed: () async {
+                        try {
+                          final result = await OpenFilex.open(file.path);
+
+                          debugPrint("OPEN RESULT : ${result.type}");
+
+                          debugPrint("OPEN MESSAGE : ${result.message}");
+                        } catch (e) {
+                          showSnackBar("Unable to open PDF", SNACK.FAILED);
+                        }
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.share),
+                      label: const Text("Share PDF"),
+                      onPressed: () async {
+                        try {
+                          await Share.shareXFiles([
+                            XFile(file.path),
+                          ], text: fileName);
+                        } catch (e) {
+                          showSnackBar("Unable to share PDF", SNACK.FAILED);
+                        }
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: const Text("Close"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          isScrollControlled: true,
         );
-      } catch (_) {}
+      } else {
+        final data = jsonDecode(response.body);
 
-      debugPrint("================================");
+        showSnackBar(data["message"] ?? "Certificate not found", SNACK.FAILED);
+      }
     } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
       debugPrint("DOWNLOAD ERROR : $e");
+
+      showSnackBar("Download failed", SNACK.FAILED);
     }
   }
 
-  Future<void> debugDownloadAllCertificates(String taggingId) async {
-    debugPrint("TAGGING ID SENT = $taggingId");
+  Future<void> downloadAllCertificates(String taggingId) async {
     final token = appController.token.value;
 
     try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
       final response = await _taggingService.downloadAllHealthCertificates(
         token: token,
         taggingId: taggingId,
       );
 
-      debugPrint("");
-      debugPrint("================================");
-      debugPrint("DOWNLOAD ALL RESPONSE");
-      debugPrint("================================");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
 
-      debugPrint("STATUS : ${response.statusCode}");
-      debugPrint("HEADERS : ${response.headers}");
-      debugPrint("BODY LENGTH : ${response.bodyBytes.length}");
+      if (response.statusCode == 200) {
+        final directory = await getApplicationDocumentsDirectory();
 
-      try {
-        debugPrint(
-          "BODY : ${response.body.substring(0, response.body.length > 500 ? 500 : response.body.length)}",
+        String fileName = "Certificates.zip";
+
+        final disposition = response.headers["content-disposition"];
+
+        if (disposition != null && disposition.contains("filename=")) {
+          fileName = disposition.split("filename=")[1].replaceAll('"', '');
+        }
+
+        final file = File("${directory.path}/$fileName");
+
+        await file.writeAsBytes(response.bodyBytes, flush: true);
+
+        debugPrint("ZIP SAVED : ${file.path}");
+
+        Get.bottomSheet(
+          SafeArea(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Wrap(
+                children: [
+                  const Center(
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 60,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  const Center(
+                    child: Text(
+                      "Certificates Downloaded",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Center(child: Text(fileName, textAlign: TextAlign.center)),
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.share),
+                      label: const Text("Share ZIP File"),
+                      onPressed: () async {
+                        await Share.shareXFiles([
+                          XFile(file.path),
+                        ], text: fileName);
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: const Text("Close"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
-      } catch (_) {}
+      } else {
+        final data = jsonDecode(response.body);
 
-      debugPrint("================================");
+        showSnackBar(data["message"] ?? "Download failed", SNACK.FAILED);
+      }
     } catch (e) {
-      debugPrint("DOWNLOAD ALL ERROR : $e");
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      debugPrint("ZIP DOWNLOAD ERROR : $e");
+
+      showSnackBar("Download failed", SNACK.FAILED);
     }
   }
 
