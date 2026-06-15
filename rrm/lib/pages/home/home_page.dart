@@ -12,9 +12,13 @@ import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
 import 'package:rrm/widgets/sync_dashboard_widget.dart';
+import 'package:get_it/get_it.dart';
+import 'package:rrm/services/offline/queue_statistics_service.dart';
 
 class Homepage extends StatelessWidget {
-  const Homepage({super.key});
+  Homepage({super.key});
+
+  final RxBool isSyncExpanded = false.obs;
 
   Future<void> openLandscapeSignature({
     required BuildContext context,
@@ -382,13 +386,6 @@ class Homepage extends StatelessWidget {
               children: [
                 SizedBox(height: hp(2)),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: wp(6)),
-                  child: const SyncDashboardWidget(),
-                ),
-
-                SizedBox(height: hp(3)),
-
                 customcontainer(
                   onTap: () {
                     Get.toNamed(routetaggingpage);
@@ -425,6 +422,11 @@ class Homepage extends StatelessWidget {
                   name: "CATTLE \nRETAGGING",
                   context: context,
                 ),
+                SizedBox(height: hp(3)),
+
+                _buildSyncStatusCard(context),
+
+                SizedBox(height: hp(3)),
               ],
             ),
           ),
@@ -462,6 +464,100 @@ class Homepage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildSyncStatusCard(BuildContext context) {
+    final stats = GetIt.I<QueueStatisticsService>();
+
+    return Obx(() {
+      int pendingCount =
+          stats.pendingSyncCount.value + stats.pendingMediaCount.value;
+      int failedCount =
+          stats.failedSyncCount.value + stats.failedMediaCount.value;
+
+      bool hasIssues = pendingCount > 0 || failedCount > 0;
+
+      Color bgColor = hasIssues ? const Color(0xFFFFEBEE) : AppColors.WHITE;
+      Color borderColor = hasIssues ? Colors.red : AppColors.DARK;
+      Color textColor = hasIssues
+          ? Colors.red.shade900
+          : AppColors.PRIMARY_COLOR;
+
+      return Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  isSyncExpanded.value = !isSyncExpanded.value;
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(dp(context, 15)),
+                    border: Border.all(color: borderColor),
+                    color: bgColor,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: wp(5)),
+                  margin: EdgeInsets.symmetric(horizontal: wp(6)),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: hp(15),
+                        width: wp(20),
+                        child: Icon(Icons.sync, size: hp(10), color: textColor),
+                      ),
+                      SizedBox(width: wp(7)),
+                      Text(
+                        "SYNC \nSTATUS",
+                        style: TextStyle(
+                          fontSize: dp(context, 30),
+                          color: textColor,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (pendingCount > 0)
+                Positioned(
+                  top: -5,
+                  right: wp(4),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '$pendingCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          Obx(
+            () => isSyncExpanded.value
+                ? Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: wp(6),
+                      vertical: hp(2),
+                    ),
+                    child: const SyncDashboardWidget(),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      );
+    });
   }
 }
 

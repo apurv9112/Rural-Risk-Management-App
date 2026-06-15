@@ -6,6 +6,8 @@ import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customcontainer.dart';
+import 'package:get_it/get_it.dart';
+import 'package:rrm/services/offline/queue_statistics_service.dart';
 
 customdrawer({required BuildContext context}) {
   return Drawer(
@@ -83,7 +85,9 @@ customdrawer({required BuildContext context}) {
           name: "RETAGGING\nDATA",
           context: context,
         ),
-        SizedBox(height: hp(24)),
+        SizedBox(height: hp(3)),
+        _buildSyncStatusDrawerItem(context),
+        SizedBox(height: hp(10)),
         Image.asset(
           'assets/images/splash_logo.png',
           height: hp(5),
@@ -145,5 +149,114 @@ void showDialoglogout({required BuildContext context}) {
         ],
       );
     },
+  );
+}
+
+Widget _buildSyncStatusDrawerItem(BuildContext context) {
+  final stats = GetIt.I<QueueStatisticsService>();
+
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(dp(context, 15)),
+      border: Border.all(color: AppColors.DARK),
+      color: AppColors.WHITE,
+    ),
+    padding: EdgeInsets.symmetric(horizontal: wp(3), vertical: hp(1)),
+    margin: EdgeInsets.symmetric(horizontal: wp(3.5)),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.sync,
+              size: dp(context, 40),
+              color: AppColors.PRIMARY_COLOR,
+            ),
+            SizedBox(width: wp(3)),
+            Text(
+              "SYNC \nSTATUS",
+              style: TextStyle(
+                fontSize: dp(context, 18),
+                color: AppColors.PRIMARY_COLOR,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        SizedBox(height: hp(1)),
+        Obx(() {
+          int pending =
+              stats.pendingSyncCount.value + stats.pendingMediaCount.value;
+          int uploading =
+              stats.syncingSyncCount.value + stats.uploadingMediaCount.value;
+          int failed =
+              stats.failedSyncCount.value + stats.failedMediaCount.value;
+          int completed =
+              stats.completedSyncCount.value + stats.completedMediaCount.value;
+          String lastSuccess =
+              stats.lastSuccessfulSyncTime.value?.toString().split('.').first ??
+              'Never';
+          String lastFailed =
+              stats.lastFailedSyncTime.value?.toString().split('.').first ??
+              'Never';
+          String health = stats.queueIntegrityStatus;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Pending: $pending',
+                style: TextStyle(
+                  fontSize: dp(context, 14),
+                  color: AppColors.DARK,
+                ),
+              ),
+              Text(
+                'Uploading: $uploading',
+                style: TextStyle(
+                  fontSize: dp(context, 14),
+                  color: AppColors.DARK,
+                ),
+              ),
+              Text(
+                'Failed: $failed',
+                style: TextStyle(
+                  fontSize: dp(context, 14),
+                  color: AppColors.DARK,
+                ),
+              ),
+              Text(
+                'Completed: $completed',
+                style: TextStyle(
+                  fontSize: dp(context, 14),
+                  color: AppColors.DARK,
+                ),
+              ),
+              SizedBox(height: hp(0.5)),
+              Text(
+                'Last Success: $lastSuccess',
+                style: TextStyle(fontSize: dp(context, 12), color: Colors.grey),
+              ),
+              Text(
+                'Last Failed: $lastFailed',
+                style: TextStyle(fontSize: dp(context, 12), color: Colors.grey),
+              ),
+              Text(
+                'Queue Health: $health',
+                style: TextStyle(
+                  fontSize: dp(context, 12),
+                  color: health == 'Warning'
+                      ? Colors.orange
+                      : (health == 'Critical' ? Colors.red : Colors.green),
+                ),
+              ),
+            ],
+          );
+        }),
+      ],
+    ),
   );
 }

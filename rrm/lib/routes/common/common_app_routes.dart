@@ -41,7 +41,7 @@ class CommonRoutes {
     ),
     GetPage(
       name: routehomepage,
-      page: () => const Homepage(),
+      page: () => Homepage(),
       binding: HomeBinding(),
     ),
     GetPage(
