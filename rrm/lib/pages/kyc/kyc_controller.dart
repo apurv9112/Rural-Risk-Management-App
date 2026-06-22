@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/image_processing_service.dart';
 import 'package:rrm/services/camera_service.dart';
-
 
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/core/storage/folder_manager.dart';
@@ -133,7 +131,10 @@ class KycController extends GetxController {
     );
 
     if (result != null && result.files.single.path != null) {
-      File file = await FolderManager.moveFromCache(File(result.files.single.path!), workflow: 'temp');
+      File file = await FolderManager.moveFromCache(
+        File(result.files.single.path!),
+        workflow: 'temp',
+      );
 
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
@@ -223,7 +224,7 @@ class KycController extends GetxController {
     addFile(selectedOther5.value);
 
     if (uploadFiles.isEmpty) {
-      showSnackBar("Please add at least one KYC document.", SNACK.FAILED);
+      showSnackBar("Please Add at Least Two KYC Document.", SNACK.FAILED);
       return;
     }
 

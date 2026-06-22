@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -15,14 +14,10 @@ import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
 
-
-
 import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/services/camera_service.dart';
 
 class CattleController extends GetxController {
-
-
   bool? cowreadOnly = false;
   bool? buffaloreadOnly = false;
   bool? taggingdate = false;
@@ -515,7 +510,10 @@ class CattleController extends GetxController {
       allowMultiple: false, // Only one for dropdown
     );
     if (result != null && result.files.single.path != null) {
-      File file = await FolderManager.moveFromCache(File(result.files.single.path!), workflow: 'temp');
+      File file = await FolderManager.moveFromCache(
+        File(result.files.single.path!),
+        workflow: 'temp',
+      );
 
       Get.dialog(
         const Center(child: CircularProgressIndicator()),
@@ -615,7 +613,10 @@ class CattleController extends GetxController {
     final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
 
     if (pickedVideo != null) {
-      final persistentFile = await FolderManager.moveFromCache(File(pickedVideo.path), workflow: 'temp');
+      final persistentFile = await FolderManager.moveFromCache(
+        File(pickedVideo.path),
+        workflow: 'temp',
+      );
       isvideo == 1
           ? videopath1 = persistentFile.path
           : isvideo == 2
@@ -636,7 +637,10 @@ class CattleController extends GetxController {
     );
 
     if (result != null && result.files.single.path != null) {
-      final persistentFile = await FolderManager.moveFromCache(File(result.files.single.path!), workflow: 'temp');
+      final persistentFile = await FolderManager.moveFromCache(
+        File(result.files.single.path!),
+        workflow: 'temp',
+      );
       isvideo == 1
           ? videopath1 = persistentFile.path
           : isvideo == 2
@@ -670,7 +674,10 @@ class CattleController extends GetxController {
       List<File> processedFiles = [];
       for (var path in result.paths) {
         if (path != null) {
-          final persistentFile = await FolderManager.moveFromCache(File(path), workflow: 'temp');
+          final persistentFile = await FolderManager.moveFromCache(
+            File(path),
+            workflow: 'temp',
+          );
           processedFiles.add(persistentFile);
         }
       }
@@ -869,6 +876,30 @@ class CattleController extends GetxController {
 
         // ================= PDF =================
         "conversionPdf": "",
+        // ================= OTHER IMAGES =================
+        "other-1": selectedOther1.value ?? "",
+        "other-2": selectedOther2.value ?? "",
+        "other-3": selectedOther3.value ?? "",
+        "other-4": selectedOther4.value ?? "",
+
+        // ================= EXTRA MEDIA =================
+        "extra": galleryFiles,
+
+        "extraPhotos": galleryFiles.where((file) {
+          final path = file.path.toLowerCase();
+
+          return path.endsWith(".jpg") ||
+              path.endsWith(".jpeg") ||
+              path.endsWith(".png");
+        }).toList(),
+
+        "extraVideos": galleryFiles.where((file) {
+          final path = file.path.toLowerCase();
+
+          return path.endsWith(".mp4") ||
+              path.endsWith(".mov") ||
+              path.endsWith(".mkv");
+        }).toList(),
       };
 
       print("========== PAYLOAD ==========");
@@ -882,6 +913,12 @@ class CattleController extends GetxController {
       });
 
       print("================================");
+      print("other-1 = ${selectedOther1.value}");
+      print("other-2 = ${selectedOther2.value}");
+      print("other-3 = ${selectedOther3.value}");
+      print("other-4 = ${selectedOther4.value}");
+
+      print("gallery count = ${galleryFiles.length}");
 
       final cattleService = CattleService();
       final response = await cattleService.submitCattle(
@@ -890,8 +927,17 @@ class CattleController extends GetxController {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception("Failed to save cattle. Server responded with ${response.statusCode}");
+        throw Exception(
+          "Failed to save cattle. Server responded with ${response.statusCode}",
+        );
       }
+
+      final responseBody = await response.stream.bytesToString();
+
+      debugPrint("========== API RESPONSE ==========");
+      debugPrint("STATUS : ${response.statusCode}");
+      debugPrint("BODY : $responseBody");
+      debugPrint("=================================");
 
       // Simulate a small delay for smooth UI transition
       await Future.delayed(const Duration(milliseconds: 500));
