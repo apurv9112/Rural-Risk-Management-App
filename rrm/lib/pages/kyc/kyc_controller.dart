@@ -315,6 +315,14 @@ class KycController extends GetxController {
       }
 
       showSnackBar("Something went wrong", SNACK.FAILED);
+      Get.toNamed(
+        routecattlepage,
+        arguments: {
+          "tagging": data,
+          "ischangepage": ischangepage,
+          "retagging": retagging,
+        },
+      );
     } finally {
       isSubmitting = false;
       update();
