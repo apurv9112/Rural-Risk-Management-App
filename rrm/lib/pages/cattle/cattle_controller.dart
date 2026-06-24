@@ -877,29 +877,35 @@ class CattleController extends GetxController {
         // ================= PDF =================
         "conversionPdf": "",
         // ================= OTHER IMAGES =================
+        // ================= NEW OTHER IMAGES =================
         "other-1": selectedOther1.value ?? "",
+
         "other-2": selectedOther2.value ?? "",
+
         "other-3": selectedOther3.value ?? "",
+
         "other-4": selectedOther4.value ?? "",
 
-        // ================= EXTRA MEDIA =================
-        "extra": galleryFiles,
+        // ================= GALLERY =================
+        "extra": galleryFiles.toList(),
 
-        "extraPhotos": galleryFiles.where((file) {
-          final path = file.path.toLowerCase();
+        "extraPhotos": galleryFiles
+            .where(
+              (f) =>
+                  f.path.toLowerCase().endsWith(".jpg") ||
+                  f.path.toLowerCase().endsWith(".jpeg") ||
+                  f.path.toLowerCase().endsWith(".png"),
+            )
+            .toList(),
 
-          return path.endsWith(".jpg") ||
-              path.endsWith(".jpeg") ||
-              path.endsWith(".png");
-        }).toList(),
-
-        "extraVideos": galleryFiles.where((file) {
-          final path = file.path.toLowerCase();
-
-          return path.endsWith(".mp4") ||
-              path.endsWith(".mov") ||
-              path.endsWith(".mkv");
-        }).toList(),
+        "extraVideos": galleryFiles
+            .where(
+              (f) =>
+                  f.path.toLowerCase().endsWith(".mp4") ||
+                  f.path.toLowerCase().endsWith(".mov") ||
+                  f.path.toLowerCase().endsWith(".mkv"),
+            )
+            .toList(),
       };
 
       print("========== PAYLOAD ==========");
@@ -934,10 +940,10 @@ class CattleController extends GetxController {
 
       final responseBody = await response.stream.bytesToString();
 
-      debugPrint("========== API RESPONSE ==========");
-      debugPrint("STATUS : ${response.statusCode}");
-      debugPrint("BODY : $responseBody");
-      debugPrint("=================================");
+      print("========== API RESPONSE ==========");
+      print("STATUS : ${response.statusCode}");
+      print("BODY : $responseBody");
+      print("=================================");
 
       // Simulate a small delay for smooth UI transition
       await Future.delayed(const Duration(milliseconds: 500));

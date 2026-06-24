@@ -94,6 +94,61 @@ class CattleService {
     // ================= PDF =================
 
     await addFile("conversionPdf", payload["conversionPdf"]);
+    // ================= OTHER IMAGES =================
+
+    await addFile("other-1", payload["other-1"]);
+
+    await addFile("other-2", payload["other-2"]);
+
+    await addFile("other-3", payload["other-3"]);
+
+    await addFile("other-4", payload["other-4"]);
+
+    // ================= EXTRA PHOTOS =================
+
+    if (payload["extraPhotos"] is List) {
+      for (final file in payload["extraPhotos"]) {
+        if (file is File) {
+          request.files.add(
+            await http.MultipartFile.fromPath("extraPhotos", file.path),
+          );
+        }
+      }
+    }
+
+    // ================= EXTRA VIDEOS =================
+
+    if (payload["extraVideos"] is List) {
+      for (final file in payload["extraVideos"]) {
+        if (file is File) {
+          request.files.add(
+            await http.MultipartFile.fromPath("extraVideos", file.path),
+          );
+        }
+      }
+    }
+
+    // ================= EXTRA (ALL FILES) =================
+
+    if (payload["extra"] is List) {
+      for (final file in payload["extra"]) {
+        if (file is File) {
+          request.files.add(
+            await http.MultipartFile.fromPath("extra", file.path),
+          );
+        }
+      }
+    }
+
+    print("========== MULTIPART FILES ==========");
+
+    for (final file in request.files) {
+      print("${file.field} => ${file.filename}");
+    }
+
+    print("TOTAL FILES = ${request.files.length}");
+
+    print("====================================");
 
     // ================= SEND =================
 
