@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/pages/data_display/data_display_controller.dart';
 import 'package:rrm/pages/data_display/owner_data_display.dart';
 import 'package:rrm/utils/colors.dart';
@@ -99,6 +100,17 @@ class Datadisplaypage extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                  Get.dialog(
+                                    Center(
+                                      child:
+                                          LoadingAnimationWidget.staggeredDotsWave(
+                                            color: Colors.white,
+                                            size: 60,
+                                          ),
+                                    ),
+                                    barrierColor: Colors.black45,
+                                    barrierDismissible: false,
+                                  );
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -190,9 +202,7 @@ class Datadisplaypage extends StatelessWidget {
                                           final id =
                                               (lead["id"] ?? lead["_id"] ?? "")
                                                   .toString();
-                                          if (id.isNotEmpty) {
-                                            // controller.downloadCertificate(id);
-                                          }
+                                          if (id.isNotEmpty) {}
                                         },
                                         child: Icon(
                                           Icons.download_rounded,

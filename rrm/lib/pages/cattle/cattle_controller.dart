@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -427,7 +428,6 @@ class CattleController extends GetxController {
           ? selectedDate.value = picked
           : selectedDatenew.value = picked;
       update();
-      // print("fdfdf :::: ${controller.selectedDate.value}");
     }
   }
 
@@ -461,7 +461,13 @@ class CattleController extends GetxController {
       File file = File(pickedFile.path);
 
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierColor: Colors.black45,
         barrierDismissible: false,
       );
       try {
@@ -499,7 +505,6 @@ class CattleController extends GetxController {
           : isimage == 12
           ? selectedearbackside.value = file
           : null;
-      // print("controllerimage::::$isimage");
     }
     update();
   }
@@ -516,7 +521,13 @@ class CattleController extends GetxController {
       );
 
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierColor: Colors.black45,
         barrierDismissible: false,
       );
       try {
@@ -553,61 +564,14 @@ class CattleController extends GetxController {
           : isimage == 12
           ? selectedearbackside.value = file
           : null;
-      // print("controllerimage::::$isimage");
     }
     update();
   }
 
-  // // camera video picker
-  // int? isvideo = 0;
-
-  // String? cameravideopath1;
-  // String? cameravideopath2;
-
-  // void pickVideoFromCamera() async {
-  //   final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
-
-  //   if (pickedVideo != null) {
-  //     isvideo == 1
-  //         ? cameravideopath1 = pickedVideo.path
-  //         : isvideo == 2
-  //         ? cameravideopath2 = pickedVideo.path
-  //         : null;
-  //   }
-
-  //   // print("Selected video for isimage $isimage: ${pickedVideo?.path}");
-
-  //   update();
-  // }
-
-  // // Gallery video picker
-  // String? videopath1;
-  // String? videopath2;
-
-  // void pickVideoFromGallery() async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     type: FileType.video,
-  //     allowMultiple: false,
-  //   );
-
-  //   if (result != null && result.files.single.path != null) {
-  //     isvideo == 1
-  //         ? videopath1 = result.files.single.path!
-  //         : isvideo == 2
-  //         ? videopath2 = result.files.single.path!
-  //         : null;
-  //   }
-
-  //   update();
-  // }
-
   int? isvideo = 0;
-  // Gallery video picker
+  // video picker
   String? videopath1;
   String? videopath2;
-
-  // String? cameravideopath1;
-  // String? cameravideopath2;
 
   void pickVideoFromCamera() async {
     final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
@@ -624,9 +588,6 @@ class CattleController extends GetxController {
           : null;
     }
 
-    // print("Selected video for isimage $isimage: ${pickedVideo?.path}");
-    print("CameraVideo 1 => $videopath1");
-    print("CameraVideo 2 => $videopath2");
     update();
   }
 
@@ -640,6 +601,16 @@ class CattleController extends GetxController {
       final persistentFile = await FolderManager.moveFromCache(
         File(result.files.single.path!),
         workflow: 'temp',
+      );
+      Get.dialog(
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierColor: Colors.black45,
+        barrierDismissible: false,
       );
       isvideo == 1
           ? videopath1 = persistentFile.path
@@ -962,13 +933,22 @@ class CattleController extends GetxController {
         update();
       } else {
         showSnackBar("All cattle completed.", SNACK.SUCCESS);
-
+        final responseJson = jsonDecode(responseBody);
         Get.offNamed(
           routesignaturepage,
           arguments: {
             "tagging": data,
             "ischangepage": ischangepage,
             "retagging": retagging,
+
+            "leadId": taggingId,
+            "leadType": leadType,
+
+            "folderId": responseJson["data"]["googleDriveFolderId"],
+
+            "ownerName": data["nameOfBeneficiary"] ?? "",
+
+            "tagNo": tagnumbercontroller.text.trim(),
           },
         );
       }

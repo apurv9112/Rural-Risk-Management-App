@@ -498,23 +498,9 @@ class TaggingDataScreen extends StatelessWidget {
 
                           Get.dialog(
                             Center(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  LoadingAnimationWidget.staggeredDotsWave(
-                                    color: Colors.white,
-                                    size: 60,
-                                  ),
-                                  SizedBox(height: hp(0.5)),
-                                  Text(
-                                    "Please wait...",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: dp(context, 16),
-                                    ),
-                                  ),
-                                ],
+                              child: LoadingAnimationWidget.staggeredDotsWave(
+                                color: Colors.white,
+                                size: 60,
                               ),
                             ),
                             barrierColor: Colors.black45,

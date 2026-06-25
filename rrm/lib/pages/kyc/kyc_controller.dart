@@ -76,7 +76,13 @@ class KycController extends GetxController {
       File file = File(pickedFile.path);
 
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierColor: Colors.black45,
         barrierDismissible: false,
       );
       try {
@@ -137,7 +143,13 @@ class KycController extends GetxController {
       );
 
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+        Center(
+          child: LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+        barrierColor: Colors.black45,
         barrierDismissible: false,
       );
       try {
@@ -256,20 +268,9 @@ class KycController extends GetxController {
 
     Get.dialog(
       Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            LoadingAnimationWidget.staggeredDotsWave(
-              color: Colors.white,
-              size: 60,
-            ),
-            SizedBox(height: hp(0.5)),
-            Text(
-              "Please wait...",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ],
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
         ),
       ),
       barrierColor: Colors.black45,
@@ -328,64 +329,4 @@ class KycController extends GetxController {
       update();
     }
   }
-
-  // Future<void> checkKycStatus() async {
-  //   try {
-  //     final token = appController.token.value;
-
-  //     if (token.isEmpty) return;
-
-  //     String leadType = "tagging";
-
-  //     if (retagging == "retagging") {
-  //       leadType = "retagging";
-  //     } else if (ischangepage != null) {
-  //       leadType = "claim";
-  //     }
-
-  //     print("========== CHECK KYC STATUS ==========");
-  //     print("LEAD ID => ${data["id"]}");
-  //     print("FLOW => $leadType");
-  //     print("======================================");
-
-  //     final response = await _kycService.uploadKyc(
-  //       token: token,
-  //       leadId: data["id"].toString(),
-  //       leadType: leadType,
-  //       files: [], // EMPTY FILES
-  //     );
-
-  //     final statusCode = response["statusCode"];
-
-  //     final decoded =
-  //         response["body"] != null && response["body"].toString().isNotEmpty
-  //         ? jsonDecode(response["body"])
-  //         : {};
-
-  //     print("========== CHECK RESPONSE ==========");
-  //     print(decoded);
-  //     print("===================================");
-
-  //     final message = decoded["message"]?.toString().toLowerCase() ?? "";
-
-  //     // ================= ALREADY UPLOADED =================
-
-  //     if (statusCode == 400 && message.contains("already uploaded")) {
-  //       showSnackBar("KYC already uploaded", SNACK.SUCCESS);
-
-  //       Future.delayed(const Duration(milliseconds: 700), () {
-  //         Get.offNamed(
-  //           routecattlepage,
-  //           arguments: {
-  //             "tagging": data,
-  //             "ischangepage": ischangepage,
-  //             "retagging": retagging,
-  //           },
-  //         );
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("CHECK KYC ERROR => $e");
-  //   }
-  // }
 }

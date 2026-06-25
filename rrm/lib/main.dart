@@ -15,7 +15,7 @@ void main() async {
   await GetStorage.init(); // ⭐ REQUIRED
 
   initDependencies();
-  
+
   Get.put(AppController());
   Get.put(DeviceController());
 

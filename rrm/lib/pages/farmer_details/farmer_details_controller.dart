@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get/get.dart';
 import 'package:screenshot/screenshot.dart';
@@ -10,6 +12,16 @@ class FarmerDetailsController extends GetxController {
   // screen shot
 
   Future<void> shareScreenshot() async {
+    Get.dialog(
+      Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: Colors.white,
+          size: 60,
+        ),
+      ),
+      barrierColor: Colors.black45,
+      barrierDismissible: false,
+    );
     try {
       final directory = await getTemporaryDirectory();
       final filePath = '${directory.path}/farmer_screenshot.png';

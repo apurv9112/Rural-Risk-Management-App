@@ -1,7 +1,5 @@
 // signature_page.dart
 
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -17,12 +15,6 @@ class SignaturePage extends StatelessWidget {
 
   // final controller = Get.put(SignatureControllerX());
   final controller = Get.find<SignatureControllerX>();
-
-  // dummy data
-  final String ownerName = "Ramesh B Patel";
-  final String tagNo = "230045678";
-  final String mobileNo = "9876543210";
-  final String village = "Bhimpura";
 
   Future<void> openLandscapeSignature({
     required BuildContext context,
@@ -105,6 +97,18 @@ class SignaturePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments ?? {};
+    final String ownerName = args["ownerName"]?.toString() ?? "";
+
+    final String tagNo = args["tagNo"]?.toString() ?? "";
+
+    final String leadId = args["leadId"]?.toString() ?? "";
+
+    final String leadType = args["leadType"]?.toString() ?? "";
+
+    final String folderId = args["folderId"]?.toString() ?? "";
+
+    print("OWNER NAME = ${Get.arguments["ownerName"]}");
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.PRIMARY_COLOR,
@@ -206,7 +210,12 @@ class SignaturePage extends StatelessWidget {
                         onPressed: controller.isSaving.value
                             ? null
                             : () {
-                                controller.saveSignatures(tagNo: tagNo);
+                                controller.saveSignatures(
+                                  tagNo: tagNo,
+                                  leadId: leadId,
+                                  leadType: leadType,
+                                  folderId: folderId,
+                                );
                               },
                         icon: controller.isSaving.value
                             ? SizedBox(
