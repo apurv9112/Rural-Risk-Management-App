@@ -18,14 +18,14 @@ class SignatureControllerX extends GetxController {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   Rx<Uint8List?> customerSignatureBytes = Rx<Uint8List?>(null);
 
-  Rx<Uint8List?> workerSignatureBytes = Rx<Uint8List?>(null);
-  final customerSignatureController = SignatureController(
-    penStrokeWidth: 3,
-    penColor: Colors.black,
-    exportBackgroundColor: Colors.white,
-  );
+  @override
+  void onInit() {
+    super.onInit();
 
-  final workerSignatureController = SignatureController(
+    loadWorkerSignature();
+  }
+
+  final customerSignatureController = SignatureController(
     penStrokeWidth: 3,
     penColor: Colors.black,
     exportBackgroundColor: Colors.white,
@@ -50,10 +50,10 @@ class SignatureControllerX extends GetxController {
         return;
       }
 
-      if (workerSignatureController.isEmpty) {
+      if (workerSignatureFile.value == null) {
         Get.snackbar(
           "Required",
-          "Field worker signature required",
+          "Please save your profile signature first.",
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
@@ -65,21 +65,15 @@ class SignatureControllerX extends GetxController {
       final Uint8List? customerBytes = await customerSignatureController
           .toPngBytes();
 
-      final Uint8List? workerBytes = await workerSignatureController
-          .toPngBytes();
+      final workerFile = workerSignatureFile.value!;
 
       final dir = await getApplicationDocumentsDirectory();
 
       final customerFile = File("${dir.path}/${tagNo}_customer_sign.png");
 
-      final workerFile = File("${dir.path}/${tagNo}_worker_sign.png");
-
       await customerFile.writeAsBytes(customerBytes!);
 
-      await workerFile.writeAsBytes(workerBytes!);
-
       debugPrint("Customer Sign Saved => ${customerFile.path}");
-      debugPrint("Worker Sign Saved => ${workerFile.path}");
 
       final token = appController.token.value;
 
@@ -112,7 +106,13 @@ class SignatureControllerX extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint("SIGNATURE UPLOAD SUCCESS");
 
-        Get.offNamed(routefarmerdetailspage);
+        Get.offNamed(
+          routefarmerdetailspage,
+          arguments: {
+            "leadId": leadId,
+            "leadType": leadType, // tagging / retagging / claim
+          },
+        );
 
         return;
       }
@@ -136,10 +136,50 @@ class SignatureControllerX extends GetxController {
     }
   }
 
+  /// ===============================
+  /// PROFILE WORKER SIGNATURE
+  /// ===============================
+  Rx<File?> workerSignatureFile = Rx<File?>(null);
+
+  Future<Directory> getSignatureDirectory() async {
+    final directory = Directory("/storage/emulated/0/Documents/RRM/Profile");
+
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    return directory;
+  }
+
+  Future<File> getWorkerSignatureFile() async {
+    final directory = await getSignatureDirectory();
+
+    return File(
+      "${directory.path}/${appController.mobileNumber.value}_worker_signature.png",
+    );
+  }
+
+  Future<void> loadWorkerSignature() async {
+    try {
+      final file = await getWorkerSignatureFile();
+
+      if (await file.exists()) {
+        workerSignatureFile.value = file;
+
+        debugPrint("WORKER SIGNATURE LOADED => ${file.path}");
+      } else {
+        workerSignatureFile.value = null;
+
+        debugPrint("WORKER SIGNATURE NOT FOUND");
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   @override
   void onClose() {
     customerSignatureController.dispose();
-    workerSignatureController.dispose();
     super.onClose();
   }
 }

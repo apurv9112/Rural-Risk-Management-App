@@ -39,12 +39,14 @@ class CattleController extends GetxController {
   int currentCattleIndex = 1;
 
   List<Map<String, dynamic>> cattleSequence = [];
+  String customerName = "";
 
   @override
   void onInit() {
     final Map<String, dynamic> args =
         (Get.arguments as Map<String, dynamic>?) ?? {};
     syncFromArgs(args);
+    customerName = args["customerName"] ?? "";
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
     super.onInit();
   }
@@ -946,7 +948,7 @@ class CattleController extends GetxController {
 
             "folderId": responseJson["data"]["googleDriveFolderId"],
 
-            "ownerName": data["nameOfBeneficiary"] ?? "",
+            "customerName": customerName,
 
             "tagNo": tagnumbercontroller.text.trim(),
           },

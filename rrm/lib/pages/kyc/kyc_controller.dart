@@ -304,6 +304,7 @@ class KycController extends GetxController {
           "tagging": data,
           "ischangepage": ischangepage,
           "retagging": retagging,
+          "customerName": namecontroller.text.trim(),
         },
       );
     } catch (e) {

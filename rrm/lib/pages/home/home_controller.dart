@@ -1,70 +1,3 @@
-// import 'dart:io';
-// import 'dart:ui' as ui;
-
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:rrm/controller.dart';
-// import 'package:signature/signature.dart';
-
-// class HomeController extends GetxController {
-//   String? retagging = "retagging";
-
-//   AppController appController = Get.find();
-
-//   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-//   /// SIGNATURE CONTROLLER
-//   SignatureController signatureController = SignatureController(
-//     penStrokeWidth: 3,
-//     penColor: Colors.black,
-//     exportBackgroundColor: Colors.white,
-//   );
-
-//   @override
-//   void onInit() {
-//     super.onInit();
-
-//     appController.loadUserData();
-//   }
-
-//   /// SAVE SIGNATURE
-//   Future<void> saveSignature() async {
-//     try {
-//       if (signatureController.isEmpty) {
-//         Get.snackbar("Error", "Please Draw Signature First");
-//         return;
-//       }
-
-//       final ui.Image? image = await signatureController.toImage();
-
-//       if (image == null) return;
-
-//       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-
-//       final pngBytes = byteData!.buffer.asUint8List();
-
-//       final directory = await getApplicationDocumentsDirectory();
-
-//       final filePath = '${directory.path}/signature.png';
-
-//       final file = File(filePath);
-
-//       await file.writeAsBytes(pngBytes);
-
-//       print("SIGNATURE PATH ::: $filePath");
-//     } catch (e) {
-//       print("SAVE SIGNATURE ERROR ::: $e");
-//     }
-//   }
-
-//   @override
-//   void onClose() {
-//     signatureController.dispose();
-//     super.onClose();
-//   }
-// }
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -73,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:rrm/controller.dart';
 import 'package:signature/signature.dart';
 
@@ -100,21 +32,38 @@ class HomeController extends GetxController {
 
     appController.loadUserData();
 
-    /// LOAD SAVED SIGNATURE
     loadSavedSignature();
   }
 
-  /// SAVE SIGNATURE
+  /// ===============================
+  /// PROFILE SIGNATURE DIRECTORY
+  /// ===============================
+  Future<Directory> getSignatureDirectory() async {
+    final directory = Directory("/storage/emulated/0/Documents/RRM/Profile");
+
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    return directory;
+  }
+
+  /// ===============================
+  /// WORKER SIGNATURE FILE
+  /// ===============================
+  Future<File> getWorkerSignatureFile() async {
+    final directory = await getSignatureDirectory();
+
+    return File(
+      "${directory.path}/${appController.mobileNumber.value}_worker_signature.png",
+    );
+  }
+
   /// SAVE SIGNATURE
   Future<void> saveSignature() async {
     try {
       if (signatureController.isEmpty) {
-        if (Get.context != null) {
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            const SnackBar(content: Text("Please Draw Signature First")),
-          );
-        }
-
+        Get.snackbar("Required", "Please draw signature first");
         return;
       }
 
@@ -124,37 +73,18 @@ class HomeController extends GetxController {
 
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
+      if (byteData == null) return;
 
-      /// APP HIDDEN STORAGE
-      final directory = await getExternalStorageDirectory();
+      final Uint8List pngBytes = byteData.buffer.asUint8List();
 
-      if (directory == null) return;
+      final file = await getWorkerSignatureFile();
 
-      /// SIGNATURE FOLDER
-      final folder = Directory("${directory.path}/signatures");
-
-      /// CREATE FOLDER
-      if (!await folder.exists()) {
-        await folder.create(recursive: true);
-      }
-
-      /// FILE NAME USING MOBILE NUMBER
-      final filePath = "${folder.path}/${appController.mobileNumber.value}.png";
-
-      final file = File(filePath);
-
-      /// SAVE FILE
       await file.writeAsBytes(pngBytes);
 
-      /// SAVE PATH
-      signaturePath.value = filePath;
-
-      print("SIGNATURE SAVED ::: $filePath");
+      signaturePath.value = file.path;
 
       update();
 
-      /// SUCCESS MESSAGE
       if (Get.context != null) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
           const SnackBar(
@@ -163,53 +93,68 @@ class HomeController extends GetxController {
           ),
         );
       }
+
+      debugPrint("SIGNATURE SAVED => ${file.path}");
     } catch (e) {
-      print("SAVE SIGNATURE ERROR ::: $e");
+      debugPrint("SAVE SIGNATURE ERROR => $e");
+
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
+  /// ===============================
   /// LOAD SAVED SIGNATURE
+  /// ===============================
   Future<void> loadSavedSignature() async {
     try {
-      final directory = await getExternalStorageDirectory();
-
-      if (directory == null) return;
-
-      final filePath =
-          "${directory.path}/signatures/${appController.mobileNumber.value}.png";
-
-      final file = File(filePath);
+      final file = await getWorkerSignatureFile();
 
       if (await file.exists()) {
-        signaturePath.value = filePath;
+        signaturePath.value = file.path;
 
-        print("SIGNATURE FOUND ::: $filePath");
+        debugPrint("SIGNATURE FOUND => ${file.path}");
+      } else {
+        signaturePath.value = "";
 
-        update();
+        debugPrint("NO SIGNATURE FOUND");
       }
+
+      update();
     } catch (e) {
-      print("LOAD SIGNATURE ERROR ::: $e");
+      debugPrint("LOAD SIGNATURE ERROR => $e");
     }
   }
 
-  /// CLEAR SIGNATURE
+  /// ===============================
+  /// CLEAR SIGNATURE (SAFE)
+  /// ===============================
   Future<void> clearSignature() async {
     try {
+      /// Clear only current drawing
       signatureController.clear();
 
-      if (signaturePath.value.isNotEmpty) {
-        final file = File(signaturePath.value);
+      /// Remove preview from UI
+      signaturePath.value = "";
 
-        if (await file.exists()) {
-          await file.delete();
-        }
+      update();
 
-        signaturePath.value = "";
-
-        update();
+      if (Get.context != null) {
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          const SnackBar(
+            content: Text("Signature Cleared"),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
+
+      debugPrint("SIGNATURE PREVIEW CLEARED");
     } catch (e) {
-      print("CLEAR SIGNATURE ERROR ::: $e");
+      debugPrint("CLEAR SIGNATURE ERROR => $e");
     }
   }
 
@@ -235,40 +180,40 @@ class HomeController extends GetxController {
 
       if (pickedFile == null) return;
 
-      File file = File(pickedFile.path);
+      final File imageFile = File(pickedFile.path);
 
       /// REMOVE BACKGROUND
-      Uint8List pngBytes = await removeBackground(file);
+      final Uint8List pngBytes = await removeBackground(imageFile);
 
-      /// STORAGE
-      final directory = await getExternalStorageDirectory();
+      /// GET WORKER SIGNATURE FILE
+      final File saveFile = await getWorkerSignatureFile();
 
-      if (directory == null) return;
-
-      final folder = Directory("${directory.path}/signatures");
-
-      if (!await folder.exists()) {
-        await folder.create(recursive: true);
-      }
-
-      final filePath = "${folder.path}/${appController.mobileNumber.value}.png";
-
-      final saveFile = File(filePath);
-
+      /// SAVE IMAGE
       await saveFile.writeAsBytes(pngBytes);
 
-      signaturePath.value = filePath;
+      /// UPDATE PATH
+      signaturePath.value = saveFile.path;
 
       update();
 
       if (Get.context != null) {
-        ScaffoldMessenger.of(
-          Get.context!,
-        ).showSnackBar(const SnackBar(content: Text("Signature Uploaded")));
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          const SnackBar(
+            content: Text("Signature Uploaded Successfully"),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
-      update();
+
+      debugPrint("SIGNATURE IMAGE SAVED => ${saveFile.path}");
     } catch (e) {
-      print("PICK SIGNATURE ERROR ::: $e");
+      debugPrint("PICK SIGNATURE ERROR => $e");
+
+      if (Get.context != null) {
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -341,5 +286,25 @@ class HomeController extends GetxController {
     image = img.copyResize(image, width: 800);
 
     return Uint8List.fromList(img.encodePng(image));
+  }
+
+  Future<void> deleteSignature() async {
+    try {
+      final file = await getWorkerSignatureFile();
+
+      if (await file.exists()) {
+        await file.delete();
+      }
+
+      signatureController.clear();
+
+      signaturePath.value = "";
+
+      update();
+
+      Get.snackbar("Success", "Signature Deleted Successfully");
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }

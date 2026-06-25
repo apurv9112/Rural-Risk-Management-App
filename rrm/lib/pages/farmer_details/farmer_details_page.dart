@@ -58,17 +58,19 @@ class FarmerDetailsScreen extends StatelessWidget {
                           datarow(
                             context: context,
                             staticdata: "Name - ",
-                            listdata: "Apurv Patel",
+                            listdata: controller.report["owner"]["name"] ?? {},
                           ),
                           datarow(
                             context: context,
                             staticdata: "Lan Number - ",
-                            listdata: "41578962214",
+                            listdata:
+                                controller.report["owner"]["lanNumber"] ?? {},
                           ),
                           datarow(
                             context: context,
                             staticdata: "Mobile - ",
-                            listdata: "5485236852",
+                            listdata:
+                                controller.report["owner"]["mobile"] ?? {},
                           ),
 
                           Row(
@@ -85,7 +87,7 @@ class FarmerDetailsScreen extends StatelessWidget {
                               SizedBox(
                                 width: wp(60),
                                 child: Text(
-                                  "B-TF-7, Block - B, Third Floor, Signet Plaza Kunal Char Rasta Gotri Road Samta, Gotri Vadodara, Gujarat 390021 India",
+                                  controller.report["owner"]["address"] ?? {},
                                   style: TextStyle(
                                     fontSize: dp(context, 18),
                                     fontWeight: FontWeight.w300,
@@ -133,113 +135,78 @@ class FarmerDetailsScreen extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: hp(1)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: wp(1)),
-                              SizedBox(
-                                width: wp(5),
-                                child: Text(
-                                  "1",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              SizedBox(width: wp(5)),
-                              SizedBox(
-                                width: wp(19),
 
-                                child: Text(
-                                  "986521\n478945",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: controller.report["cattle"] ?? [].length,
+                            itemBuilder: (context, index) {
+                              final item = controller.report["cattle"]?[index];
+
+                              return Padding(
+                                padding: EdgeInsets.only(bottom: hp(1)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(width: wp(1)),
+
+                                    SizedBox(
+                                      width: wp(5),
+                                      child: Text(
+                                        "${item["srNo"] ?? index + 1}",
+                                        style: TextStyle(
+                                          fontSize: dp(context, 18),
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+
+                                    SizedBox(width: wp(5)),
+
+                                    SizedBox(
+                                      width: wp(19),
+                                      child: Text(
+                                        "${item["tagNo"] ?? ""}",
+                                        style: TextStyle(
+                                          fontSize: dp(context, 18),
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+
+                                    SizedBox(width: wp(5)),
+
+                                    SizedBox(
+                                      width: wp(15),
+                                      child: Text(
+                                        "${item["species"] ?? ""}",
+                                        style: TextStyle(
+                                          fontSize: dp(context, 18),
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+
+                                    SizedBox(width: wp(4)),
+
+                                    SizedBox(
+                                      width: wp(18),
+                                      child: Text(
+                                        "${item["sumInsured"] ?? ""}",
+                                        style: TextStyle(
+                                          fontSize: dp(context, 18),
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              SizedBox(width: wp(5)),
-                              SizedBox(
-                                width: wp(15),
-                                child: Text(
-                                  "Cow",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              SizedBox(width: wp(4)),
-                              SizedBox(
-                                width: wp(18),
-                                child: Text(
-                                  "45000",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: hp(1)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: wp(1)),
-                              SizedBox(
-                                width: wp(5),
-                                child: Text(
-                                  "2",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              SizedBox(width: wp(5)),
-                              SizedBox(
-                                width: wp(19),
-                                child: Text(
-                                  "412587\n986325",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              SizedBox(width: wp(5)),
-                              SizedBox(
-                                width: wp(15),
-                                child: Text(
-                                  "Buffalo",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              SizedBox(width: wp(4)),
-                              SizedBox(
-                                width: wp(18),
-                                child: Text(
-                                  "50000",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
                         ],
                       ),

@@ -98,7 +98,6 @@ class SignaturePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = Get.arguments ?? {};
-    final String ownerName = args["ownerName"]?.toString() ?? "";
 
     final String tagNo = args["tagNo"]?.toString() ?? "";
 
@@ -108,7 +107,12 @@ class SignaturePage extends StatelessWidget {
 
     final String folderId = args["folderId"]?.toString() ?? "";
 
-    print("OWNER NAME = ${Get.arguments["ownerName"]}");
+    final String ownerName = args["customerName"] ?? "";
+
+    print(
+      "leadId:$leadId, leadType:$leadType, folderId:$folderId, ownerName:$ownerName",
+    );
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.PRIMARY_COLOR,
@@ -182,15 +186,9 @@ class SignaturePage extends StatelessWidget {
                   SizedBox(height: hp(2)),
 
                   /// WORKER SIGNATURE
-                  buildSignatureCard(
+                  buildWorkerSignatureCard(
                     context: context,
-                    title: "2. Field Worker Signature",
-                    subtitle:
-                        "I hereby declare that I have physically verified the cattle and personally taken the required photography.",
-                    signatureController: controller.workerSignatureController,
-                    onClear: () {
-                      controller.workerSignatureController.clear();
-                    },
+                    controller: controller,
                   ),
 
                   SizedBox(height: hp(2)),
@@ -394,4 +392,81 @@ class SignaturePage extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget buildWorkerSignatureCard({required BuildContext context, controller}) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: Colors.green.shade200),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "2. Field Worker Signature",
+          style: TextStyle(
+            fontSize: dp(context, 16),
+            color: AppColors.PRIMARY_COLOR,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        SizedBox(height: hp(1)),
+
+        Text(
+          "Profile Signature",
+          style: TextStyle(color: Colors.grey.shade600),
+        ),
+
+        SizedBox(height: hp(2)),
+
+        Obx(() {
+          final file = controller.workerSignatureFile.value;
+
+          if (file == null || !file.existsSync()) {
+            return Container(
+              height: hp(30),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.red),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text("No Profile Signature Found"),
+            );
+          }
+
+          return Container(
+            height: hp(30),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Image.file(file, fit: BoxFit.contain),
+          );
+        }),
+
+        SizedBox(height: hp(2)),
+
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              Get.back();
+
+              Get.snackbar(
+                "Profile",
+                "Update your signature from Profile page.",
+              );
+            },
+            icon: const Icon(Icons.edit),
+            label: const Text("Update Profile Signature"),
+          ),
+        ),
+      ],
+    ),
+  );
 }

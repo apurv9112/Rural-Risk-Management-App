@@ -12,7 +12,6 @@ import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
 
-
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
 
@@ -61,7 +60,7 @@ class Homepage extends StatelessWidget {
 
                         ElevatedButton.icon(
                           onPressed: () {
-                            Get.back();
+                            Navigator.of(context).pop();
                           },
                           icon: const Icon(Icons.check),
                           label: const Text("OK"),
@@ -248,7 +247,7 @@ class Homepage extends StatelessWidget {
                                             File(
                                               controller.signaturePath.value,
                                             ),
-                                            fit: BoxFit.cover,
+                                            fit: BoxFit.contain,
                                           );
                                         }
 
@@ -257,7 +256,7 @@ class Homepage extends StatelessWidget {
                                             snapshot.data != null) {
                                           return Image.memory(
                                             snapshot.data!,
-                                            fit: BoxFit.cover,
+                                            fit: BoxFit.contain,
                                           );
                                         }
 
@@ -381,8 +380,6 @@ class Homepage extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: hp(2)),
-
-
 
                 SizedBox(height: hp(3)),
 
