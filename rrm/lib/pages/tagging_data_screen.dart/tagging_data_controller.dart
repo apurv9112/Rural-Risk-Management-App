@@ -14,8 +14,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import '../../routes/common/common_app_pages.dart';
 
-
-
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
@@ -69,7 +67,7 @@ class TaggingdataController extends GetxController {
     manualtagging = args["manualtagging"] ?? false;
 
     if (manualtagging == true) {
-      data = {
+      data = Map<String, dynamic>.from({
         "ownerName": "",
         "mobileNo": "",
         "address": "",
@@ -84,7 +82,7 @@ class TaggingdataController extends GetxController {
         "numberOfCow": "",
         "sumInsuredBuffalo": "",
         "sumInsuredCow": "",
-      };
+      });
     } else {
       data = args["tagging"] ?? args["retagging"] ?? args["claim"];
     }
@@ -116,10 +114,14 @@ class TaggingdataController extends GetxController {
     cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
     species = dataMap["species"];
     tagnumberclaim = dataMap["tagNumber"] ?? dataMap["oldTagNumber"];
-    dateofdeathcontroller.text = dataMap["dateOfDeath"] != null && dataMap["dateOfDeath"].toString().isNotEmpty
+    dateofdeathcontroller.text =
+        dataMap["dateOfDeath"] != null &&
+            dataMap["dateOfDeath"].toString().isNotEmpty
         ? dataMap["dateOfDeath"].toString()
         : '';
-    timeofdeathcontroller.text = dataMap["timeOfDeath"] != null && dataMap["timeOfDeath"].toString().isNotEmpty
+    timeofdeathcontroller.text =
+        dataMap["timeOfDeath"] != null &&
+            dataMap["timeOfDeath"].toString().isNotEmpty
         ? dataMap["timeOfDeath"].toString()
         : '';
     final images = dataMap["images"];
@@ -141,6 +143,15 @@ class TaggingdataController extends GetxController {
   }
 
   void syncDataFromControllers() {
+    print("===== MANUAL DEBUG =====");
+    print(data.runtimeType);
+    print(data);
+
+    if (data is Map) {
+      (data as Map).forEach((k, v) {
+        print("$k (${k.runtimeType}) => $v (${v.runtimeType})");
+      });
+    }
     if (data is Map<String, dynamic>) {
       final map = data as Map<String, dynamic>;
       final buffaloCount = int.tryParse(buffalocountcontroller.text.trim());
@@ -151,7 +162,7 @@ class TaggingdataController extends GetxController {
       if (cowCount != null) map["numberOfCow"] = cowCount;
       if (buffaloSI != null) map["sumInsuredBuffalo"] = buffaloSI;
       if (cowSI != null) map["sumInsuredCow"] = cowSI;
-      
+
       if (retagging != null) {
         map["newTagNumber"] = timeofdeathcontroller.text.trim();
         map["dateOfReTagging"] = dateofdeathcontroller.text.trim();
