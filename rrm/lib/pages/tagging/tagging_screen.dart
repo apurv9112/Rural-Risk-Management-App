@@ -413,16 +413,16 @@ class TaggingScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-          floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: AppColors.WHITE,
-            onPressed: () {
-              Get.toNamed(
-                routetaggingdatapage,
-                arguments: {"manualtagging": true},
-              );
-            },
-            label: Text("Manual Tagging"),
-          ),
+          // floatingActionButton: FloatingActionButton.extended(
+          //   backgroundColor: AppColors.WHITE,
+          //   onPressed: () {
+          //     Get.toNamed(
+          //       routetaggingdatapage,
+          //       arguments: {"manualtagging": true},
+          //     );
+          //   },
+          //   label: Text("Manual Tagging"),
+          // ),
         );
       },
     );

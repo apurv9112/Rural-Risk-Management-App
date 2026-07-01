@@ -33,10 +33,10 @@ class FarmerDetailsController extends GetxController {
     required String leadType,
   }) async {
     try {
-      isLoading = true;
-      update();
-
       report = await _service.getReport(leadId: leadId, leadType: leadType);
+    } catch (e) {
+      debugPrint("Farmer Report Error: $e");
+      report = {};
     } finally {
       isLoading = false;
       update();

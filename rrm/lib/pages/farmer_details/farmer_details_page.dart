@@ -58,19 +58,19 @@ class FarmerDetailsScreen extends StatelessWidget {
                           datarow(
                             context: context,
                             staticdata: "Name - ",
-                            listdata: controller.report["owner"]["name"] ?? {},
+                            listdata: controller.report["owner"]?["name"] ?? "",
                           ),
                           datarow(
                             context: context,
                             staticdata: "Lan Number - ",
                             listdata:
-                                controller.report["owner"]["lanNumber"] ?? {},
+                                controller.report["owner"]?["lanNumber"] ?? "",
                           ),
                           datarow(
                             context: context,
                             staticdata: "Mobile - ",
                             listdata:
-                                controller.report["owner"]["mobile"] ?? {},
+                                controller.report["owner"]?["mobile"] ?? "",
                           ),
 
                           Row(
@@ -87,7 +87,7 @@ class FarmerDetailsScreen extends StatelessWidget {
                               SizedBox(
                                 width: wp(60),
                                 child: Text(
-                                  controller.report["owner"]["address"] ?? {},
+                                  controller.report["owner"]?["address"] ?? "",
                                   style: TextStyle(
                                     fontSize: dp(context, 18),
                                     fontWeight: FontWeight.w300,
@@ -139,9 +139,15 @@ class FarmerDetailsScreen extends StatelessWidget {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: controller.report["cattle"] ?? [].length,
+                            itemCount:
+                                (controller.report["cattle"] as List?)
+                                    ?.length ??
+                                0,
                             itemBuilder: (context, index) {
-                              final item = controller.report["cattle"]?[index];
+                              final item =
+                                  ((controller.report["cattle"] as List?) ??
+                                          [])[index]
+                                      as Map<String, dynamic>;
 
                               return Padding(
                                 padding: EdgeInsets.only(bottom: hp(1)),
