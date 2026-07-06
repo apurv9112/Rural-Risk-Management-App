@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/widget/cancel.dart';
+import 'package:rrm/pages/tagging_data_screen.dart/widget/fullscreenImageviewer.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/widget/species.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/tagging_data_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
@@ -290,29 +291,60 @@ class TaggingDataScreen extends StatelessWidget {
                                 child: SizedBox(
                                   height: hp(78),
                                   width: wp(70),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: BouncingScrollPhysics(),
-                                    itemCount: controller.imageBytesList.length,
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        margin: EdgeInsets.only(bottom: hp(2)),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: AppColors.PRIMARY_COLOR,
-                                            width: wp(1),
-                                          ),
-                                        ),
-                                        child: InteractiveViewer(
-                                          minScale: 1,
-                                          maxScale: 4,
-                                          child: Image.memory(
-                                            controller.imageBytesList[index],
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                  child: Scrollbar(
+                                    controller:
+                                        controller.imageScrollController,
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    thickness: 6,
+                                    radius: Radius.circular(10),
+
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        right: 12,
+                                      ), // ← અહીં space વધઘટ કરી શકે
+                                      child: ListView.builder(
+                                        controller:
+                                            controller.imageScrollController,
+                                        shrinkWrap: true,
+                                        physics: const BouncingScrollPhysics(),
+                                        itemCount:
+                                            controller.imageBytesList.length,
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            margin: EdgeInsets.only(
+                                              bottom: hp(2),
+                                            ),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: AppColors.PRIMARY_COLOR,
+                                                width: wp(1),
+                                              ),
+                                            ),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Get.to(
+                                                  () => FullScreenImageViewer(
+                                                    images: controller
+                                                        .imageBytesList,
+                                                    initialIndex: index,
+                                                  ),
+                                                );
+                                              },
+                                              child: InteractiveViewer(
+                                                minScale: 1,
+                                                maxScale: 4,
+                                                child: Image.memory(
+                                                  controller
+                                                      .imageBytesList[index],
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

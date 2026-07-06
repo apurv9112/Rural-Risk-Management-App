@@ -60,6 +60,7 @@ class TaggingdataController extends GetxController {
   String? selectedReasonDropdown;
   bool _fieldsInitialized = false;
   List<Uint8List> imageBytesList = [];
+  final ScrollController imageScrollController = ScrollController();
 
   void setInitialData(Map<String, dynamic> args) {
     if (data != null) return;
