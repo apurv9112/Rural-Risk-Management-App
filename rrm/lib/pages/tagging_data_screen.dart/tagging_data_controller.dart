@@ -7,8 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/cancel_lead_service.dart';
-// import 'package:rrm/services/claim_service.dart';
-// import 'package:rrm/services/retagging_service.dart';
 import 'package:rrm/services/tagging_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -17,9 +15,6 @@ import '../../routes/common/common_app_pages.dart';
 class TaggingdataController extends GetxController {
   final AppController _appController = Get.find();
   final TaggingService _taggingService = TaggingService();
-  // final RetaggingService _retaggingService = RetaggingService();
-  // final ClaimService _claimService = ClaimService();
-
   TextEditingController namecontroller = TextEditingController();
   TextEditingController mobilenumbercontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
@@ -40,13 +35,10 @@ class TaggingdataController extends GetxController {
   TextEditingController goatcontroller = TextEditingController();
   TextEditingController dateofdeathcontroller = TextEditingController();
   TextEditingController timeofdeathcontroller = TextEditingController();
-
   final FocusNode dateOfDeathFocusNode = FocusNode();
   final FocusNode timeOfDeathFocusNode = FocusNode();
-
   bool showDateError = false;
   bool showTimeError = false;
-
   String? species;
   String? tagnumberclaim;
   bool? cowreadOnly = false;
@@ -88,11 +80,6 @@ class TaggingdataController extends GetxController {
       data = args["tagging"] ?? args["retagging"] ?? args["claim"];
     }
   }
-  // void setInitialData(Map<String, dynamic> args) {
-  //   if (data != null) return;
-
-  //   data = args["tagging"] ?? args["retagging"] ?? args["claim"];
-  // }
 
   void initFieldsFromData(Map<String, dynamic> dataMap, BuildContext context) {
     if (_fieldsInitialized) return;
@@ -308,6 +295,126 @@ class TaggingdataController extends GetxController {
     }
     // update();
     update(['cancelDialog']);
+  }
+
+  Future<bool> createManualLead() async {
+    final token = _appController.token.value;
+
+    if (token.isEmpty) {
+      debugPrint("Token not found");
+      return false;
+    }
+
+    final int buffaloCount =
+        int.tryParse(buffalocountcontroller.text.trim()) ?? 0;
+
+    final int cowCount = int.tryParse(cowcountcontroller.text.trim()) ?? 0;
+
+    final int goatCount = int.tryParse(goatcontroller.text.trim()) ?? 0;
+
+    final int sheepCount = int.tryParse(sheepcountcontroller.text.trim()) ?? 0;
+
+    final body = <String, dynamic>{
+      "leadType": "tagging",
+
+      "ownerName": namecontroller.text.trim(),
+      "mobileNo": mobilenumbercontroller.text.trim(),
+      "address": addresscontroller.text.trim(),
+      "village": villegcontroller.text.trim(),
+      "taluko": talukcontroller.text.trim(),
+      "district": districcontroller.text.trim(),
+
+      "state": "",
+      "pinCode": "",
+      "insuranceCompanyId": "6a2bb481c1265c2a338aa45c",
+
+      "insuranceCompanyName": insurancecontroller.text.trim(),
+      "bankName": banknamecontroller.text.trim(),
+
+      "branchOfBank": branchcontroller.text.trim(),
+      "loanAccountNo": loanacnocontroller.text.trim(),
+
+      "aadharFront": "",
+
+      "cattle": [
+        {
+          "tagNumber": "",
+          "species": species ?? "",
+          "breed": "",
+          "bodyColor": "",
+          "cattleAge": "",
+          "milkPerDayLtr": 0,
+
+          "marketValue": 0,
+          "taggingDate": "",
+          "headPoseImage": "",
+          "earTagImage": "",
+        },
+      ],
+      "sumInsuredCow": cowmoneycontroller.text.trim(),
+      "sumInsuredBuffalo": buffalomoneycontroller.text.trim(),
+      "sumInsuredGoat": goatmoneycontroller.text.trim(),
+      "sumInsuredSheep": sheepmoneycontroller.text.trim(),
+
+      "numberOfCow": cowCount,
+      "numberOfBuffalo": buffaloCount,
+      "numberOfGoat": goatCount,
+      "numberOfSheep": sheepCount,
+    };
+
+    try {
+      final response = await _taggingService.createManualLead(
+        token: token,
+        body: body,
+      );
+
+      debugPrint("Manual Lead Status => ${response.statusCode}");
+      debugPrint("Manual Lead Response => ${response.body}");
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        return false;
+      }
+
+      final responseData = jsonDecode(response.body);
+
+      final leadId =
+          responseData["data"]?["leadId"] ??
+          responseData["data"]?["_id"] ??
+          responseData["leadId"] ??
+          responseData["_id"];
+
+      if (leadId != null) {
+        data = {
+          "id": leadId.toString(),
+          "ownerName": namecontroller.text.trim(),
+          "mobileNo": mobilenumbercontroller.text.trim(),
+          "address": addresscontroller.text.trim(),
+          "village": villegcontroller.text.trim(),
+          "taluko": talukcontroller.text.trim(),
+          "district": districcontroller.text.trim(),
+          "bankName": banknamecontroller.text.trim(),
+          "branchOfBank": branchcontroller.text.trim(),
+          "loanAccountNo": loanacnocontroller.text.trim(),
+          "insuranceCompanyName": insurancecontroller.text.trim(),
+          "numberOfCow": cowCount,
+          "numberOfBuffalo": buffaloCount,
+          "numberOfGoat": goatCount,
+          "numberOfSheep": sheepCount,
+          "sumInsuredCow": cowmoneycontroller.text.trim(),
+          "sumInsuredBuffalo": buffalomoneycontroller.text.trim(),
+          "sumInsuredGoat": goatmoneycontroller.text.trim(),
+          "sumInsuredSheep": sheepmoneycontroller.text.trim(),
+        };
+
+        debugPrint("===== MANUAL DATA =====");
+        debugPrint(data.toString());
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint("Manual Lead Error => $e");
+      return false;
+    }
   }
 
   // Udate lead API call //

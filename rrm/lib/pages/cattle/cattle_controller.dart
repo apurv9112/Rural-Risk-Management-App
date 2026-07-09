@@ -905,13 +905,20 @@ class CattleController extends GetxController {
         payload: payload,
       );
 
+      final responseBody = await response.stream.bytesToString();
+
+      debugPrint("========== CATTLE RESPONSE ==========");
+      debugPrint("STATUS => ${response.statusCode}");
+      debugPrint("BODY => $responseBody");
+      debugPrint("=====================================");
+
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(
           "Failed to save cattle. Server responded with ${response.statusCode}",
         );
       }
 
-      final responseBody = await response.stream.bytesToString();
+      // final responseBody = await response.stream.bytesToString();
 
       print("========== API RESPONSE ==========");
       print("STATUS : ${response.statusCode}");

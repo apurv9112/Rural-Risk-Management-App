@@ -118,4 +118,15 @@ class TaggingService {
       headers: _authHeaders(token),
     );
   }
+
+  Future<http.Response> createManualLead({
+    required String token,
+    required Map<String, dynamic> body,
+  }) {
+    return _client.post(
+      Uri.parse("$baseUrl/field-worker/manual-lead"),
+      headers: _authHeaders(token),
+      body: jsonEncode(body),
+    );
+  }
 }

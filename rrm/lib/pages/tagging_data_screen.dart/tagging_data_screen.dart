@@ -94,7 +94,7 @@ class TaggingDataScreen extends StatelessWidget {
                                   .text
                                   .trim();
                               if (number.isEmpty) return;
-                              url_launcher.launchUrl(Uri.parse('tel:+$number'));
+                              url_launcher.launchUrl(Uri.parse('tel:$number'));
                             },
                             child: Icon(
                               Icons.call_sharp,
@@ -539,15 +539,44 @@ class TaggingDataScreen extends StatelessWidget {
                             barrierDismissible: false,
                           );
 
-                          await controller.saveLeadUpdates();
+                          // await controller.saveLeadUpdates();
+
+                          // if (Get.isDialogOpen ?? false) Get.back();
+                          // Get.toNamed(
+                          //   routekycpage,
+                          //   arguments: {
+                          //     "tagging": controller.data,
+                          //     "ischangepage": controller.ischangepage,
+                          //     "retagging": controller.retagging,
+                          //   },
+                          // );
+
+                          bool success = true;
+
+                          if (controller.manualtagging == true) {
+                            success = await controller.createManualLead();
+                          } else {
+                            await controller.saveLeadUpdates();
+                          }
 
                           if (Get.isDialogOpen ?? false) Get.back();
+
+                          if (!success) {
+                            Get.snackbar(
+                              "Error",
+                              "Unable to create manual lead",
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                            return;
+                          }
+
                           Get.toNamed(
                             routekycpage,
                             arguments: {
                               "tagging": controller.data,
                               "ischangepage": controller.ischangepage,
                               "retagging": controller.retagging,
+                              "manualtagging": controller.manualtagging,
                             },
                           );
                         },
