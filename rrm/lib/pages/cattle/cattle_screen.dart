@@ -122,7 +122,7 @@ class Cattlescreen extends StatelessWidget {
                               Expanded(
                                 flex: 2,
                                 child: CustomTextField(
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.text,
                                   controller: controller.newtagnumbercontroller,
                                   focusNode: controller.newTagNumberFocusNode,
                                   validator: null,

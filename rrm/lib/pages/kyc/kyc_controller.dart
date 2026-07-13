@@ -11,6 +11,7 @@ import 'package:rrm/services/image_processing_service.dart';
 import 'package:rrm/services/camera_service.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/core/storage/folder_manager.dart';
+import 'package:rrm/services/gallery_service.dart';
 
 class KycController extends GetxController {
   final AppController appController = Get.find();
@@ -85,6 +86,7 @@ class KycController extends GetxController {
       );
       try {
         file = await ImageProcessingService.processImage(file);
+        await GalleryService.saveImage(file);
       } catch (e) {
         print("Image processing error: $e");
       }

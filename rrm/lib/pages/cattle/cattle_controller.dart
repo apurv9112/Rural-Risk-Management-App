@@ -14,7 +14,7 @@ import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
-
+import 'package:rrm/services/gallery_service.dart';
 import 'package:rrm/services/image_watermark_service.dart';
 import 'package:rrm/services/camera_service.dart';
 
@@ -475,6 +475,7 @@ class CattleController extends GetxController {
       try {
         file = await ImageProcessingService.processImage(file);
         file = await ImageWatermarkService.addWatermark(file, position);
+        await GalleryService.saveImage(file);
       } catch (e) {
         print("Image processing error: $e");
       }
@@ -583,6 +584,7 @@ class CattleController extends GetxController {
         File(pickedVideo.path),
         workflow: 'temp',
       );
+      await GalleryService.saveVideo(persistentFile);
       isvideo == 1
           ? videopath1 = persistentFile.path
           : isvideo == 2
