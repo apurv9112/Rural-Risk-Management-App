@@ -22,6 +22,8 @@ class SignatureControllerX extends GetxController {
   void onInit() {
     super.onInit();
 
+    appController.loadUserData();
+
     loadWorkerSignature();
   }
 
@@ -137,12 +139,15 @@ class SignatureControllerX extends GetxController {
   }
 
   /// ===============================
-  /// PROFILE WORKER SIGNATURE
+  /// PROFILE WORKER SIGNATURE FILE
   /// ===============================
+
   Rx<File?> workerSignatureFile = Rx<File?>(null);
 
   Future<Directory> getSignatureDirectory() async {
-    final directory = Directory("/storage/emulated/0/Documents/RRM/Profile");
+    final appDir = await getApplicationDocumentsDirectory();
+
+    final directory = Directory("${appDir.path}/RRM/Profile");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);

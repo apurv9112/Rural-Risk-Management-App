@@ -153,7 +153,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
-                          hint: "Taluk",
+                          hint: "Taluko",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),

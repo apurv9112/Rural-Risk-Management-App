@@ -793,9 +793,13 @@ class CattleController extends GetxController {
 
         "sidePoseLeftImage": selectedsideposeleft.value ?? "",
 
-        "sidePoseRightImage": selectedsideposeright.value ?? "",
+        "sidePoseRightImage": leadType == "claim"
+            ? selectedsideposeright.value
+            : selectedbackpose.value ?? "",
 
-        "backPoseImage": selectedbackpose.value ?? "",
+        "backPoseImage": leadType == "claim"
+            ? selectedbackpose.value
+            : selectedsideposeright.value ?? "",
 
         "earCutPhoto": selectedearcut.value ?? "",
 
@@ -827,9 +831,13 @@ class CattleController extends GetxController {
 
         "taggingSidePoseLeftImage": selectedsideposeleft.value ?? "",
 
-        "taggingSidePoseRightImage": selectedsideposeright.value ?? "",
+        "taggingSidePoseRightImage": leadType == "claim"
+            ? selectedsideposeright.value
+            : selectedbackpose.value ?? "",
 
-        "taggingBackPoseImage": selectedbackpose.value ?? "",
+        "taggingBackPoseImage": leadType == "claim"
+            ? selectedbackpose.value
+            : selectedsideposeright.value ?? "",
 
         // ================= CLAIM =================
         "dateOfDeath": leadType == "claim"
@@ -851,13 +859,13 @@ class CattleController extends GetxController {
         "conversionPdf": "",
         // ================= OTHER IMAGES =================
         // ================= NEW OTHER IMAGES =================
-        "other-1": selectedOther1.value ?? "",
+        "other-1": selectedOther5.value ?? "",
 
-        "other-2": selectedOther2.value ?? "",
+        "other-2": selectedOther1.value ?? "",
 
-        "other-3": selectedOther3.value ?? "",
+        "other-3": selectedOther2.value ?? "",
 
-        "other-4": selectedOther4.value ?? "",
+        "other-4": selectedOther3.value ?? "",
 
         // ================= GALLERY =================
         "extra": galleryFiles.toList(),
@@ -892,10 +900,10 @@ class CattleController extends GetxController {
       });
 
       print("================================");
-      print("other-1 = ${selectedOther1.value}");
-      print("other-2 = ${selectedOther2.value}");
-      print("other-3 = ${selectedOther3.value}");
-      print("other-4 = ${selectedOther4.value}");
+      print("other-1 = ${selectedOther5.value}");
+      print("other-2 = ${selectedOther1.value}");
+      print("other-3 = ${selectedOther2.value}");
+      print("other-4 = ${selectedOther3.value}");
 
       print("gallery count = ${galleryFiles.length}");
 
@@ -1013,9 +1021,16 @@ class CattleController extends GetxController {
     buffalomoneycontroller.clear();
     tagnumbercontroller.clear();
     newtagnumbercontroller.clear();
+    marketValueController.clear();
 
     // Keep tagging date to current date for convenience.
     selectedDate.value = DateTime.now();
+
+    taggingdatecontroller.text = DateFormat(
+      'yyyy-MM-dd',
+    ).format(selectedDate.value!);
+
+    newtaggingdatecontroller.clear();
     taggingdatecontroller.text = '';
     newtaggingdatecontroller.text = '';
 
@@ -1045,10 +1060,10 @@ class CattleController extends GetxController {
     selectedOther4.value = null;
     selectedearcut.value = null;
     selectedearbackside.value = null;
-    // cameravideopath1 = null;
-    // cameravideopath2 = null;
     videopath1 = null;
     videopath2 = null;
+    isvideo = 0;
+    isimage = 0;
     galleryFiles.clear();
 
     // Auto set next cattle species & SI

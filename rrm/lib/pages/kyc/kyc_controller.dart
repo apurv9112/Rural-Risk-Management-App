@@ -6,11 +6,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/kyc_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
-import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/image_processing_service.dart';
 import 'package:rrm/services/camera_service.dart';
-
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/core/storage/folder_manager.dart';
 

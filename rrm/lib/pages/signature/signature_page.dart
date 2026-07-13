@@ -457,9 +457,13 @@ Widget buildWorkerSignatureCard({required BuildContext context, controller}) {
             onPressed: () {
               Get.back();
 
+              Get.until((route) => route.isFirst);
+
               Get.snackbar(
                 "Profile",
-                "Update your signature from Profile page.",
+                "Open Profile and update your signature.",
+                backgroundColor: Colors.green,
+                colorText: Colors.white,
               );
             },
             icon: const Icon(Icons.edit),
