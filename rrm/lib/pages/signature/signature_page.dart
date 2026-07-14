@@ -1,8 +1,11 @@
 // signature_page.dart
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
@@ -392,85 +395,142 @@ class SignaturePage extends StatelessWidget {
       ),
     );
   }
-}
 
-Widget buildWorkerSignatureCard({required BuildContext context, controller}) {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: Colors.green.shade200),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "2. Field Worker Signature",
-          style: TextStyle(
-            fontSize: dp(context, 16),
-            color: AppColors.PRIMARY_COLOR,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+  Widget buildWorkerSignatureCard({
+    required BuildContext context,
+    required SignatureControllerX controller,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.green.shade200),
+      ),
+      child: Obx(() {
+        final File? file = controller.workerSignatureFile.value;
 
-        SizedBox(height: hp(1)),
-
-        Text(
-          "Profile Signature",
-          style: TextStyle(color: Colors.grey.shade600),
-        ),
-
-        SizedBox(height: hp(2)),
-
-        Obx(() {
-          final file = controller.workerSignatureFile.value;
-
-          if (file == null || !file.existsSync()) {
-            return Container(
-              height: hp(30),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.red),
-                borderRadius: BorderRadius.circular(12),
+        /// ===============================
+        /// NO SIGNATURE
+        /// ===============================
+        if (file == null || !file.existsSync()) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "2. Field Worker Signature",
+                style: TextStyle(
+                  fontSize: dp(context, 16),
+                  color: AppColors.PRIMARY_COLOR,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              child: const Text("No Profile Signature Found"),
-            );
-          }
 
-          return Container(
-            height: hp(30),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Image.file(file, fit: BoxFit.contain),
+              SizedBox(height: hp(1)),
+
+              const Text(
+                "No profile signature found.\n"
+                "This signature will be saved and reused for future Tagging, Retagging and Claim.",
+              ),
+
+              SizedBox(height: hp(3)),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.draw),
+                  label: const Text("Draw Signature"),
+                  onPressed: () async {
+                    await openLandscapeSignature(
+                      context: context,
+                      controller: controller.workerSignatureController,
+                    );
+
+                    await controller.saveWorkerSignatureFromCanvas();
+                  },
+                ),
+              ),
+
+              SizedBox(height: hp(1.5)),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.photo),
+                  label: const Text("Upload From Gallery"),
+                  onPressed: () {
+                    controller.pickWorkerSignature(source: ImageSource.gallery);
+                  },
+                ),
+              ),
+            ],
           );
-        }),
+        }
 
-        SizedBox(height: hp(2)),
+        /// ===============================
+        /// SIGNATURE AVAILABLE
+        /// ===============================
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "2. Field Worker Signature",
+              style: TextStyle(
+                fontSize: dp(context, 16),
+                color: AppColors.PRIMARY_COLOR,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
 
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Get.back();
+            SizedBox(height: hp(2)),
 
-              Get.until((route) => route.isFirst);
+            Container(
+              height: hp(30),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black),
+              ),
+              child: Image.file(file, fit: BoxFit.contain),
+            ),
 
-              Get.snackbar(
-                "Profile",
-                "Open Profile and update your signature.",
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-              );
-            },
-            icon: const Icon(Icons.edit),
-            label: const Text("Update Profile Signature"),
-          ),
-        ),
-      ],
-    ),
-  );
+            SizedBox(height: hp(2)),
+
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.edit),
+                    label: const Text("Draw Again"),
+                    onPressed: () async {
+                      await openLandscapeSignature(
+                        context: context,
+                        controller: controller.workerSignatureController,
+                      );
+
+                      await controller.saveWorkerSignatureFromCanvas();
+                    },
+                  ),
+                ),
+
+                SizedBox(width: wp(2)),
+
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.photo),
+                    label: const Text("Gallery"),
+                    onPressed: () {
+                      controller.pickWorkerSignature(
+                        source: ImageSource.gallery,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      }),
+    );
+  }
 }
