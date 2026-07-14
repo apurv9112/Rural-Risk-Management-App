@@ -6,11 +6,13 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rrm/core/storage/folder_manager.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/services/cattle_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
+import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:rrm/services/location_service.dart';
 import 'package:rrm/services/image_processing_service.dart';
@@ -464,9 +466,40 @@ class CattleController extends GetxController {
 
       Get.dialog(
         Center(
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: Colors.white,
-            size: 60,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: wp(60),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: hp(20),
+                    child: Lottie.asset(
+                      'assets/animations/imageprocess.json',
+                      width: wp(50),
+                      height: hp(30),
+                      repeat: true,
+                    ),
+                  ),
+
+                  Text(
+                    "Please Wait Resigning Images...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
         barrierColor: Colors.black45,
@@ -525,9 +558,40 @@ class CattleController extends GetxController {
 
       Get.dialog(
         Center(
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: Colors.white,
-            size: 60,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: wp(60),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: hp(20),
+                    child: Lottie.asset(
+                      'assets/animations/imageprocess.json',
+                      width: wp(50),
+                      height: hp(30),
+                      repeat: true,
+                    ),
+                  ),
+
+                  Text(
+                    "Please Wait Resigning Images...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
         barrierColor: Colors.black45,
@@ -733,9 +797,40 @@ class CattleController extends GetxController {
 
     Get.dialog(
       Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: Colors.white,
-          size: 60,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: wp(60),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: hp(20),
+                  child: Lottie.asset(
+                    'assets/animations/file.json',
+                    width: wp(50),
+                    height: hp(30),
+                    repeat: true,
+                  ),
+                ),
+
+                Text(
+                  "Please Wait uploading Images...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       barrierColor: Colors.black45,
