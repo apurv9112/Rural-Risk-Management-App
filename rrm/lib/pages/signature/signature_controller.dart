@@ -168,15 +168,22 @@ class SignatureControllerX extends GetxController {
     try {
       final file = await getWorkerSignatureFile();
 
+      debugPrint("========== SIGNATURE ==========");
+      debugPrint("Mobile : ${appController.mobileNumber.value}");
+      debugPrint("Path   : ${file.path}");
+      debugPrint("Exists : ${await file.exists()}");
+
       if (await file.exists()) {
         workerSignatureFile.value = file;
 
-        debugPrint("WORKER SIGNATURE LOADED => ${file.path}");
+        debugPrint("LOADED");
       } else {
         workerSignatureFile.value = null;
 
-        debugPrint("WORKER SIGNATURE NOT FOUND");
+        debugPrint("NOT FOUND");
       }
+
+      debugPrint("===============================");
     } catch (e) {
       debugPrint(e.toString());
     }

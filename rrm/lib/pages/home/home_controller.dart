@@ -42,7 +42,7 @@ class HomeController extends GetxController {
   Future<Directory> getSignatureDirectory() async {
     final appDir = await getApplicationDocumentsDirectory();
 
-    final directory = Directory("${appDir.path}/Profile");
+    final directory = Directory("${appDir.path}/RRM/Profile");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -62,8 +62,6 @@ class HomeController extends GetxController {
     );
   }
 
-  /// SAVE SIGNATURE
-  /// ===============================
   /// SAVE PROFILE SIGNATURE
   /// ===============================
   Future<void> saveSignature() async {
