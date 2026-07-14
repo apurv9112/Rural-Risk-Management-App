@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rrm/widgets/custom_camera_button.dart';
@@ -75,9 +77,20 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Front Side of Aadhar card",
                       childimage: controller.selectedAadharfront.value != null
-                          ? Image.file(
-                              controller.selectedAadharfront.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedAadharfront.value !=
+                                    null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedAadharfront.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedAadharfront.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       image: "assets/kyc/addhar_front.png",
@@ -98,9 +111,20 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Back Side of Aadhar card",
                       childimage: controller.selectedAadharback.value != null
-                          ? Image.file(
-                              controller.selectedAadharback.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedAadharback.value !=
+                                    null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedAadharback.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedAadharback.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       image: "assets/kyc/addhar_back.png",
@@ -120,9 +144,19 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Front Side of Pan card",
                       childimage: controller.selectedPanfront.value != null
-                          ? Image.file(
-                              controller.selectedPanfront.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedPanfront.value != null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedPanfront.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedPanfront.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       image: "assets/kyc/pan_card.jpg",
@@ -143,9 +177,20 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Add Bank Details 1",
                       childimage: controller.selectedbankdetails1.value != null
-                          ? Image.file(
-                              controller.selectedbankdetails1.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedbankdetails1.value !=
+                                    null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedbankdetails1.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedbankdetails1.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       image: "assets/kyc/passbook.jpeg",
@@ -165,9 +210,20 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Add Bank Details 2",
                       childimage: controller.selectedbankdetails2.value != null
-                          ? Image.file(
-                              controller.selectedbankdetails2.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedbankdetails2.value !=
+                                    null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedbankdetails2.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedbankdetails2.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       image: "assets/kyc/passbook.jpeg",
@@ -188,9 +244,19 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Other",
                       childimage: controller.selectedOther5.value != null
-                          ? Image.file(
-                              controller.selectedOther5.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedOther5.value != null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedOther5.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedOther5.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       onTap: () {
@@ -209,9 +275,19 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Other",
                       childimage: controller.selectedOther1.value != null
-                          ? Image.file(
-                              controller.selectedOther1.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedOther1.value != null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedOther1.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedOther1.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
 
@@ -231,9 +307,19 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Other",
                       childimage: controller.selectedOther2.value != null
-                          ? Image.file(
-                              controller.selectedOther2.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedOther2.value != null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedOther2.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedOther2.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
                       onTap: () {
@@ -252,9 +338,19 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Other",
                       childimage: controller.selectedOther3.value != null
-                          ? Image.file(
-                              controller.selectedOther3.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedOther3.value != null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedOther3.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedOther3.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
 
@@ -274,9 +370,19 @@ class KycScreen extends StatelessWidget {
                       controller: controller,
                       textdata: "Other",
                       childimage: controller.selectedOther4.value != null
-                          ? Image.file(
-                              controller.selectedOther4.value!,
-                              fit: BoxFit.cover,
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.selectedOther4.value != null) {
+                                  showImagePreview(
+                                    context,
+                                    controller.selectedOther4.value!,
+                                  );
+                                }
+                              },
+                              child: Image.file(
+                                controller.selectedOther4.value!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : SizedBox(),
 
@@ -307,4 +413,30 @@ class KycScreen extends StatelessWidget {
       },
     );
   }
+}
+
+void showImagePreview(BuildContext context, File imageFile) {
+  Get.dialog(
+    Dialog(
+      backgroundColor: Colors.black,
+      insetPadding: const EdgeInsets.all(10),
+      child: Stack(
+        children: [
+          InteractiveViewer(
+            minScale: 1,
+            maxScale: 5,
+            child: Image.file(imageFile, fit: BoxFit.contain),
+          ),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () => Get.back(),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

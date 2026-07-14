@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:rrm/pages/cattle/widget/buttomsheet.dart';
 import 'package:rrm/widgets/custom_row.dart';
 import 'package:rrm/utils/colors.dart';
@@ -14,7 +18,17 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Ear Tag",
         childimage: controller.selectedeartag.value != null
-            ? Image.file(controller.selectedeartag.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedeartag.value != null) {
+                    showImagePreview(context, controller.selectedeartag.value!);
+                  }
+                },
+                child: Image.file(
+                  controller.selectedeartag.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
 
         image: controller.ischangepage == null
@@ -34,7 +48,20 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Head Pose",
         childimage: controller.selectedheadpose.value != null
-            ? Image.file(controller.selectedheadpose.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedheadpose.value != null) {
+                    showImagePreview(
+                      context,
+                      controller.selectedheadpose.value!,
+                    );
+                  }
+                },
+                child: Image.file(
+                  controller.selectedheadpose.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
         image: controller.ischangepage == null
             ? "assets/Tagging_Sample/100779925870b.jpg"
@@ -53,9 +80,19 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Side Pose 1(Left)",
         childimage: controller.selectedsideposeleft.value != null
-            ? Image.file(
-                controller.selectedsideposeleft.value!,
-                fit: BoxFit.cover,
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedsideposeleft.value != null) {
+                    showImagePreview(
+                      context,
+                      controller.selectedsideposeleft.value!,
+                    );
+                  }
+                },
+                child: Image.file(
+                  controller.selectedsideposeleft.value!,
+                  fit: BoxFit.cover,
+                ),
               )
             : SizedBox(),
         image: controller.ischangepage == null
@@ -75,9 +112,19 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Side Pose 2(Right)",
         childimage: controller.selectedsideposeright.value != null
-            ? Image.file(
-                controller.selectedsideposeright.value!,
-                fit: BoxFit.cover,
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedsideposeright.value != null) {
+                    showImagePreview(
+                      context,
+                      controller.selectedsideposeright.value!,
+                    );
+                  }
+                },
+                child: Image.file(
+                  controller.selectedsideposeright.value!,
+                  fit: BoxFit.cover,
+                ),
               )
             : SizedBox(),
         image: controller.ischangepage == null
@@ -97,7 +144,20 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Back Pose",
         childimage: controller.selectedbackpose.value != null
-            ? Image.file(controller.selectedbackpose.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedbackpose.value != null) {
+                    showImagePreview(
+                      context,
+                      controller.selectedbackpose.value!,
+                    );
+                  }
+                },
+                child: Image.file(
+                  controller.selectedbackpose.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
         image: controller.ischangepage == null
             ? "assets/Tagging_Sample/100779925870e.jpg"
@@ -158,9 +218,19 @@ iscattleimage({required BuildContext context, required controller}) {
               controller: controller,
               textdata: "Cut Ear",
               childimage: controller.selectedearcut.value != null
-                  ? Image.file(
-                      controller.selectedearcut.value!,
-                      fit: BoxFit.cover,
+                  ? GestureDetector(
+                      onTap: () {
+                        if (controller.selectedearcut.value != null) {
+                          showImagePreview(
+                            context,
+                            controller.selectedearcut.value!,
+                          );
+                        }
+                      },
+                      child: Image.file(
+                        controller.selectedearcut.value!,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   : SizedBox(),
 
@@ -189,9 +259,19 @@ iscattleimage({required BuildContext context, required controller}) {
               controller: controller,
               textdata: "Ear Back Side",
               childimage: controller.selectedearbackside.value != null
-                  ? Image.file(
-                      controller.selectedearbackside.value!,
-                      fit: BoxFit.cover,
+                  ? GestureDetector(
+                      onTap: () {
+                        if (controller.selectedearbackside.value != null) {
+                          showImagePreview(
+                            context,
+                            controller.selectedearbackside.value!,
+                          );
+                        }
+                      },
+                      child: Image.file(
+                        controller.selectedearbackside.value!,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   : SizedBox(),
 
@@ -218,7 +298,17 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Other",
         childimage: controller.selectedOther5.value != null
-            ? Image.file(controller.selectedOther5.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedOther5.value != null) {
+                    showImagePreview(context, controller.selectedOther5.value!);
+                  }
+                },
+                child: Image.file(
+                  controller.selectedOther5.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
 
         onTap: () {
@@ -233,7 +323,17 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Other",
         childimage: controller.selectedOther1.value != null
-            ? Image.file(controller.selectedOther1.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedOther1.value != null) {
+                    showImagePreview(context, controller.selectedOther1.value!);
+                  }
+                },
+                child: Image.file(
+                  controller.selectedOther1.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
 
         onTap: () {
@@ -248,7 +348,17 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Other",
         childimage: controller.selectedOther2.value != null
-            ? Image.file(controller.selectedOther2.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedOther2.value != null) {
+                    showImagePreview(context, controller.selectedOther2.value!);
+                  }
+                },
+                child: Image.file(
+                  controller.selectedOther2.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 8);
@@ -262,7 +372,17 @@ iscattleimage({required BuildContext context, required controller}) {
         controller: controller,
         textdata: "Other",
         childimage: controller.selectedOther3.value != null
-            ? Image.file(controller.selectedOther3.value!, fit: BoxFit.cover)
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedOther3.value != null) {
+                    showImagePreview(context, controller.selectedOther3.value!);
+                  }
+                },
+                child: Image.file(
+                  controller.selectedOther3.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
             : SizedBox(),
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 9);
@@ -287,5 +407,31 @@ iscattleimage({required BuildContext context, required controller}) {
         },
       ),
     ],
+  );
+}
+
+void showImagePreview(BuildContext context, File imageFile) {
+  Get.dialog(
+    Dialog(
+      backgroundColor: Colors.black,
+      insetPadding: const EdgeInsets.all(10),
+      child: Stack(
+        children: [
+          InteractiveViewer(
+            minScale: 1,
+            maxScale: 5,
+            child: Image.file(imageFile, fit: BoxFit.contain),
+          ),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () => Get.back(),
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }
