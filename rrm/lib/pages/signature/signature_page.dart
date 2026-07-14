@@ -1,7 +1,6 @@
 // signature_page.dart
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -10,13 +9,11 @@ import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
 import 'package:signature/signature.dart';
-
 import 'signature_controller.dart';
 
 class SignaturePage extends StatelessWidget {
   SignaturePage({super.key});
 
-  // final controller = Get.put(SignatureControllerX());
   final controller = Get.find<SignatureControllerX>();
 
   Future<void> openLandscapeSignature({

@@ -143,9 +143,11 @@ class CattleController extends GetxController {
       // Tagging flow: user enters new tag number for each cattle.
       tagnumbercontroller.clear();
       newtagnumbercontroller.clear();
-      taggingdatecontroller.text = DateFormat(
-        'yyyy-MM-dd',
-      ).format(DateTime.now());
+      if (taggingdatecontroller.text.isEmpty) {
+        taggingdatecontroller.text = DateFormat(
+          'yyyy-MM-dd',
+        ).format(DateTime.now());
+      }
     } else {
       // Retagging/claim flow: prefill from lead.
       tagnumbercontroller.text =
@@ -428,9 +430,14 @@ class CattleController extends GetxController {
     );
 
     if (picked != null) {
-      taggingdate == true
-          ? selectedDate.value = picked
-          : selectedDatenew.value = picked;
+      if (taggingdate == true) {
+        selectedDate.value = picked;
+        taggingdatecontroller.text = DateFormat('yyyy-MM-dd').format(picked);
+      } else {
+        selectedDatenew.value = picked;
+        newtaggingdatecontroller.text = DateFormat('yyyy-MM-dd').format(picked);
+      }
+
       update();
     }
   }
@@ -1120,7 +1127,6 @@ class CattleController extends GetxController {
     newtagnumbercontroller.clear();
     marketValueController.clear();
 
-    // Keep tagging date to current date for convenience.
     selectedDate.value = DateTime.now();
 
     taggingdatecontroller.text = DateFormat(
@@ -1128,8 +1134,6 @@ class CattleController extends GetxController {
     ).format(selectedDate.value!);
 
     newtaggingdatecontroller.clear();
-    taggingdatecontroller.text = '';
-    newtaggingdatecontroller.text = '';
 
     // Reset dropdown selections for next cattle.
     selectedspeciesnotavailable = null;
