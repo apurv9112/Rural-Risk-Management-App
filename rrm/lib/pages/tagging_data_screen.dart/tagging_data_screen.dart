@@ -539,18 +539,6 @@ class TaggingDataScreen extends StatelessWidget {
                             barrierDismissible: false,
                           );
 
-                          // await controller.saveLeadUpdates();
-
-                          // if (Get.isDialogOpen ?? false) Get.back();
-                          // Get.toNamed(
-                          //   routekycpage,
-                          //   arguments: {
-                          //     "tagging": controller.data,
-                          //     "ischangepage": controller.ischangepage,
-                          //     "retagging": controller.retagging,
-                          //   },
-                          // );
-
                           bool success = true;
 
                           if (controller.manualtagging == true) {

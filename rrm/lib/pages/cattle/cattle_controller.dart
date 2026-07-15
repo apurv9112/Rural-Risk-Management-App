@@ -89,12 +89,25 @@ class CattleController extends GetxController {
 
     final lead = data as Map<String, dynamic>;
 
-    if (species == "Buffalo") {
-      sumInsuredController.text = formatAmount(lead["sumInsuredBuffalo"]);
-    } else if (species == "Cow") {
-      sumInsuredController.text = formatAmount(lead["sumInsuredCow"]);
-    } else {
-      sumInsuredController.clear();
+    switch (species) {
+      case "Buffalo":
+        sumInsuredController.text = formatAmount(lead["sumInsuredBuffalo"]);
+        break;
+
+      case "Cow":
+        sumInsuredController.text = formatAmount(lead["sumInsuredCow"]);
+        break;
+
+      case "Goat":
+        sumInsuredController.text = formatAmount(lead["sumInsuredGoat"]);
+        break;
+
+      case "Sheep":
+        sumInsuredController.text = formatAmount(lead["sumInsuredSheep"]);
+        break;
+
+      default:
+        sumInsuredController.clear();
     }
 
     update();
@@ -109,19 +122,28 @@ class CattleController extends GetxController {
 
     final buffaloCount = _parseInt(lead["numberOfBuffalo"]) ?? 0;
     final cowCount = _parseInt(lead["numberOfCow"]) ?? 0;
+    final goatCount = _parseInt(lead["numberOfGoat"]) ?? 0;
+    final sheepCount = _parseInt(lead["numberOfSheep"]) ?? 0;
 
     final buffaloSI = formatAmount(lead["sumInsuredBuffalo"]);
-
     final cowSI = formatAmount(lead["sumInsuredCow"]);
+    final goatSI = formatAmount(lead["sumInsuredGoat"]);
+    final sheepSI = formatAmount(lead["sumInsuredSheep"]);
 
-    // Buffalo sequence
     for (int i = 0; i < buffaloCount; i++) {
       cattleSequence.add({"species": "Buffalo", "sumInsured": buffaloSI});
     }
 
-    // Cow sequence
     for (int i = 0; i < cowCount; i++) {
       cattleSequence.add({"species": "Cow", "sumInsured": cowSI});
+    }
+
+    for (int i = 0; i < goatCount; i++) {
+      cattleSequence.add({"species": "Goat", "sumInsured": goatSI});
+    }
+
+    for (int i = 0; i < sheepCount; i++) {
+      cattleSequence.add({"species": "Sheep", "sumInsured": sheepSI});
     }
 
     // Initial auto set
