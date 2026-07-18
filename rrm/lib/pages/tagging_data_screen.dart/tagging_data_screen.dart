@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:rrm/pages/cattle/widget/custom_dropdown.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/widget/cancel.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/widget/fullscreenImageviewer.dart';
 import 'package:rrm/pages/tagging_data_screen.dart/widget/species.dart';
@@ -242,25 +243,78 @@ class TaggingDataScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: hp(2)),
-                  Row(
-                    children: [
-                      Customcontainer(context: context, text: "Insurance Co:"),
-                      SizedBox(width: wp(2.5)),
-                      Expanded(
-                        flex: 2,
-                        child: CustomTextField(
-                          hint: "Insurance Company",
-                          hintStyle: TextStyle(
-                            color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
-                          ),
-                          controller: controller.insurancecontroller,
-                          backgroundColor: AppColors.WHITE,
-                          inputtextcolor: AppColors.PRIMARY_COLOR,
-                          readOnly: isReadOnly,
+                  if (controller.manualtagging != true)
+                    Row(
+                      children: [
+                        Customcontainer(
+                          context: context,
+                          text: "Insurance Co:",
                         ),
-                      ),
-                    ],
-                  ),
+                        SizedBox(width: wp(2.5)),
+                        Expanded(
+                          flex: 2,
+                          child: CustomTextField(
+                            hint: "Insurance Company",
+                            hintStyle: TextStyle(
+                              color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
+                            ),
+                            controller: controller.insurancecontroller,
+                            backgroundColor: AppColors.WHITE,
+                            inputtextcolor: AppColors.PRIMARY_COLOR,
+                            readOnly: isReadOnly,
+                          ),
+                        ),
+                      ],
+                    ),
+                  SizedBox(height: hp(2)),
+                  if (controller.manualtagging == true)
+                    Row(
+                      children: [
+                        Customcontainer(
+                          context: context,
+                          text: "Insurance Co:",
+                        ),
+                        SizedBox(width: wp(2.5)),
+                        Expanded(
+                          flex: 2,
+                          child: customdropdown(
+                            context: context,
+                            controller: controller,
+                            title: "Insurance Company",
+
+                            items: controller.insuranceCompanies
+                                .map(
+                                  (company) => DropdownMenuItem<String>(
+                                    value: company["id"].toString(),
+                                    child: Text(
+                                      company["name"].toString(),
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+
+                            value: controller.selectedInsuranceValue,
+
+                            onChanged: (value) {
+                              controller.selectedInsuranceValue = value;
+
+                              final company = controller.insuranceCompanies
+                                  .firstWhere(
+                                    (e) => e["id"].toString() == value,
+                                  );
+
+                              controller.insurancecontroller.text =
+                                  company["name"].toString();
+                              controller.data["insuranceCompanyId"] =
+                                  company["id"].toString();
+
+                              controller.update();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   controller.ischangepage == null
                       ? SizedBox(height: hp(4))
                       : SizedBox(height: hp(2)),

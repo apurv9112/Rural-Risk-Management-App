@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rrm/services/base.dart';
 
@@ -127,6 +128,28 @@ class TaggingService {
       Uri.parse("$baseUrl/field-worker/manual-lead"),
       headers: _authHeaders(token),
       body: jsonEncode(body),
+    );
+  }
+
+  Future<List<dynamic>> getInsuranceCompanies({required String token}) async {
+    final response = await _client.post(
+      Uri.parse("$baseUrl/companies/search"),
+      headers: _authHeaders(token),
+      body: jsonEncode({"type": "INSURANCE", "active": true, "limit": 100}),
+    );
+
+    debugPrint("===== COMPANY SEARCH =====");
+    debugPrint("Status Code : ${response.statusCode}");
+    debugPrint("Response Body : ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final json = jsonDecode(response.body);
+
+      return List<dynamic>.from(json["data"]["companies"] ?? []);
+    }
+
+    throw Exception(
+      "Unable to load insurance companies. Status: ${response.statusCode}",
     );
   }
 }

@@ -54,6 +54,15 @@ class TaggingdataController extends GetxController {
   List<Uint8List> imageBytesList = [];
   final ScrollController imageScrollController = ScrollController();
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    if (manualtagging == true) {
+      loadInsuranceCompanies();
+    }
+  }
+
   void setInitialData(Map<String, dynamic> args) {
     if (data != null) return;
 
@@ -78,6 +87,9 @@ class TaggingdataController extends GetxController {
       });
     } else {
       data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+    }
+    if (manualtagging == true) {
+      loadInsuranceCompanies();
     }
   }
 
@@ -326,7 +338,7 @@ class TaggingdataController extends GetxController {
 
       "state": "",
       "pinCode": "",
-      "insuranceCompanyId": "6a2bb481c1265c2a338aa45c",
+      "insuranceCompanyId": data["insuranceCompanyId"] ?? "",
 
       "insuranceCompanyName": insurancecontroller.text.trim(),
       "bankName": banknamecontroller.text.trim(),
@@ -546,6 +558,43 @@ class TaggingdataController extends GetxController {
 
       // ❌ NO SNACKBAR HERE
       debugPrint("Something went wrong");
+    }
+  }
+
+  List<Map<String, dynamic>> insuranceCompanies = [];
+
+  String? selectedInsuranceValue;
+
+  bool isInsuranceLoading = false;
+
+  Future<void> loadInsuranceCompanies() async {
+    try {
+      isInsuranceLoading = true;
+      update();
+
+      final token = _appController.token.value;
+
+      final companies = await _taggingService.getInsuranceCompanies(
+        token: token,
+      );
+
+      debugPrint("===== INSURANCE API RESPONSE =====");
+      debugPrint(companies.toString());
+
+      insuranceCompanies = List<Map<String, dynamic>>.from(companies);
+
+      debugPrint("===== INSURANCE LIST =====");
+      debugPrint(insuranceCompanies.toString());
+
+      isInsuranceLoading = false;
+      update();
+    } catch (e, stackTrace) {
+      debugPrint("===== INSURANCE API ERROR =====");
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+
+      isInsuranceLoading = false;
+      update();
     }
   }
 
