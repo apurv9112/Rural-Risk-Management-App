@@ -48,7 +48,11 @@ class CattleController extends GetxController {
     final Map<String, dynamic> args =
         (Get.arguments as Map<String, dynamic>?) ?? {};
     syncFromArgs(args);
-    customerName = args["customerName"] ?? "";
+    customerName =
+        args["customerName"] ??
+        data["ownerName"] ??
+        ""
+            "";
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
     super.onInit();
   }
@@ -157,30 +161,69 @@ class CattleController extends GetxController {
     }
   }
 
+  // void _initializeTagFields() {
+  //   if (data is! Map<String, dynamic>) return;
+  //   final lead = data as Map<String, dynamic>;
+
+  //   if (ischangepage == null && retagging == null) {
+  //     // Tagging flow: user enters new tag number for each cattle.
+  //     tagnumbercontroller.clear();
+  //     newtagnumbercontroller.clear();
+  //     if (taggingdatecontroller.text.isEmpty) {
+  //       taggingdatecontroller.text = DateFormat(
+  //         'yyyy-MM-dd',
+  //       ).format(DateTime.now() ?? lead["createdAt"] ?? DateTime.now());
+  //     }
+  //   } else {
+  //     // Retagging/claim flow: prefill from lead.
+  //     tagnumbercontroller.text =
+  //         (lead["tagNumber"] ?? lead["oldTagNumber"] ?? "").toString();
+
+  //     if (retagging != null) {
+  //       taggingdatecontroller.text =
+  //           (lead["taggingDate"] ?? lead["oldTagDate"] ?? "").toString();
+  //       newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
+  //       newtaggingdatecontroller.text = (lead["dateOfReTagging"] ?? "")
+  //           .toString();
+  //     } else {
+  //       newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
+  //     }
+  //   }
+  // }
+
   void _initializeTagFields() {
     if (data is! Map<String, dynamic>) return;
     final lead = data as Map<String, dynamic>;
+
+    String formatDate(dynamic value) {
+      if (value == null || value.toString().isEmpty) return "";
+      return DateFormat('yyyy-MM-dd').format(DateTime.parse(value.toString()));
+    }
 
     if (ischangepage == null && retagging == null) {
       // Tagging flow: user enters new tag number for each cattle.
       tagnumbercontroller.clear();
       newtagnumbercontroller.clear();
+
       if (taggingdatecontroller.text.isEmpty) {
         taggingdatecontroller.text = DateFormat(
           'yyyy-MM-dd',
         ).format(DateTime.now());
       }
     } else {
-      // Retagging/claim flow: prefill from lead.
+      // Retagging / Claim flow
       tagnumbercontroller.text =
           (lead["tagNumber"] ?? lead["oldTagNumber"] ?? "").toString();
 
       if (retagging != null) {
-        taggingdatecontroller.text =
-            (lead["taggingDate"] ?? lead["oldTagDate"] ?? "").toString();
+        // Tagging Date → taggingDate → oldTagDate → createdAt
+        taggingdatecontroller.text = formatDate(
+          lead["taggingDate"] ?? lead["oldTagDate"] ?? lead["createdAt"],
+        );
+
         newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
-        newtaggingdatecontroller.text = (lead["dateOfReTagging"] ?? "")
-            .toString();
+
+        newtaggingdatecontroller.text = formatDate(lead["dateOfReTagging"]);
       } else {
         newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
       }
@@ -518,7 +561,7 @@ class CattleController extends GetxController {
                   ),
 
                   Text(
-                    "Please Wait Resigning Images...",
+                    "Please Wait Resigning Image...",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
@@ -610,7 +653,7 @@ class CattleController extends GetxController {
                   ),
 
                   Text(
-                    "Please Wait Resigning Images...",
+                    "Please Wait Resigning Image...",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
