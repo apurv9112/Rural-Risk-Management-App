@@ -127,6 +127,17 @@ class LoginPage extends StatelessWidget {
                         textInputAction: TextInputAction.done,
                         hint: 'Password',
                         labeltext: 'Password',
+                        obscureText: !controller.isPasswordVisible,
+
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            controller.isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: AppColors.WHITE,
+                          ),
+                          onPressed: controller.togglePasswordVisibility,
+                        ),
                         validator: formValidation.validation(
                           type: 'password',
                           multiValidator: MultiValidator([]),

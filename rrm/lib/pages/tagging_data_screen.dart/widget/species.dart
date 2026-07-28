@@ -58,6 +58,7 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    cursorColor: Colors.deepPurple,
                     readOnly: controller.buffaloreadOnly,
                     controller: controller.buffalocountcontroller,
                     backgroundColor: AppColors.WHITE,
@@ -70,6 +71,7 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    cursorColor: Colors.deepPurple,
                     textAlign: TextAlign.center,
                     readOnly: controller.buffaloreadOnly,
                     controller: controller.buffalomoneycontroller,
@@ -138,6 +140,7 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    cursorColor: Colors.redAccent,
                     textAlign: TextAlign.center,
                     readOnly: controller.cowreadOnly,
                     controller: controller.cowcountcontroller,
@@ -150,6 +153,7 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    cursorColor: Colors.redAccent,
                     textAlign: TextAlign.center,
                     readOnly: controller.cowreadOnly,
                     controller: controller.cowmoneycontroller,
@@ -216,6 +220,7 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    cursorColor: Colors.brown,
                     textAlign: TextAlign.center,
                     readOnly: controller.goatoreadOnly,
                     controller: controller.goatcontroller,
@@ -228,6 +233,7 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    cursorColor: Colors.brown,
                     textAlign: TextAlign.center,
                     readOnly: controller.goatoreadOnly,
                     controller: controller.goatmoneycontroller,
@@ -269,6 +275,7 @@ species({
                   context: context,
                   width: wp(22),
                   text: "Sheep",
+
                   textcolor: Colors.blue,
                   padding: EdgeInsets.only(left: wp(2.5), right: wp(2.5)),
                 ),
@@ -276,6 +283,7 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    cursorColor: Colors.blue,
                     textAlign: TextAlign.center,
                     readOnly: controller.sheepreadOnly,
                     controller: controller.sheepcountcontroller,
@@ -288,6 +296,7 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    cursorColor: Colors.blue,
                     textAlign: TextAlign.center,
                     readOnly: controller.sheepreadOnly,
                     controller: controller.sheepmoneycontroller,

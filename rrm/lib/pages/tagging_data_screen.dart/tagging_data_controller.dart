@@ -112,6 +112,11 @@ class TaggingdataController extends GetxController {
     cowcountcontroller.text = _formatNumber(dataMap["numberOfCow"]);
     buffalomoneycontroller.text = _formatNumber(dataMap["sumInsuredBuffalo"]);
     cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
+    goatcontroller.text = _formatNumber(dataMap["numberOfGoat"]);
+    sheepcountcontroller.text = _formatNumber(dataMap["numberOfSheep"]);
+
+    goatmoneycontroller.text = _formatNumber(dataMap["sumInsuredGoat"]);
+    sheepmoneycontroller.text = _formatNumber(dataMap["sumInsuredSheep"]);
     species = dataMap["species"];
     tagnumberclaim = dataMap["tagNumber"] ?? dataMap["oldTagNumber"];
     dateofdeathcontroller.text =

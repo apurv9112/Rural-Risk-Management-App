@@ -63,6 +63,7 @@ class TaggingDataScreen extends StatelessWidget {
               child: Column(
                 children: [
                   CustomTextField(
+                    cursorColor: AppColors.PRIMARY_COLOR,
                     hint: "Owner Name",
                     hintStyle: TextStyle(
                       color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -80,6 +81,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Mobile Number",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -114,6 +116,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Address",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -134,6 +137,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Village",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -154,6 +158,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Taluko",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -170,6 +175,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "District",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -190,6 +196,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Bank Name",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -210,6 +217,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Branch",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -230,6 +238,7 @@ class TaggingDataScreen extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Loan Account Number",
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -254,6 +263,7 @@ class TaggingDataScreen extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: CustomTextField(
+                            cursorColor: AppColors.PRIMARY_COLOR,
                             hint: "Insurance Company",
                             hintStyle: TextStyle(
                               color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
@@ -428,6 +438,7 @@ class TaggingDataScreen extends StatelessWidget {
                             Expanded(
                               flex: 2,
                               child: CustomTextField(
+                                cursorColor: AppColors.PRIMARY_COLOR,
                                 controller: controller.dateofdeathcontroller,
                                 focusNode: controller.dateOfDeathFocusNode,
                                 inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -482,6 +493,7 @@ class TaggingDataScreen extends StatelessWidget {
                             Expanded(
                               flex: 2,
                               child: CustomTextField(
+                                cursorColor: AppColors.PRIMARY_COLOR,
                                 keyboardType: TextInputType.number,
                                 controller: controller.timeofdeathcontroller,
                                 focusNode: controller.timeOfDeathFocusNode,

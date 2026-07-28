@@ -90,6 +90,7 @@ class Cattlescreen extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: CustomTextField(
+                            cursorColor: AppColors.PRIMARY_COLOR,
                             keyboardType: TextInputType.number,
                             controller: controller.tagnumbercontroller,
                             focusNode: controller.tagNumberFocusNode,
@@ -122,6 +123,7 @@ class Cattlescreen extends StatelessWidget {
                               Expanded(
                                 flex: 2,
                                 child: CustomTextField(
+                                  cursorColor: AppColors.PRIMARY_COLOR,
                                   keyboardType: TextInputType.text,
                                   controller: controller.newtagnumbercontroller,
                                   focusNode: controller.newTagNumberFocusNode,
@@ -151,6 +153,7 @@ class Cattlescreen extends StatelessWidget {
                               Expanded(
                                 flex: 2,
                                 child: CustomTextField(
+                                  cursorColor: AppColors.PRIMARY_COLOR,
                                   controller: controller.taggingdatecontroller,
                                   inputtextcolor: AppColors.PRIMARY_COLOR,
                                   readOnly: true,
@@ -195,6 +198,7 @@ class Cattlescreen extends StatelessWidget {
                                   inputtextcolor: AppColors.PRIMARY_COLOR,
                                   readOnly: true,
                                   backgroundColor: AppColors.WHITE,
+                                  cursorColor: AppColors.PRIMARY_COLOR,
                                   suffixIcon: SizedBox(),
                                 ),
                               ),

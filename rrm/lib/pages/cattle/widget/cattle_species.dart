@@ -37,6 +37,7 @@ iscattlevalue({required BuildContext context, required controller}) {
                 SizedBox(
                   width: wp(44.5),
                   child: CustomTextField(
+                    cursorColor: AppColors.PRIMARY_COLOR,
                     inputtextcolor: AppColors.PRIMARY_COLOR,
                     keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
@@ -48,6 +49,7 @@ iscattlevalue({required BuildContext context, required controller}) {
                 SizedBox(
                   width: wp(44.5),
                   child: CustomTextField(
+                    cursorColor: AppColors.PRIMARY_COLOR,
                     inputtextcolor: AppColors.PRIMARY_COLOR,
                     keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
@@ -55,7 +57,7 @@ iscattlevalue({required BuildContext context, required controller}) {
                     focusNode: controller.marketValueFocusNode,
                     validator: controller.isSuccessfullyTagging
                         ? MultiValidator([
-                            RequiredValidator(errorText: "Required")
+                            RequiredValidator(errorText: "Required"),
                           ])
                         : null,
                     backgroundColor: AppColors.WHITE,

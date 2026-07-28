@@ -2,20 +2,22 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get/get.dart';
+import 'package:rrm/controller.dart';
 import 'package:rrm/services/farmer_services.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class FarmerDetailsController extends GetxController {
   final FarmerReportService _service = FarmerReportService();
-
+  AppController appController = Get.find();
   ScreenshotController screenshotController = ScreenshotController();
 
   Map<String, dynamic> report = {};
 
   bool isLoading = true;
 
-  @override
+  String type = "";
+
   @override
   void onInit() {
     super.onInit();
@@ -25,6 +27,8 @@ class FarmerDetailsController extends GetxController {
     debugPrint("Arguments : $args");
 
     getReport(leadId: args["leadId"], leadType: args["leadType"]);
+
+    type = args["leadType"];
   }
 
   Future<void> getReport({
@@ -54,7 +58,9 @@ class FarmerDetailsController extends GetxController {
       final file = File(filePath);
       await file.writeAsBytes(image);
 
-      await Share.shareXFiles([XFile(filePath)], text: "Report");
+      await Share.shareXFiles([
+        XFile(filePath),
+      ], text: "Pera-Wet - ${appController.userName.value}");
     } catch (e) {
       // print("Screenshot error: $e");
     }

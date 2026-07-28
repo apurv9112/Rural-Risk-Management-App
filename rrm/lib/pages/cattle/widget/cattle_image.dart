@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -35,7 +34,7 @@ iscattleimage({required BuildContext context, required controller}) {
             ? "assets/Tagging_Sample/100779925870a.jpg"
             : controller.retagging != null
             ? "assets/Tagging_Sample/100779925870a.jpg"
-            : "assets/Claim_Sample/340124808390a.jpg",
+            : "assets/Claim_Sample/100291577351a.jpeg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 1);
         },
@@ -67,7 +66,7 @@ iscattleimage({required BuildContext context, required controller}) {
             ? "assets/Tagging_Sample/100779925870b.jpg"
             : controller.retagging != null
             ? "assets/Tagging_Sample/100779925870b.jpg"
-            : "assets/Claim_Sample/340124808390b.jpg",
+            : "assets/Claim_Sample/100291577351b.jpeg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 2);
         },
@@ -99,41 +98,9 @@ iscattleimage({required BuildContext context, required controller}) {
             ? "assets/Tagging_Sample/100779925870c.jpg"
             : controller.retagging != null
             ? "assets/Tagging_Sample/100779925870c.jpg"
-            : "assets/Claim_Sample/340124808390c.jpg",
+            : "assets/Claim_Sample/100291577351c.jpeg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 3);
-        },
-      ),
-      SizedBox(height: hp(1)),
-      customRow(
-        videoicon: false,
-        isvideoimag: false,
-        context: context,
-        controller: controller,
-        textdata: "Side Pose 2(Right)",
-        childimage: controller.selectedsideposeright.value != null
-            ? GestureDetector(
-                onTap: () {
-                  if (controller.selectedsideposeright.value != null) {
-                    showImagePreview(
-                      context,
-                      controller.selectedsideposeright.value!,
-                    );
-                  }
-                },
-                child: Image.file(
-                  controller.selectedsideposeright.value!,
-                  fit: BoxFit.cover,
-                ),
-              )
-            : SizedBox(),
-        image: controller.ischangepage == null
-            ? "assets/Tagging_Sample/100779925870d.jpg"
-            : controller.retagging != null
-            ? "assets/Tagging_Sample/100779925870d.jpg"
-            : "assets/Claim_Sample/340124808390d.jpg",
-        onTap: () {
-          buttomsheet(context: context, controller: controller, isimage: 4);
         },
       ),
       SizedBox(height: hp(1)),
@@ -163,11 +130,44 @@ iscattleimage({required BuildContext context, required controller}) {
             ? "assets/Tagging_Sample/100779925870e.jpg"
             : controller.retagging != null
             ? "assets/Tagging_Sample/100779925870e.jpg"
-            : "assets/Claim_Sample/340124808390e.jpg",
+            : "assets/Claim_Sample/100291577351e.jpeg",
         onTap: () {
           buttomsheet(context: context, controller: controller, isimage: 5);
         },
       ),
+      SizedBox(height: hp(1)),
+      customRow(
+        videoicon: false,
+        isvideoimag: false,
+        context: context,
+        controller: controller,
+        textdata: "Side Pose 2(Right)",
+        childimage: controller.selectedsideposeright.value != null
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.selectedsideposeright.value != null) {
+                    showImagePreview(
+                      context,
+                      controller.selectedsideposeright.value!,
+                    );
+                  }
+                },
+                child: Image.file(
+                  controller.selectedsideposeright.value!,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : SizedBox(),
+        image: controller.ischangepage == null
+            ? "assets/Tagging_Sample/100779925870d.jpg"
+            : controller.retagging != null
+            ? "assets/Tagging_Sample/100779925870d.jpg"
+            : "assets/Claim_Sample/100291577351d.jpeg",
+        onTap: () {
+          buttomsheet(context: context, controller: controller, isimage: 4);
+        },
+      ),
+
       SizedBox(height: hp(1)),
       customRow(
         videoicon: true,
@@ -238,7 +238,7 @@ iscattleimage({required BuildContext context, required controller}) {
                   ? "assets/Tagging_Sample/100779925870a.jpg"
                   : controller.retagging != null
                   ? "assets/Tagging_Sample/100779925870a.jpg"
-                  : "assets/Claim_Sample/340124808390a.jpg",
+                  : "assets/Claim_Sample/100291577351f.jpeg",
               onTap: () {
                 buttomsheet(
                   context: context,
@@ -279,7 +279,7 @@ iscattleimage({required BuildContext context, required controller}) {
                   ? "assets/Tagging_Sample/100779925870a.jpg"
                   : controller.retagging != null
                   ? "assets/Tagging_Sample/100779925870a.jpg"
-                  : "assets/Claim_Sample/340124808390a.jpg",
+                  : "assets/Claim_Sample/100291577351j.jpeg",
               onTap: () {
                 buttomsheet(
                   context: context,

@@ -55,6 +55,30 @@ class FarmerDetailsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           SizedBox(height: hp(0.5)),
+
+                          Center(
+                            child: Text(
+                              controller.type == "claim"
+                                  ? "CLAIM REPORT"
+                                  : controller.type == "retagging"
+                                  ? "RETAGGING REPORT"
+                                  : controller.type == "tagging"
+                                  ? "TAGGING REPORT"
+                                  : "",
+                              style: TextStyle(
+                                fontSize: dp(context, 24),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: hp(1)),
+
+                          datarow(
+                            context: context,
+                            staticdata: "Pera-Wet - ",
+                            listdata:
+                                controller.appController.userName.value ?? "",
+                          ),
                           datarow(
                             context: context,
                             staticdata: "Name - ",
@@ -251,7 +275,7 @@ class FarmerDetailsScreen extends StatelessWidget {
                         ),
                         margin: EdgeInsets.symmetric(horizontal: wp(0)),
                         onTap: () {
-                          Get.offAllNamed("/homepage");
+                          Get.offAllNamed("routehomepage");
                         },
                         logo: 'assets/images/home.png',
                         imgheight: hp(5),

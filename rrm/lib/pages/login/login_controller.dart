@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/device_controller.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
@@ -20,7 +22,41 @@ class LoginController extends GetxController {
 
   bool isemail = true;
 
+  bool isPasswordVisible = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    Future.delayed(Duration.zero, () async {
+      await requestRequiredPermissions();
+    });
+  }
+
+  void togglePasswordVisibility() {
+    isPasswordVisible = !isPasswordVisible;
+    update();
+  }
+
   Future<void> submitLogin() async {
+    bool granted = await requestRequiredPermissions();
+
+    if (!granted) {
+      Get.defaultDialog(
+        title: "Permission Required",
+        middleText:
+            "Camera, Gallery and Location permissions are mandatory to use this application.",
+        textConfirm: "Open Settings",
+        textCancel: "Exit",
+        onConfirm: () async {
+          await openAppSettings();
+        },
+        onCancel: () {
+          Get.back();
+        },
+      );
+      return;
+    }
     if (!formKey.currentState!.validate()) return;
 
     if (deviceController.deviceId.value.isEmpty) {
@@ -196,5 +232,20 @@ class LoginController extends GetxController {
     }
 
     return '';
+  }
+
+  Future<bool> requestRequiredPermissions() async {
+    final camera = await Permission.camera.request();
+    final location = await Permission.locationWhenInUse.request();
+
+    PermissionStatus storage;
+
+    if (Platform.isAndroid) {
+      storage = await Permission.storage.request();
+    } else {
+      storage = await Permission.photos.request();
+    }
+
+    return camera.isGranted && location.isGranted && storage.isGranted;
   }
 }

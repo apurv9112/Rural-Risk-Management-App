@@ -161,36 +161,6 @@ class CattleController extends GetxController {
     }
   }
 
-  // void _initializeTagFields() {
-  //   if (data is! Map<String, dynamic>) return;
-  //   final lead = data as Map<String, dynamic>;
-
-  //   if (ischangepage == null && retagging == null) {
-  //     // Tagging flow: user enters new tag number for each cattle.
-  //     tagnumbercontroller.clear();
-  //     newtagnumbercontroller.clear();
-  //     if (taggingdatecontroller.text.isEmpty) {
-  //       taggingdatecontroller.text = DateFormat(
-  //         'yyyy-MM-dd',
-  //       ).format(DateTime.now() ?? lead["createdAt"] ?? DateTime.now());
-  //     }
-  //   } else {
-  //     // Retagging/claim flow: prefill from lead.
-  //     tagnumbercontroller.text =
-  //         (lead["tagNumber"] ?? lead["oldTagNumber"] ?? "").toString();
-
-  //     if (retagging != null) {
-  //       taggingdatecontroller.text =
-  //           (lead["taggingDate"] ?? lead["oldTagDate"] ?? "").toString();
-  //       newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
-  //       newtaggingdatecontroller.text = (lead["dateOfReTagging"] ?? "")
-  //           .toString();
-  //     } else {
-  //       newtagnumbercontroller.text = (lead["newTagNumber"] ?? "").toString();
-  //     }
-  //   }
-  // }
-
   void _initializeTagFields() {
     if (data is! Map<String, dynamic>) return;
     final lead = data as Map<String, dynamic>;
@@ -528,7 +498,9 @@ class CattleController extends GetxController {
   //image  picker
   void pickFromCamera() async {
     final position = await LocationService.getCurrentLocation();
+
     if (position == null) {
+      showSnackBar("Unable to get current location.", SNACK.FAILED);
       return;
     }
 
@@ -712,20 +684,42 @@ class CattleController extends GetxController {
   String? videopath1;
   String? videopath2;
 
+  // void pickVideoFromCamera() async {
+  //   final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
+  //   if (pickedVideo != null) {
+  //     final persistentFile = await FolderManager.moveFromCache(
+  //       File(pickedVideo.path),
+  //       workflow: 'temp',
+  //     );
+  //     await GalleryService.saveVideo(persistentFile);
+  //     isvideo == 1
+  //         ? videopath1 = persistentFile.path
+  //         : isvideo == 2
+  //         ? videopath2 = persistentFile.path
+  //         : null;
+  //   }
+  //   update();
+  // }
+
   void pickVideoFromCamera() async {
-    final pickedVideo = await _picker.pickVideo(source: ImageSource.camera);
+    final pickedVideo = await _picker.pickVideo(
+      source: ImageSource.camera,
+      maxDuration: const Duration(minutes: 1), // 1 minute limit
+    );
 
     if (pickedVideo != null) {
       final persistentFile = await FolderManager.moveFromCache(
         File(pickedVideo.path),
         workflow: 'temp',
       );
+
       await GalleryService.saveVideo(persistentFile);
-      isvideo == 1
-          ? videopath1 = persistentFile.path
-          : isvideo == 2
-          ? videopath2 = persistentFile.path
-          : null;
+
+      if (isvideo == 1) {
+        videopath1 = persistentFile.path;
+      } else if (isvideo == 2) {
+        videopath2 = persistentFile.path;
+      }
     }
 
     update();
