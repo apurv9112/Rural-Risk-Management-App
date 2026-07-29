@@ -7,6 +7,7 @@ import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customcontainer.dart';
 import 'package:rrm/widgets/text_field.dart';
 import 'package:rrm/dependency_injection.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -154,9 +155,30 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: hp(20)),
+                  SizedBox(height: hp(18)),
+                  GestureDetector(
+                    onTap: () async {
+                      final Uri url = Uri.parse(
+                        'https://ruralrisk.in/privacy-policy.html',
+                      );
+
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      }
+                    },
+                    child: Text(
+                      "Privacy Policy",
+                      style: TextStyle(
+                        color: AppColors.WHITE,
+                        fontSize: dp(context, 8),
+                      ),
+                    ),
+                  ),
                   Padding(
-                    padding: EdgeInsets.only(bottom: hp(10)),
+                    padding: EdgeInsets.only(bottom: hp(10), top: hp(1)),
                     child: Image.asset(
                       'assets/images/DCI.png',
                       scale: dp(context, 2.5),

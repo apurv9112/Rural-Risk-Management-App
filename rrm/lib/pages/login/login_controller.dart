@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -238,14 +239,21 @@ class LoginController extends GetxController {
     final camera = await Permission.camera.request();
     final location = await Permission.locationWhenInUse.request();
 
-    PermissionStatus storage;
+    PermissionStatus media;
 
     if (Platform.isAndroid) {
-      storage = await Permission.storage.request();
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+
+      if (androidInfo.version.sdkInt >= 33) {
+        final image = await Permission.photos.request();
+        media = image;
+      } else {
+        media = await Permission.storage.request();
+      }
     } else {
-      storage = await Permission.photos.request();
+      media = await Permission.photos.request();
     }
 
-    return camera.isGranted && location.isGranted && storage.isGranted;
+    return camera.isGranted && location.isGranted && media.isGranted;
   }
 }

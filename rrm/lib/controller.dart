@@ -10,6 +10,13 @@ class AppController extends GetxController {
     super.onInit();
     loadUserData();
     token.value = _box.read('token') ?? '';
+
+    Get.snackbar(
+      "Debug",
+      "Saved Token: ${token.value.isEmpty ? "EMPTY" : token.value}",
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 5),
+    );
   }
 
   void setToken(String value) {
