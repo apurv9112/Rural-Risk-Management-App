@@ -65,6 +65,13 @@ class TaggingDataScreen extends StatelessWidget {
                   CustomTextField(
                     cursorColor: AppColors.PRIMARY_COLOR,
                     hint: "Owner Name",
+                    bordercolor: controller.showOwnerError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showOwnerError
+                        ? "Owner name required"
+                        : null,
                     hintStyle: TextStyle(
                       color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                     ),
@@ -83,6 +90,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Mobile Number",
+                          bordercolor: controller.showMobileError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showMobileError
+                              ? "Mobile number required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -118,6 +132,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Address",
+                          bordercolor: controller.showAddressError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showAddressError
+                              ? "Address required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -139,6 +160,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Village",
+                          bordercolor: controller.showVillageError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showVillageError
+                              ? "Village required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -160,6 +188,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Taluko",
+                          bordercolor: controller.showTalukoError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showTalukoError
+                              ? "Taluko required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -177,6 +212,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "District",
+                          bordercolor: controller.showDistrictError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showDistrictError
+                              ? "District required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -198,6 +240,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Bank Name",
+                          bordercolor: controller.showBankError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showBankError
+                              ? "Bank name required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -219,6 +268,13 @@ class TaggingDataScreen extends StatelessWidget {
                         child: CustomTextField(
                           cursorColor: AppColors.PRIMARY_COLOR,
                           hint: "Branch",
+                          bordercolor: controller.showBranchError
+                              ? Colors.yellow
+                              : AppColors.WHITE,
+
+                          errorText: controller.showBranchError
+                              ? "Branch required"
+                              : null,
                           hintStyle: TextStyle(
                             color: AppColors.PRIMARY_COLOR.withOpacity(0.5),
                           ),
@@ -287,40 +343,51 @@ class TaggingDataScreen extends StatelessWidget {
                         SizedBox(width: wp(2.5)),
                         Expanded(
                           flex: 2,
-                          child: customdropdown(
-                            context: context,
-                            controller: controller,
-                            title: "Insurance Company",
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: controller.showInsuranceError
+                                    ? Colors.redAccent
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: customdropdown(
+                              context: context,
+                              controller: controller,
+                              title: "Insurance Company",
 
-                            items: controller.insuranceCompanies
-                                .map(
-                                  (company) => DropdownMenuItem<String>(
-                                    value: company["id"].toString(),
-                                    child: Text(
-                                      company["name"].toString(),
-                                      style: const TextStyle(fontSize: 14),
+                              items: controller.insuranceCompanies
+                                  .map(
+                                    (company) => DropdownMenuItem<String>(
+                                      value: company["id"].toString(),
+                                      child: Text(
+                                        company["name"].toString(),
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
                                     ),
-                                  ),
-                                )
-                                .toList(),
+                                  )
+                                  .toList(),
 
-                            value: controller.selectedInsuranceValue,
+                              value: controller.selectedInsuranceValue,
 
-                            onChanged: (value) {
-                              controller.selectedInsuranceValue = value;
+                              onChanged: (value) {
+                                controller.selectedInsuranceValue = value;
 
-                              final company = controller.insuranceCompanies
-                                  .firstWhere(
-                                    (e) => e["id"].toString() == value,
-                                  );
+                                final company = controller.insuranceCompanies
+                                    .firstWhere(
+                                      (e) => e["id"].toString() == value,
+                                    );
 
-                              controller.insurancecontroller.text =
-                                  company["name"].toString();
-                              controller.data["insuranceCompanyId"] =
-                                  company["id"].toString();
+                                controller.insurancecontroller.text =
+                                    company["name"].toString();
+                                controller.data["insuranceCompanyId"] =
+                                    company["id"].toString();
 
-                              controller.update();
-                            },
+                                controller.update();
+                              },
+                            ),
                           ),
                         ),
                       ],
@@ -566,6 +633,15 @@ class TaggingDataScreen extends StatelessWidget {
                       SizedBox(width: wp(3)),
                       Customcontainer(
                         onTap: () async {
+                          if (controller.manualtagging == true) {
+                            final validFields = controller
+                                .validateManualFields();
+                            final validSpecies = controller.validateSpecies();
+
+                            if (!validFields || !validSpecies) {
+                              return;
+                            }
+                          }
                           bool isClaim =
                               controller.ischangepage != null &&
                               controller.retagging == null;

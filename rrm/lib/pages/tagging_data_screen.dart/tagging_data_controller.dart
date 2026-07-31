@@ -603,6 +603,133 @@ class TaggingdataController extends GetxController {
     }
   }
 
+  // manual tagging validation
+
+  bool showOwnerError = false;
+  bool showMobileError = false;
+  bool showAddressError = false;
+  bool showVillageError = false;
+  bool showTalukoError = false;
+  bool showDistrictError = false;
+  bool showBankError = false;
+  bool showBranchError = false;
+  bool showInsuranceError = false;
+
+  bool showSpeciesError = false;
+
+  bool validateManualFields() {
+    if (manualtagging != true) {
+      return true;
+    }
+
+    showOwnerError = namecontroller.text.trim().isEmpty;
+    showMobileError = mobilenumbercontroller.text.trim().isEmpty;
+    showAddressError = addresscontroller.text.trim().isEmpty;
+    showVillageError = villegcontroller.text.trim().isEmpty;
+    showTalukoError = talukcontroller.text.trim().isEmpty;
+    showDistrictError = districcontroller.text.trim().isEmpty;
+    showBankError = banknamecontroller.text.trim().isEmpty;
+    showBranchError = branchcontroller.text.trim().isEmpty;
+    showInsuranceError = insurancecontroller.text.trim().isEmpty;
+
+    update();
+
+    return !(showOwnerError ||
+        showMobileError ||
+        showAddressError ||
+        showVillageError ||
+        showTalukoError ||
+        showDistrictError ||
+        showBankError ||
+        showBranchError ||
+        showInsuranceError);
+  }
+
+  // bool validateSpecies() {
+  //   if (manualtagging != true) {
+  //     return true;
+  //   }
+
+  //   final hasBuffalo =
+  //       buffalocountcontroller.text.trim().isNotEmpty ||
+  //       buffalomoneycontroller.text.trim().isNotEmpty;
+
+  //   final hasCow =
+  //       cowcountcontroller.text.trim().isNotEmpty ||
+  //       cowmoneycontroller.text.trim().isNotEmpty;
+
+  //   final hasGoat =
+  //       goatcontroller.text.trim().isNotEmpty ||
+  //       goatmoneycontroller.text.trim().isNotEmpty;
+
+  //   final hasSheep =
+  //       sheepcountcontroller.text.trim().isNotEmpty ||
+  //       sheepmoneycontroller.text.trim().isNotEmpty;
+
+  //   showSpeciesError = !(hasBuffalo || hasCow || hasGoat || hasSheep);
+
+  //   update();
+
+  //   return !showSpeciesError;
+  // }
+
+  bool showBuffaloError = false;
+  bool showCowError = false;
+  bool showGoatError = false;
+  bool showSheepError = false;
+
+  bool validateSpecies() {
+    if (manualtagging != true) {
+      return true;
+    }
+
+    final buffaloCount = buffalocountcontroller.text.trim();
+    final buffaloAmount = buffalomoneycontroller.text.trim();
+
+    final cowCount = cowcountcontroller.text.trim();
+    final cowAmount = cowmoneycontroller.text.trim();
+
+    final goatCount = goatcontroller.text.trim();
+    final goatAmount = goatmoneycontroller.text.trim();
+
+    final sheepCount = sheepcountcontroller.text.trim();
+    final sheepAmount = sheepmoneycontroller.text.trim();
+
+    final hasBuffalo = buffaloCount.isNotEmpty || buffaloAmount.isNotEmpty;
+
+    final hasCow = cowCount.isNotEmpty || cowAmount.isNotEmpty;
+
+    final hasGoat = goatCount.isNotEmpty || goatAmount.isNotEmpty;
+
+    final hasSheep = sheepCount.isNotEmpty || sheepAmount.isNotEmpty;
+
+    final hasAnySpecies = hasBuffalo || hasCow || hasGoat || hasSheep;
+
+    showSpeciesError = !hasAnySpecies;
+
+    showBuffaloError =
+        showSpeciesError ||
+        (hasBuffalo && (buffaloCount.isEmpty || buffaloAmount.isEmpty));
+
+    showCowError =
+        showSpeciesError || (hasCow && (cowCount.isEmpty || cowAmount.isEmpty));
+
+    showGoatError =
+        showSpeciesError ||
+        (hasGoat && (goatCount.isEmpty || goatAmount.isEmpty));
+
+    showSheepError =
+        showSpeciesError ||
+        (hasSheep && (sheepCount.isEmpty || sheepAmount.isEmpty));
+    update();
+
+    return hasAnySpecies &&
+        !showBuffaloError &&
+        !showCowError &&
+        !showGoatError &&
+        !showSheepError;
+  }
+
   @override
   void onClose() {
     dateOfDeathFocusNode.dispose();

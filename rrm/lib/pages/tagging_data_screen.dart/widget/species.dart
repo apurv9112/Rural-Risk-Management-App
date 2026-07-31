@@ -58,6 +58,11 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    bordercolor: controller.showBuffaloError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showBuffaloError ? "Required" : null,
                     cursorColor: Colors.deepPurple,
                     readOnly: controller.buffaloreadOnly,
                     controller: controller.buffalocountcontroller,
@@ -71,6 +76,11 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    bordercolor: controller.showBuffaloError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showBuffaloError ? "Required" : null,
                     cursorColor: Colors.deepPurple,
                     textAlign: TextAlign.center,
                     readOnly: controller.buffaloreadOnly,
@@ -140,6 +150,11 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    bordercolor: controller.showCowError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showCowError ? "Required" : null,
                     cursorColor: Colors.redAccent,
                     textAlign: TextAlign.center,
                     readOnly: controller.cowreadOnly,
@@ -153,6 +168,11 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    bordercolor: controller.showCowError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showCowError ? "Required" : null,
                     cursorColor: Colors.redAccent,
                     textAlign: TextAlign.center,
                     readOnly: controller.cowreadOnly,
@@ -220,6 +240,11 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    bordercolor: controller.showGoatError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showGoatError ? "Required" : null,
                     cursorColor: Colors.brown,
                     textAlign: TextAlign.center,
                     readOnly: controller.goatoreadOnly,
@@ -233,6 +258,11 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    bordercolor: controller.showGoatError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showGoatError ? "Required" : null,
                     cursorColor: Colors.brown,
                     textAlign: TextAlign.center,
                     readOnly: controller.goatoreadOnly,
@@ -283,6 +313,11 @@ species({
                 Expanded(
                   flex: 2,
                   child: CustomTextField(
+                    bordercolor: controller.showSheepError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showSheepError ? "Required" : null,
                     cursorColor: Colors.blue,
                     textAlign: TextAlign.center,
                     readOnly: controller.sheepreadOnly,
@@ -296,6 +331,11 @@ species({
                 Expanded(
                   flex: 4,
                   child: CustomTextField(
+                    bordercolor: controller.showSheepError
+                        ? Colors.yellow
+                        : AppColors.WHITE,
+
+                    errorText: controller.showSheepError ? "Required" : null,
                     cursorColor: Colors.blue,
                     textAlign: TextAlign.center,
                     readOnly: controller.sheepreadOnly,
