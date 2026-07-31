@@ -1,8 +1,9 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 import 'package:rrm/controller.dart';
-import 'dart:async';
 import 'package:rrm/routes/common/common_app_pages.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:rrm/services/auth_service.dart';
 
 class SplashController extends GetxController {
@@ -25,13 +26,8 @@ class SplashController extends GetxController {
     // }
 
     await Future.delayed(const Duration(seconds: 3));
-    Get.snackbar(
-      "Splash Debug",
-      "Token Empty: ${appController.token.value.isEmpty}",
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 5),
-    );
-    await Future.delayed(const Duration(seconds: 2));
+
+    print("Token Empty: ${appController.token.value.isEmpty}");
 
     final token = appController.token.value;
 
