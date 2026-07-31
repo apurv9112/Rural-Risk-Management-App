@@ -108,15 +108,41 @@ class TaggingdataController extends GetxController {
     loanacnocontroller.text = (dataMap["loanAccountNo"] ?? '').toString();
     insurancecontroller.text = (dataMap["insuranceCompanyName"] ?? '')
         .toString();
-    buffalocountcontroller.text = _formatNumber(dataMap["numberOfBuffalo"]);
-    cowcountcontroller.text = _formatNumber(dataMap["numberOfCow"]);
-    buffalomoneycontroller.text = _formatNumber(dataMap["sumInsuredBuffalo"]);
-    cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]);
-    goatcontroller.text = _formatNumber(dataMap["numberOfGoat"]);
-    sheepcountcontroller.text = _formatNumber(dataMap["numberOfSheep"]);
+    buffalocountcontroller.text =
+        _formatNumber(dataMap["numberOfBuffalo"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["numberOfBuffalo"]);
 
-    goatmoneycontroller.text = _formatNumber(dataMap["sumInsuredGoat"]);
-    sheepmoneycontroller.text = _formatNumber(dataMap["sumInsuredSheep"]);
+    cowcountcontroller.text = _formatNumber(dataMap["numberOfCow"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["numberOfCow"]);
+
+    goatcontroller.text = _formatNumber(dataMap["numberOfGoat"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["numberOfGoat"]);
+
+    sheepcountcontroller.text = _formatNumber(dataMap["numberOfSheep"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["numberOfSheep"]);
+
+    buffalomoneycontroller.text =
+        _formatNumber(dataMap["sumInsuredBuffalo"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["sumInsuredBuffalo"]);
+
+    cowmoneycontroller.text = _formatNumber(dataMap["sumInsuredCow"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["sumInsuredCow"]);
+
+    goatmoneycontroller.text = _formatNumber(dataMap["sumInsuredGoat"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["sumInsuredGoat"]);
+
+    sheepmoneycontroller.text =
+        _formatNumber(dataMap["sumInsuredSheep"]).isEmpty
+        ? "-"
+        : _formatNumber(dataMap["sumInsuredSheep"]);
+
     species = dataMap["species"];
     tagnumberclaim = dataMap["tagNumber"] ?? dataMap["oldTagNumber"];
     dateofdeathcontroller.text =
