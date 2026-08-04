@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -322,19 +321,16 @@ class TaggingdataController extends GetxController {
   }
 
   void pickFromGallery() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false, // Only one for dropdown
-    );
-    if (result != null && result.files.single.path != null) {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
       isimage == 1
-          ? selectedOther1.value = File(result.files.single.path!)
+          ? selectedOther1.value = File(image.path)
           : isimage == 2
-          ? selectedOther2.value = File(result.files.single.path!)
+          ? selectedOther2.value = File(image.path)
           : isimage == 3
-          ? selectedOther3.value = File(result.files.single.path!)
+          ? selectedOther3.value = File(image.path)
           : null;
-      // print("controllerimage::::$isimage");
     }
     // update();
     update(['cancelDialog']);

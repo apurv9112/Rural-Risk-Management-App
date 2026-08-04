@@ -390,20 +390,60 @@ iscattleimage({required BuildContext context, required controller}) {
       ),
       SizedBox(height: hp(1)),
       customRow(
+        videoicon: false,
+        isvideoimag: true,
+        context: context,
+        controller: controller,
+        textdata: "Extra Photo",
+        childimage: controller.extraPhotos.isNotEmpty
+            ? Icon(
+                Icons.image,
+                color: AppColors.PRIMARY_COLOR,
+                size: dp(context, 30),
+              )
+            : const SizedBox(),
+        onTap: () {
+          controller.pickExtraPhotos();
+        },
+      ),
+      SizedBox(height: hp(1)),
+      customRow(
         videoicon: true,
         isvideoimag: true,
         context: context,
         controller: controller,
-        textdata: "Extra Video & Photo",
-        childimage: controller.galleryFiles.isNotEmpty
+        textdata: "Extra Video 1",
+
+        childimage: controller.extraVideo1 != null
             ? Icon(
                 Icons.video_library,
                 color: AppColors.PRIMARY_COLOR,
                 size: dp(context, 30),
               )
-            : SizedBox(),
+            : const SizedBox(),
+
         onTap: () {
-          controller.pickMultiplePhotosAndVideos();
+          controller.pickExtraVideo(1);
+        },
+      ),
+      SizedBox(height: hp(1)),
+      customRow(
+        videoicon: true,
+        isvideoimag: true,
+        context: context,
+        controller: controller,
+        textdata: "Extra Video 2",
+
+        childimage: controller.extraVideo2 != null
+            ? Icon(
+                Icons.video_library,
+                color: AppColors.PRIMARY_COLOR,
+                size: dp(context, 30),
+              )
+            : const SizedBox(),
+
+        onTap: () {
+          controller.pickExtraVideo(2);
         },
       ),
     ],

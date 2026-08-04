@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -46,7 +44,7 @@ class LoginController extends GetxController {
       Get.defaultDialog(
         title: "Permission Required",
         middleText:
-            "Camera, Gallery and Location permissions are mandatory to use this application.",
+            "Camera and Location permissions are mandatory to use this application.",
         textConfirm: "Open Settings",
         textCancel: "Exit",
         onConfirm: () async {
@@ -56,9 +54,13 @@ class LoginController extends GetxController {
           Get.back();
         },
       );
+
       return;
     }
-    if (!formKey.currentState!.validate()) return;
+
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
 
     if (deviceController.deviceId.value.isEmpty) {
       await deviceController.fetchDeviceId();
@@ -237,23 +239,9 @@ class LoginController extends GetxController {
 
   Future<bool> requestRequiredPermissions() async {
     final camera = await Permission.camera.request();
+
     final location = await Permission.locationWhenInUse.request();
 
-    PermissionStatus media;
-
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-
-      if (androidInfo.version.sdkInt >= 33) {
-        final image = await Permission.photos.request();
-        media = image;
-      } else {
-        media = await Permission.storage.request();
-      }
-    } else {
-      media = await Permission.photos.request();
-    }
-
-    return camera.isGranted && location.isGranted && media.isGranted;
+    return camera.isGranted && location.isGranted;
   }
 }

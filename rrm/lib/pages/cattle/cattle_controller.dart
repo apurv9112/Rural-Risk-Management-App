@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -493,7 +492,8 @@ class CattleController extends GetxController {
   Rx<File?> selectedearcut = Rx<File?>(null);
   Rx<File?> selectedearbackside = Rx<File?>(null);
 
-  final ImagePicker _picker = ImagePicker();
+  // final ImagePicker _picker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
 
   //image  picker
   void pickFromCamera() async {
@@ -590,92 +590,93 @@ class CattleController extends GetxController {
   }
 
   void picFromGallery() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false, // Only one for dropdown
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) {
+      return;
+    }
+
+    File file = await FolderManager.moveFromCache(
+      File(image.path),
+      workflow: 'temp',
     );
-    if (result != null && result.files.single.path != null) {
-      File file = await FolderManager.moveFromCache(
-        File(result.files.single.path!),
-        workflow: 'temp',
-      );
 
-      Get.dialog(
-        Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              width: wp(60),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: hp(20),
-                    child: Lottie.asset(
-                      'assets/animations/imageprocess.json',
-                      width: wp(50),
-                      height: hp(30),
-                      repeat: true,
-                    ),
+    Get.dialog(
+      Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: wp(60),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: hp(20),
+                  child: Lottie.asset(
+                    'assets/animations/imageprocess.json',
+                    width: wp(50),
+                    height: hp(30),
+                    repeat: true,
                   ),
+                ),
 
-                  Text(
-                    "Please Wait Resigning Image...",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+                Text(
+                  "Please Wait Resigning Image...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-        barrierColor: Colors.black45,
-        barrierDismissible: false,
-      );
-      try {
-        file = await ImageProcessingService.processImage(file);
-      } catch (e) {
-        print("Image processing error: $e");
-      }
-      if (Get.isDialogOpen ?? false) {
-        Get.back();
-      }
-
-      isimage == 1
-          ? selectedeartag.value = file
-          : isimage == 2
-          ? selectedheadpose.value = file
-          : isimage == 3
-          ? selectedsideposeleft.value = file
-          : isimage == 4
-          ? selectedsideposeright.value = file
-          : isimage == 5
-          ? selectedbackpose.value = file
-          : isimage == 6
-          ? selectedOther5.value = file
-          : isimage == 7
-          ? selectedOther1.value = file
-          : isimage == 8
-          ? selectedOther2.value = file
-          : isimage == 9
-          ? selectedOther3.value = file
-          : isimage == 10
-          ? selectedOther4.value = file
-          : isimage == 11
-          ? selectedearcut.value = file
-          : isimage == 12
-          ? selectedearbackside.value = file
-          : null;
+      ),
+      barrierColor: Colors.black45,
+      barrierDismissible: false,
+    );
+    try {
+      file = await ImageProcessingService.processImage(file);
+    } catch (e) {
+      print("Image processing error: $e");
     }
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+
+    isimage == 1
+        ? selectedeartag.value = file
+        : isimage == 2
+        ? selectedheadpose.value = file
+        : isimage == 3
+        ? selectedsideposeleft.value = file
+        : isimage == 4
+        ? selectedsideposeright.value = file
+        : isimage == 5
+        ? selectedbackpose.value = file
+        : isimage == 6
+        ? selectedOther5.value = file
+        : isimage == 7
+        ? selectedOther1.value = file
+        : isimage == 8
+        ? selectedOther2.value = file
+        : isimage == 9
+        ? selectedOther3.value = file
+        : isimage == 10
+        ? selectedOther4.value = file
+        : isimage == 11
+        ? selectedearcut.value = file
+        : isimage == 12
+        ? selectedearbackside.value = file
+        : null;
+
     update();
   }
 
@@ -702,7 +703,7 @@ class CattleController extends GetxController {
   // }
 
   void pickVideoFromCamera() async {
-    final pickedVideo = await _picker.pickVideo(
+    final pickedVideo = await picker.pickVideo(
       source: ImageSource.camera,
       maxDuration: const Duration(minutes: 1), // 1 minute limit
     );
@@ -726,68 +727,73 @@ class CattleController extends GetxController {
   }
 
   void pickVideoFromGallery() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.video,
-      allowMultiple: false,
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+
+    if (video == null) {
+      return;
+    }
+
+    final persistentFile = await FolderManager.moveFromCache(
+      File(video.path),
+      workflow: 'temp',
     );
 
-    if (result != null && result.files.single.path != null) {
-      final persistentFile = await FolderManager.moveFromCache(
-        File(result.files.single.path!),
-        workflow: 'temp',
-      );
-      Get.dialog(
-        Center(
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: Colors.white,
-            size: 60,
-          ),
-        ),
-        barrierColor: Colors.black45,
-        barrierDismissible: false,
-      );
-      isvideo == 1
-          ? videopath1 = persistentFile.path
-          : isvideo == 2
-          ? videopath2 = persistentFile.path
-          : null;
+    if (isvideo == 1) {
+      videopath1 = persistentFile.path;
+    } else if (isvideo == 2) {
+      videopath2 = persistentFile.path;
     }
-    print("galleryVideo 1 => $videopath1");
-    print("galleryVideo 2 => $videopath2");
+
     update();
   }
 
   // MultiplePhotosAndVideos
 
-  RxList<File> galleryFiles = <File>[].obs;
+  RxList<File> extraPhotos = <File>[].obs;
+  // RxList<File> extraVideos = <File>[].obs;
 
-  Future<void> pickMultiplePhotosAndVideos() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: [
-        'jpg',
-        'jpeg',
-        'png',
-        'mp4',
-        'mov',
-        'mkv',
-      ], // ✅ Add as needed
-      allowMultiple: true,
+  Future<void> pickExtraPhotos() async {
+    final List<XFile> images = await picker.pickMultiImage();
+
+    if (images.isEmpty) {
+      return;
+    }
+
+    extraPhotos.clear();
+
+    for (final image in images) {
+      final file = await FolderManager.moveFromCache(
+        File(image.path),
+        workflow: 'temp',
+      );
+
+      extraPhotos.add(file);
+    }
+
+    update();
+  }
+
+  File? extraVideo1;
+  File? extraVideo2;
+
+  Future<void> pickExtraVideo(int index) async {
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+
+    if (video == null) {
+      return;
+    }
+
+    final file = await FolderManager.moveFromCache(
+      File(video.path),
+      workflow: 'temp',
     );
 
-    if (result != null) {
-      List<File> processedFiles = [];
-      for (var path in result.paths) {
-        if (path != null) {
-          final persistentFile = await FolderManager.moveFromCache(
-            File(path),
-            workflow: 'temp',
-          );
-          processedFiles.add(persistentFile);
-        }
-      }
-      galleryFiles.value = processedFiles;
+    if (index == 1) {
+      extraVideo1 = file;
+    } else if (index == 2) {
+      extraVideo2 = file;
     }
+
     update();
   }
 
@@ -1031,25 +1037,17 @@ class CattleController extends GetxController {
         "other-4": selectedOther3.value ?? "",
 
         // ================= GALLERY =================
-        "extra": galleryFiles.toList(),
+        // "extra": [
+        //   ...extraPhotos,
+        //   if (extraVideo1 != null) extraVideo1!,
+        //   if (extraVideo2 != null) extraVideo2!,
+        // ],
+        "extraPhotos": extraPhotos.toList(),
 
-        "extraPhotos": galleryFiles
-            .where(
-              (f) =>
-                  f.path.toLowerCase().endsWith(".jpg") ||
-                  f.path.toLowerCase().endsWith(".jpeg") ||
-                  f.path.toLowerCase().endsWith(".png"),
-            )
-            .toList(),
-
-        "extraVideos": galleryFiles
-            .where(
-              (f) =>
-                  f.path.toLowerCase().endsWith(".mp4") ||
-                  f.path.toLowerCase().endsWith(".mov") ||
-                  f.path.toLowerCase().endsWith(".mkv"),
-            )
-            .toList(),
+        "extraVideos": [
+          if (extraVideo1 != null) extraVideo1!,
+          if (extraVideo2 != null) extraVideo2!,
+        ],
       };
 
       print("========== PAYLOAD ==========");
@@ -1067,8 +1065,6 @@ class CattleController extends GetxController {
       print("other-2 = ${selectedOther1.value}");
       print("other-3 = ${selectedOther2.value}");
       print("other-4 = ${selectedOther3.value}");
-
-      print("gallery count = ${galleryFiles.length}");
 
       final cattleService = CattleService();
       final response = await cattleService.submitCattle(
@@ -1224,7 +1220,9 @@ class CattleController extends GetxController {
     videopath2 = null;
     isvideo = 0;
     isimage = 0;
-    galleryFiles.clear();
+    extraPhotos.clear();
+    extraVideo1 = null;
+    extraVideo2 = null;
 
     // Auto set next cattle species & SI
     if (cattleSequence.isNotEmpty &&

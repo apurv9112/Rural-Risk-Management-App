@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/kyc_service.dart';
@@ -42,6 +42,7 @@ class KycController extends GetxController {
   Rx<File?> selectedOther3 = Rx<File?>(null);
   Rx<File?> selectedOther4 = Rx<File?>(null);
   Rx<File?> selectedOther5 = Rx<File?>(null);
+  final ImagePicker picker = ImagePicker();
 
   @override
   void onInit() {
@@ -163,100 +164,100 @@ class KycController extends GetxController {
   }
 
   void pickFromGallery() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) {
+      return;
+    }
+
+    File file = await FolderManager.moveFromCache(
+      File(image.path),
+      workflow: 'temp',
     );
 
-    if (result != null && result.files.single.path != null) {
-      File file = await FolderManager.moveFromCache(
-        File(result.files.single.path!),
-        workflow: 'temp',
-      );
-
-      Get.dialog(
-        Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              width: wp(60),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: hp(20),
-                    child: Lottie.asset(
-                      'assets/animations/imageprocess.json',
-                      width: wp(50),
-                      height: hp(30),
-                      repeat: true,
-                    ),
+    Get.dialog(
+      Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: wp(60),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: hp(20),
+                  child: Lottie.asset(
+                    'assets/animations/imageprocess.json',
+                    width: wp(50),
+                    height: hp(30),
+                    repeat: true,
                   ),
+                ),
 
-                  Text(
-                    "Please Wait Resigning Images...",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+                Text(
+                  "Please Wait Resigning Images...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-        barrierColor: Colors.black45,
-        barrierDismissible: false,
-      );
-      try {
-        file = await ImageProcessingService.processImage(file);
-      } catch (e) {
-        print("Image processing error: $e");
-      }
-      if (Get.isDialogOpen ?? false) {
-        Get.back();
-      }
-
-      switch (isimage) {
-        case 1:
-          selectedAadharfront.value = file;
-          break;
-        case 2:
-          selectedAadharback.value = file;
-          break;
-        case 3:
-          selectedPanfront.value = file;
-          break;
-        case 4:
-          selectedbankdetails1.value = file;
-          break;
-        case 5:
-          selectedbankdetails2.value = file;
-          break;
-        case 6:
-          selectedOther5.value = file;
-          break;
-        case 7:
-          selectedOther1.value = file;
-          break;
-        case 8:
-          selectedOther2.value = file;
-          break;
-        case 9:
-          selectedOther3.value = file;
-          break;
-        case 10:
-          selectedOther4.value = file;
-          break;
-      }
+      ),
+      barrierColor: Colors.black45,
+      barrierDismissible: false,
+    );
+    try {
+      file = await ImageProcessingService.processImage(file);
+    } catch (e) {
+      print("Image processing error: $e");
     }
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+
+    switch (isimage) {
+      case 1:
+        selectedAadharfront.value = file;
+        break;
+      case 2:
+        selectedAadharback.value = file;
+        break;
+      case 3:
+        selectedPanfront.value = file;
+        break;
+      case 4:
+        selectedbankdetails1.value = file;
+        break;
+      case 5:
+        selectedbankdetails2.value = file;
+        break;
+      case 6:
+        selectedOther5.value = file;
+        break;
+      case 7:
+        selectedOther1.value = file;
+        break;
+      case 8:
+        selectedOther2.value = file;
+        break;
+      case 9:
+        selectedOther3.value = file;
+        break;
+      case 10:
+        selectedOther4.value = file;
+        break;
+    }
+
     update();
   }
 

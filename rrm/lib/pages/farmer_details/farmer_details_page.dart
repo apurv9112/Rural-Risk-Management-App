@@ -76,8 +76,7 @@ class FarmerDetailsScreen extends StatelessWidget {
                           datarow(
                             context: context,
                             staticdata: "Pera-Wet - ",
-                            listdata:
-                                controller.appController.userName.value ?? "",
+                            listdata: controller.appController.userName.value,
                           ),
                           datarow(
                             context: context,
