@@ -192,6 +192,29 @@ class TaggingdataController extends GetxController {
       if (cowCount != null) map["numberOfCow"] = cowCount;
       if (buffaloSI != null) map["sumInsuredBuffalo"] = buffaloSI;
       if (cowSI != null) map["sumInsuredCow"] = cowSI;
+      final goatCount = int.tryParse(goatcontroller.text.trim());
+
+      final sheepCount = int.tryParse(sheepcountcontroller.text.trim());
+
+      final goatSI = double.tryParse(goatmoneycontroller.text.trim());
+
+      final sheepSI = double.tryParse(sheepmoneycontroller.text.trim());
+
+      if (goatCount != null) {
+        map["numberOfGoat"] = goatCount;
+      }
+
+      if (sheepCount != null) {
+        map["numberOfSheep"] = sheepCount;
+      }
+
+      if (goatSI != null) {
+        map["sumInsuredGoat"] = goatSI;
+      }
+
+      if (sheepSI != null) {
+        map["sumInsuredSheep"] = sheepSI;
+      }
 
       if (retagging != null) {
         map["newTagNumber"] = timeofdeathcontroller.text.trim();
@@ -473,11 +496,34 @@ class TaggingdataController extends GetxController {
     final cowCount = int.tryParse(cowcountcontroller.text.trim());
     final buffaloSI = double.tryParse(buffalomoneycontroller.text.trim());
     final cowSI = double.tryParse(cowmoneycontroller.text.trim());
+    final goatCount = int.tryParse(goatcontroller.text.trim());
+
+    final sheepCount = int.tryParse(sheepcountcontroller.text.trim());
+
+    final goatSI = double.tryParse(goatmoneycontroller.text.trim());
+
+    final sheepSI = double.tryParse(sheepmoneycontroller.text.trim());
 
     if (buffaloCount != null) body["numberOfBuffalo"] = buffaloCount;
     if (cowCount != null) body["numberOfCow"] = cowCount;
     if (buffaloSI != null) body["sumInsuredBuffalo"] = buffaloSI;
     if (cowSI != null) body["sumInsuredCow"] = cowSI;
+    if (goatCount != null) {
+      body["numberOfGoat"] = goatCount;
+    }
+
+    if (sheepCount != null) {
+      body["numberOfSheep"] = sheepCount;
+    }
+
+    if (goatSI != null) {
+      body["sumInsuredGoat"] = goatSI;
+    }
+
+    if (sheepSI != null) {
+      body["sumInsuredSheep"] = sheepSI;
+    }
+    debugPrint("Lead $id updated with: $body");
 
     if (body.isEmpty) return;
 
