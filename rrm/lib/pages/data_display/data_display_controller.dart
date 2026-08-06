@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/tagging_service.dart';
@@ -12,6 +11,7 @@ import 'package:rrm/services/claim_service.dart';
 import 'package:rrm/utils/enum_utils.dart';
 import 'package:rrm/widgets/snackbar_widget.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DatadisplayController extends GetxController {
   final AppController appController = Get.find();
@@ -338,11 +338,13 @@ class DatadisplayController extends GetxController {
                       label: const Text("Open PDF"),
                       onPressed: () async {
                         try {
-                          final result = await OpenFilex.open(file.path);
+                          final uri = Uri.file(file.path);
 
-                          debugPrint("OPEN RESULT : ${result.type}");
-
-                          debugPrint("OPEN MESSAGE : ${result.message}");
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri);
+                          } else {
+                            showSnackBar("Unable to open PDF", SNACK.FAILED);
+                          }
                         } catch (e) {
                           showSnackBar("Unable to open PDF", SNACK.FAILED);
                         }
