@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rrm/pages/farmer_details/farmer_details_controller.dart';
-import 'package:rrm/pages/home/home_page.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customappbar.dart';
-import 'package:screenshot/screenshot.dart';
+import 'package:rrm/pages/farmer_details/farmer_details_controller.dart';
+import 'package:rrm/pages/farmer_details/widget/claim_report_widget.dart';
+import 'package:rrm/pages/farmer_details/widget/retagging_report_widget.dart';
+import 'package:rrm/pages/farmer_details/widget/tagging_report_widget.dart';
 
 class FarmerDetailsScreen extends StatelessWidget {
   const FarmerDetailsScreen({super.key});
@@ -24,6 +25,10 @@ class FarmerDetailsScreen extends StatelessWidget {
             lefticononTap: () {
               Get.back();
             },
+            iconright: Icons.share,
+            righticononTap: () async {
+              await controller.generatePdf(); // Handle share icon tap
+            },
           ),
           body: Padding(
             padding: EdgeInsets.only(
@@ -32,267 +37,59 @@ class FarmerDetailsScreen extends StatelessWidget {
               left: wp(4),
               bottom: hp(4),
             ),
-            child: Stack(
-              children: [
-                Screenshot(
-                  controller: controller.screenshotController,
-                  child: Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    padding: EdgeInsets.only(
-                      right: wp(4),
-                      left: wp(4),
-                      top: hp(1),
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.DARK),
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppColors.WHITE,
-                    ),
+            child: RepaintBoundary(
+              key: controller.reportKey,
+              child: Material(
+                color: Colors.white,
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 5,
+                  constrained: false,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
                     child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          SizedBox(height: hp(0.5)),
-
-                          Center(
-                            child: Text(
-                              controller.type == "claim"
-                                  ? "CLAIM REPORT"
-                                  : controller.type == "retagging"
-                                  ? "RETAGGING REPORT"
-                                  : controller.type == "tagging"
-                                  ? "TAGGING REPORT"
-                                  : "",
-                              style: TextStyle(
-                                fontSize: dp(context, 24),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: hp(1)),
-
-                          datarow(
-                            context: context,
-                            staticdata: "Pera-Wet - ",
-                            listdata: controller.appController.userName.value,
-                          ),
-                          datarow(
-                            context: context,
-                            staticdata: "Name - ",
-                            listdata: controller.report["owner"]?["name"] ?? "",
-                          ),
-                          datarow(
-                            context: context,
-                            staticdata: "Lan Number - ",
-                            listdata:
-                                controller.report["owner"]?["lanNumber"] ?? "",
-                          ),
-                          datarow(
-                            context: context,
-                            staticdata: "Mobile - ",
-                            listdata:
-                                controller.report["owner"]?["mobile"] ?? "",
-                          ),
-
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Address - ",
-                                style: TextStyle(
-                                  fontSize: dp(context, 18),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(
-                                width: wp(60),
-                                child: Text(
-                                  controller.report["owner"]?["address"] ?? "",
-                                  style: TextStyle(
-                                    fontSize: dp(context, 18),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: hp(2)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Sr\nNo.",
-                                style: TextStyle(
-                                  fontSize: dp(context, 20),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(width: wp(3)),
-                              Text(
-                                "Tag Num.",
-                                style: TextStyle(
-                                  fontSize: dp(context, 20),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(width: wp(3)),
-                              Text(
-                                "Species",
-                                style: TextStyle(
-                                  fontSize: dp(context, 20),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(width: wp(3)),
-                              Text(
-                                "Sum Ins.",
-                                style: TextStyle(
-                                  fontSize: dp(context, 20),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: hp(1)),
-
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount:
-                                (controller.report["cattle"] as List?)
-                                    ?.length ??
-                                0,
-                            itemBuilder: (context, index) {
-                              final item =
-                                  ((controller.report["cattle"] as List?) ??
-                                          [])[index]
-                                      as Map<String, dynamic>;
-
-                              return Padding(
-                                padding: EdgeInsets.only(bottom: hp(1)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(width: wp(1)),
-
-                                    SizedBox(
-                                      width: wp(5),
-                                      child: Text(
-                                        "${item["srNo"] ?? index + 1}",
-                                        style: TextStyle(
-                                          fontSize: dp(context, 18),
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-
-                                    SizedBox(width: wp(5)),
-
-                                    SizedBox(
-                                      width: wp(19),
-                                      child: Text(
-                                        "${item["tagNo"] ?? ""}",
-                                        style: TextStyle(
-                                          fontSize: dp(context, 18),
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-
-                                    SizedBox(width: wp(5)),
-
-                                    SizedBox(
-                                      width: wp(15),
-                                      child: Text(
-                                        "${item["species"] ?? ""}",
-                                        style: TextStyle(
-                                          fontSize: dp(context, 18),
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-
-                                    SizedBox(width: wp(4)),
-
-                                    SizedBox(
-                                      width: wp(18),
-                                      child: Text(
-                                        "${item["sumInsured"] ?? ""}",
-                                        style: TextStyle(
-                                          fontSize: dp(context, 18),
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                      child: buildReport(controller),
                     ),
                   ),
                 ),
-                Positioned.fill(
-                  bottom: hp(-60),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      customcontainer(
-                        padding: EdgeInsets.only(
-                          right: wp(3),
-                          top: hp(1),
-                          bottom: hp(1),
-                        ),
-                        margin: EdgeInsets.symmetric(horizontal: wp(0)),
-                        onTap: () async {
-                          await controller.shareScreenshot();
-                        },
-                        logo: 'assets/images/share.png',
-                        imgheight: hp(5),
-
-                        rowwidth: wp(1),
-                        name: "Share",
-                        fontSize: dp(context, 20),
-                        context: context,
-                      ),
-                      SizedBox(width: wp(2)),
-                      customcontainer(
-                        padding: EdgeInsets.only(
-                          right: wp(3),
-                          top: hp(1),
-                          bottom: hp(1),
-                        ),
-                        margin: EdgeInsets.symmetric(horizontal: wp(0)),
-                        onTap: () {
-                          Get.offAllNamed("routehomepage");
-                        },
-                        logo: 'assets/images/home.png',
-                        imgheight: hp(5),
-
-                        rowwidth: wp(1.5),
-                        name: "Home",
-                        fontSize: dp(context, 20),
-                        context: context,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: AppColors.WHITE,
+            onPressed: () {
+              Get.offAllNamed("routehomepage");
+            },
+            label: Text("Home"),
           ),
         );
       },
     );
+  }
+
+  Widget buildReport(FarmerDetailsController controller) {
+    switch (controller.type.toLowerCase()) {
+      case "tagging":
+        return TaggingReportWidget(
+          report: controller.report,
+          controller: controller,
+        );
+
+      case "retagging":
+        return RetaggingReportWidget(
+          report: controller.report,
+          controller: controller,
+        );
+
+      case "claim":
+        return ClaimReportWidget(
+          report: controller.report,
+          controller: controller,
+        );
+
+      default:
+        return const SizedBox();
+    }
   }
 }
 
