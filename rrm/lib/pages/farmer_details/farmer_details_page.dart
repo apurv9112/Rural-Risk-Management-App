@@ -32,10 +32,10 @@ class FarmerDetailsScreen extends StatelessWidget {
           ),
           body: Padding(
             padding: EdgeInsets.only(
-              top: hp(4),
-              right: wp(4),
-              left: wp(4),
-              bottom: hp(4),
+              top: hp(0.5),
+              right: wp(2),
+              left: wp(2),
+              bottom: hp(2),
             ),
             child: RepaintBoundary(
               key: controller.reportKey,
@@ -46,7 +46,7 @@ class FarmerDetailsScreen extends StatelessWidget {
                   maxScale: 5,
                   constrained: false,
                   child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    // scrollDirection: Axis.horizontal,
                     child: SingleChildScrollView(
                       child: buildReport(controller),
                     ),
@@ -56,11 +56,23 @@ class FarmerDetailsScreen extends StatelessWidget {
             ),
           ),
           floatingActionButton: FloatingActionButton.extended(
+            icon: Icon(Icons.home, color: AppColors.PRIMARY_COLOR),
             backgroundColor: AppColors.WHITE,
+
+            shape: Border.all(
+              strokeAlign: BorderSide.strokeAlignCenter,
+
+              color: AppColors.PRIMARY_COLOR,
+              width: wp(1),
+            ),
+
             onPressed: () {
               Get.offAllNamed("routehomepage");
             },
-            label: Text("Home"),
+            label: Text(
+              "Home",
+              style: TextStyle(color: AppColors.PRIMARY_COLOR),
+            ),
           ),
         );
       },

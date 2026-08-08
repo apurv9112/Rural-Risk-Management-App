@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rrm/pages/farmer_details/farmer_details_controller.dart';
+import 'package:rrm/utils/responsive.dart';
 
 class TaggingReportWidget extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -17,28 +18,30 @@ class TaggingReportWidget extends StatelessWidget {
     final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
 
     return Container(
-      width: 794,
-      constraints: const BoxConstraints(minHeight: 1123),
+      width: wp(129),
+      constraints: BoxConstraints(minHeight: hp(100)),
       color: Colors.white,
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          _title(),
+          _title(context),
 
           _row(
             "PERA-WET",
             controller.appController.userName.value,
             "TAGGING DATE",
             "2026-08-01",
+            context,
           ),
 
-          _singleRow("OWNER NAME", owner["name"] ?? ""),
+          _singleRow("OWNER NAME", owner["name"] ?? "", context),
 
           _row(
             "VILLAGE",
             owner["village"] ?? "",
             "TALUKA",
-            owner["village"] ?? "",
+            owner["taluka"] ?? "",
+            context,
           ),
 
           _row(
@@ -46,15 +49,17 @@ class TaggingReportWidget extends StatelessWidget {
             owner["district"] ?? "",
             "STATE",
             owner["state"] ?? "",
+            context,
           ),
 
-          _row("BANK", "HDFC ERGO", "BRANCH", "BAYAD"),
+          _row("BANK", "HDFC ERGO", "BRANCH", "BAYAD", context),
 
           _row(
             "LAN NO.",
             owner["lanNumber"] ?? "",
             "INSURANCE CO.",
             "ICICI LOMBARD LTD",
+            context,
           ),
 
           _row(
@@ -62,9 +67,10 @@ class TaggingReportWidget extends StatelessWidget {
             owner["mobile"] ?? "",
             "TOTAL CATTLE",
             "${report["totalCattle"] ?? 0}",
+            context,
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: hp(2)),
 
           Table(
             border: TableBorder.all(color: Colors.black),
@@ -77,10 +83,10 @@ class TaggingReportWidget extends StatelessWidget {
             children: [
               TableRow(
                 children: [
-                  _headerCell("SR.NO"),
-                  _headerCell("TAG NO."),
-                  _headerCell("SPECIES"),
-                  _headerCell("SUM INSURED"),
+                  _headerCell("SR.NO", context),
+                  _headerCell("TAG NO.", context),
+                  _headerCell("SPECIES", context),
+                  _headerCell("SUM INSURED", context),
                 ],
               ),
 
@@ -89,10 +95,10 @@ class TaggingReportWidget extends StatelessWidget {
 
                 return TableRow(
                   children: [
-                    _cell("${index + 1}"),
-                    _cell(item["tagNo"] ?? ""),
-                    _cell(item["species"] ?? ""),
-                    _cell("${item["sumInsured"] ?? ""}"),
+                    _cell("${index + 1}", context),
+                    _cell(item["tagNo"] ?? "", context),
+                    _cell(item["species"] ?? "", context),
+                    _cell("${item["sumInsured"] ?? ""}", context),
                   ],
                 );
               }),
@@ -103,23 +109,29 @@ class TaggingReportWidget extends StatelessWidget {
     );
   }
 
-  Widget _title() {
+  Widget _title(BuildContext context) {
     return Container(
-      height: 70,
+      height: hp(5),
       alignment: Alignment.center,
       decoration: BoxDecoration(border: Border.all()),
-      child: const Text(
+      child: Text(
         "TAGGING REPORT",
         style: TextStyle(
           color: Color(0xff93256d),
-          fontSize: 32,
+          fontSize: dp(context, 24),
           fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
-  Widget _row(String label1, String value1, String label2, String value2) {
+  Widget _row(
+    String label1,
+    String value1,
+    String label2,
+    String value2,
+    BuildContext context,
+  ) {
     return Table(
       border: TableBorder.all(),
       columnWidths: const {
@@ -131,50 +143,74 @@ class TaggingReportWidget extends StatelessWidget {
       children: [
         TableRow(
           children: [
-            _cell(label1, isBold: false),
-            _cell(value1),
-            _cell(label2, isBold: false),
-            _cell(value2),
+            _cell(label1, context, isBold: false, isLeft: true),
+            _cell(value1, context, isLeft: true),
+            _cell(label2, context, isBold: false, isLeft: true),
+            _cell(value2, context, isLeft: true),
           ],
         ),
       ],
     );
   }
 
-  Widget _singleRow(String label, String value) {
+  Widget _singleRow(String label, String value, BuildContext context) {
     return Table(
       border: TableBorder.all(),
       columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(8)},
       children: [
-        TableRow(children: [_cell(label, isBold: false), _cell(value)]),
+        TableRow(
+          children: [
+            _cell(label, context, isBold: false, isLeft: true),
+            _cell(value, context, isLeft: true),
+          ],
+        ),
       ],
     );
   }
 
-  Widget _headerCell(String value) {
+  Widget _headerCell(String value, BuildContext context) {
     return Container(
-      height: 50,
+      height: hp(5),
       alignment: Alignment.center,
       child: Text(
         value,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: dp(context, 12),
+        ),
       ),
     );
   }
 
-  Widget _cell(String value, {bool isBold = true}) {
+  Widget _cell(
+    String value,
+    BuildContext context, {
+    bool isBold = true,
+    bool isLeft = false,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(8),
       alignment: Alignment.centerLeft,
-      constraints: const BoxConstraints(minHeight: 50),
-      child: Text(
-        value,
-        softWrap: true,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
+      constraints: BoxConstraints(minHeight: hp(5)),
+      child: isLeft
+          ? Text(
+              value,
+              softWrap: true,
+              style: TextStyle(
+                fontSize: dp(context, 10),
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              ),
+            )
+          : Center(
+              child: Text(
+                value,
+                softWrap: true,
+                style: TextStyle(
+                  fontSize: dp(context, 10),
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
     );
   }
 }

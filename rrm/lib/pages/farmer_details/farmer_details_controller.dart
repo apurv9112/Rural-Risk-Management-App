@@ -1,15 +1,13 @@
 import 'dart:io';
-import 'dart:ui' as ui;
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:rrm/controller.dart';
 import 'package:rrm/services/farmer_services.dart';
 import 'package:rrm/services/pdf_service.dart';
-import 'package:share_plus/share_plus.dart' show XFile, SharePlus, ShareParams;
+import 'package:share_plus/share_plus.dart';
 
 class FarmerDetailsController extends GetxController {
   final FarmerReportService _service = FarmerReportService();
@@ -78,41 +76,189 @@ class FarmerDetailsController extends GetxController {
 
   Future<void> generatePdf() async {
     try {
-      RenderRepaintBoundary boundary =
-          reportKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
-      final image = await boundary.toImage(pixelRatio: 4);
-
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-
-      final pngBytes = byteData!.buffer.asUint8List();
-
       final pdf = pw.Document();
 
-      final provider = pw.MemoryImage(pngBytes);
+      final owner = report["owner"] ?? {};
+
+      final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
 
       pdf.addPage(
-        pw.Page(
+        pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.zero,
+          margin: const pw.EdgeInsets.all(25),
+
           build: (context) {
-            return pw.Container(
-              alignment: pw.Alignment.center,
-              child: pw.Image(provider, fit: pw.BoxFit.contain),
-            );
+            return [
+              pw.Container(
+                height: 55,
+                alignment: pw.Alignment.center,
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.black, width: 1),
+                ),
+                child: pw.Text(
+                  type.toUpperCase() == "RETAGGING"
+                      ? "RE-TAGGING REPORT"
+                      : type.toUpperCase() == "CLAIM"
+                      ? "CLAIM REPORT"
+                      : "TAGGING REPORT",
+                  style: pw.TextStyle(
+                    color: PdfColor.fromInt(0xff93256d),
+                    fontSize: 22,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              _pdfDoubleRow(
+                "PERA-WET",
+                appController.userName.value,
+                type.toLowerCase() == "tagging" ? "TAGGING DATE" : "DATE",
+                "",
+              ),
+
+              _pdfSingleRow("OWNER NAME", owner["name"] ?? ""),
+
+              _pdfDoubleRow(
+                "VILLAGE",
+                owner["village"] ?? "",
+                "TALUKA",
+                owner["taluka"] ?? "",
+              ),
+
+              _pdfDoubleRow(
+                "DISTRICT",
+                owner["district"] ?? "",
+                "STATE",
+                owner["state"] ?? "",
+              ),
+
+              _pdfDoubleRow("BANK", "", "BRANCH", ""),
+
+              _pdfDoubleRow(
+                "LAN NO.",
+                owner["lanNumber"] ?? "",
+                "INSURANCE CO.",
+                "",
+              ),
+
+              _pdfDoubleRow(
+                "MOBILE NO.",
+                owner["mobile"] ?? "",
+                "TOTAL CATTLE",
+                "${report["totalCattle"] ?? 0}",
+              ),
+
+              pw.SizedBox(height: 15),
+
+              pw.TableHelper.fromTextArray(
+                border: pw.TableBorder.all(color: PdfColors.black, width: 1),
+                columnWidths: {
+                  0: const pw.FixedColumnWidth(45),
+                  1: const pw.FixedColumnWidth(150),
+                  2: const pw.FixedColumnWidth(110),
+                  3: const pw.FixedColumnWidth(120),
+                },
+                headerDecoration: const pw.BoxDecoration(
+                  color: PdfColors.white,
+                ),
+                headerStyle: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+                cellStyle: const pw.TextStyle(fontSize: 10),
+                cellPadding: const pw.EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 8,
+                ),
+                cellAlignment: pw.Alignment.center,
+                headerAlignment: pw.Alignment.center,
+                headers: ["SR.NO", "TAG NO.", "SPECIES", "SUM INSURED"],
+                data: cattle.map((item) {
+                  return [
+                    "${item["srNo"] ?? ""}",
+                    "${item["tagNo"] ?? ""}",
+                    "${item["species"] ?? ""}",
+                    "${item["sumInsured"] ?? ""}",
+                  ];
+                }).toList(),
+              ),
+            ];
           },
         ),
       );
-
       final directory = await getTemporaryDirectory();
 
-      final file = File("${directory.path}/report.pdf");
+      final file = File("${directory.path}/farmer_report.pdf");
 
-      await file.writeAsBytes(await pdf.save());
+      final pdfBytes = await pdf.save();
 
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+      await file.writeAsBytes(pdfBytes);
+
+      debugPrint("PDF SAVED : ${file.path}");
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: "Pera-Wet - ${appController.userName.value}",
+        ),
+      );
+
+      debugPrint("PDF CREATED SUCCESSFULLY");
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("PDF ERROR: $e");
     }
+  }
+
+  pw.Widget _pdfSingleRow(String label, String value) {
+    return pw.Table(
+      border: pw.TableBorder.all(color: PdfColors.black, width: 1),
+      columnWidths: {
+        0: const pw.FixedColumnWidth(100),
+        1: const pw.FlexColumnWidth(),
+      },
+      children: [
+        pw.TableRow(children: [_pdfCell(label, bold: false), _pdfCell(value)]),
+      ],
+    );
+  }
+
+  pw.Widget _pdfDoubleRow(
+    String label1,
+    String value1,
+    String label2,
+    String value2,
+  ) {
+    return pw.Table(
+      border: pw.TableBorder.all(color: PdfColors.black, width: 1),
+      columnWidths: {
+        0: const pw.FixedColumnWidth(100),
+        1: const pw.FlexColumnWidth(),
+        2: const pw.FixedColumnWidth(100),
+        3: const pw.FlexColumnWidth(),
+      },
+      children: [
+        pw.TableRow(
+          children: [
+            _pdfCell(label1, bold: false),
+            _pdfCell(value1),
+            _pdfCell(label2, bold: false),
+            _pdfCell(value2),
+          ],
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _pdfCell(String value, {bool bold = true}) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+      alignment: pw.Alignment.centerLeft,
+      child: pw.Text(
+        value,
+        style: pw.TextStyle(
+          fontSize: 10,
+          fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+        ),
+      ),
+    );
   }
 }
