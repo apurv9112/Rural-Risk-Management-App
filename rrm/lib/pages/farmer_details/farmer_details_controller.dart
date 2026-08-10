@@ -20,6 +20,12 @@ class FarmerDetailsController extends GetxController {
   Map<String, dynamic> kycData = {};
   Map<String, dynamic> cattleData = {};
   Map<String, dynamic> signatureData = {};
+  Map<String, dynamic> retaggingData = {};
+  Map<String, dynamic> claimData = {};
+  Map<String, dynamic> manualTaggingData = {};
+  String dateOfDeath = "";
+  String timeOfDeath = "";
+  final reportCreatedAt = DateTime.now();
 
   bool isLoading = true;
 
@@ -44,6 +50,23 @@ class FarmerDetailsController extends GetxController {
     cattleData = Map<String, dynamic>.from(args["cattleData"] ?? {});
 
     signatureData = Map<String, dynamic>.from(args["signatureData"] ?? {});
+    retaggingData = Map<String, dynamic>.from(args["retaggingData"] ?? {});
+
+    claimData = Map<String, dynamic>.from(args["claimData"] ?? {});
+
+    manualTaggingData = Map<String, dynamic>.from(
+      args["manualTaggingData"] ?? {},
+    );
+    // ⭐ Claim death data
+    dateOfDeath = args["dateOfDeath"] ?? "";
+    timeOfDeath = args["timeOfDeath"] ?? "";
+
+    debugPrint("========== REPORT DATA FLOW ==========");
+    debugPrint("TAGGING DATA        : $taggingData");
+    debugPrint("RETAGGING DATA      : $retaggingData");
+    debugPrint("CLAIM DATA          : $claimData");
+    debugPrint("MANUAL TAGGING DATA : $manualTaggingData");
+    debugPrint("======================================");
   }
 
   Future<void> getReport({
@@ -76,11 +99,20 @@ class FarmerDetailsController extends GetxController {
 
   Future<void> generatePdf() async {
     try {
+      if (type.toLowerCase() == "retagging") {
+        await _generateRetaggingPdf();
+        return;
+      }
+      if (type.toLowerCase() == "claim") {
+        await _generateClaimPdf();
+        return;
+      }
       final pdf = pw.Document();
 
       final owner = report["owner"] ?? {};
 
       final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+      final leadData = taggingData;
 
       pdf.addPage(
         pw.MultiPage(
@@ -111,39 +143,63 @@ class FarmerDetailsController extends GetxController {
 
               _pdfDoubleRow(
                 "PERA-WET",
-                appController.userName.value,
+                (appController.userName.value ?? "").toString().toUpperCase(),
                 type.toLowerCase() == "tagging" ? "TAGGING DATE" : "DATE",
-                "",
+                leadData["createdAt"]?.toString().split("T").first ?? "",
               ),
 
-              _pdfSingleRow("OWNER NAME", owner["name"] ?? ""),
+              _pdfSingleRow(
+                "OWNER NAME",
+                (leadData["ownerName"] ?? owner["name"] ?? "")
+                    .toString()
+                    .toUpperCase(),
+              ),
 
               _pdfDoubleRow(
                 "VILLAGE",
-                owner["village"] ?? "",
+                (leadData["village"] ?? owner["village"] ?? "")
+                    .toString()
+                    .toUpperCase(),
                 "TALUKA",
-                owner["taluka"] ?? "",
+                (leadData["taluko"] ?? owner["taluka"] ?? "")
+                    .toString()
+                    .toUpperCase(),
               ),
 
               _pdfDoubleRow(
                 "DISTRICT",
-                owner["district"] ?? "",
+                (leadData["district"] ?? owner["district"] ?? "")
+                    .toString()
+                    .toUpperCase(),
                 "STATE",
-                owner["state"] ?? "",
+                (leadData["state"] ?? owner["state"] ?? "")
+                    .toString()
+                    .toUpperCase(),
               ),
 
-              _pdfDoubleRow("BANK", "", "BRANCH", ""),
+              _pdfDoubleRow(
+                "BANK",
+                (leadData["bankName"] ?? "").toString().toUpperCase(),
+                "BRANCH",
+                (leadData["branchOfBank"] ?? "").toString().toUpperCase(),
+              ),
 
               _pdfDoubleRow(
                 "LAN NO.",
-                owner["lanNumber"] ?? "",
+                (leadData["loanAccountNo"] ?? owner["lanNumber"] ?? "")
+                    .toString()
+                    .toUpperCase(),
                 "INSURANCE CO.",
-                "",
+                (leadData["insuranceCompanyName"] ?? "")
+                    .toString()
+                    .toUpperCase(),
               ),
 
               _pdfDoubleRow(
                 "MOBILE NO.",
-                owner["mobile"] ?? "",
+                (leadData["mobileNo"] ?? owner["mobile"] ?? "")
+                    .toString()
+                    .toUpperCase(),
                 "TOTAL CATTLE",
                 "${report["totalCattle"] ?? 0}",
               ),
@@ -188,7 +244,9 @@ class FarmerDetailsController extends GetxController {
       );
       final directory = await getTemporaryDirectory();
 
-      final file = File("${directory.path}/farmer_report.pdf");
+      final file = File(
+        "${directory.path}/Tagging Report - PERA-WET - ${appController.userName.value}.pdf",
+      );
 
       final pdfBytes = await pdf.save();
 
@@ -260,5 +318,490 @@ class FarmerDetailsController extends GetxController {
         ),
       ),
     );
+  }
+
+  /// Retagging PDF Generation ///
+
+  Future<void> _generateRetaggingPdf() async {
+    try {
+      final pdf = pw.Document();
+
+      final owner = report["owner"] ?? {};
+      final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+
+      final leadData = retaggingData;
+
+      final cattleItem = cattle.isNotEmpty ? cattle.first : {};
+
+      final taggingDate = _formatPdfDate(leadData["createdAt"]);
+
+      final reTaggingDate = _formatPdfDate(leadData["dateOfReTagging"]);
+
+      final oldTagNumber = leadData["oldTagNumber"] ?? "";
+
+      final newTagNumber = leadData["newTagNumber"] ?? "";
+
+      final species = cattleItem["species"] ?? leadData["species"] ?? "";
+
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(25),
+          build: (context) {
+            return pw.Column(
+              children: [
+                // TITLE
+                pw.Container(
+                  height: 55,
+                  alignment: pw.Alignment.center,
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.black, width: 1),
+                  ),
+                  child: pw.Text(
+                    "RE-TAGGING REPORT",
+                    style: pw.TextStyle(
+                      color: PdfColor.fromInt(0xff93256d),
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                // PERA-WET
+                _pdfSingleRow(
+                  "PERA-WET",
+                  (appController.userName.value ?? "").toString().toUpperCase(),
+                ),
+
+                // OWNER
+                _pdfSingleRow(
+                  "OWNER NAME",
+                  (leadData["ownerName"] ?? owner["name"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // VILLAGE + TALUKA
+                _pdfDoubleRow(
+                  "VILLAGE",
+                  (leadData["village"] ?? owner["village"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                  "TALUKA",
+                  (leadData["taluko"] ?? owner["taluka"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // DISTRICT + STATE
+                _pdfDoubleRow(
+                  "DISTRICT",
+                  (leadData["district"] ?? owner["district"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                  "STATE",
+                  (leadData["state"] ?? owner["state"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // BANK
+                _pdfSingleRow(
+                  "BANK",
+                  (leadData["bankName"] ?? "").toString().toUpperCase(),
+                ),
+
+                // BRANCH
+                _pdfSingleRow(
+                  "BRANCH",
+                  (leadData["branchOfBank"] ?? "").toString().toUpperCase(),
+                ),
+
+                // INSURANCE
+                _pdfSingleRow(
+                  "INSURANCE CO.",
+                  (leadData["insuranceCompanyName"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // LAN
+                _pdfSingleRow(
+                  "LAN NO.",
+                  (leadData["loanAccountNo"] ?? owner["lanNumber"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // MOBILE
+                _pdfSingleRow(
+                  "MOBILE NO.",
+                  (leadData["mobileNo"] ?? owner["mobile"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                pw.SizedBox(height: 15),
+
+                // RETAGGING TABLE
+                pw.Table(
+                  border: pw.TableBorder.all(color: PdfColors.black, width: 1),
+                  columnWidths: {
+                    0: const pw.FlexColumnWidth(2),
+                    1: const pw.FlexColumnWidth(3),
+                    2: const pw.FlexColumnWidth(3),
+                    3: const pw.FlexColumnWidth(3),
+                    4: const pw.FlexColumnWidth(2),
+                  },
+                  children: [
+                    pw.TableRow(
+                      children: [
+                        _pdfHeaderCell("TAGGING DATE"),
+                        _pdfHeaderCell("OLD TAG NO."),
+                        _pdfHeaderCell("RE-TAGGING DATE"),
+                        _pdfHeaderCell("NEW TAG NO."),
+                        _pdfHeaderCell("SPECIES"),
+                      ],
+                    ),
+
+                    pw.TableRow(
+                      children: [
+                        _pdfCell2(taggingDate, bold: false, center: true),
+                        _pdfCell2(oldTagNumber, bold: false, center: true),
+                        _pdfCell2(reTaggingDate, bold: false, center: true),
+                        _pdfCell2(newTagNumber, bold: false, center: true),
+                        _pdfCell2(species, bold: false, center: true),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      final directory = await getTemporaryDirectory();
+
+      final file = File(
+        "${directory.path}/Re-Tagging Report - PERA-WET - ${appController.userName.value}.pdf",
+      );
+
+      await file.writeAsBytes(await pdf.save());
+
+      debugPrint("RETAGGING PDF SAVED : ${file.path}");
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: "Re-Tagging Report - ${appController.userName.value}",
+        ),
+      );
+
+      debugPrint("RETAGGING PDF CREATED SUCCESSFULLY");
+    } catch (e) {
+      debugPrint("RETAGGING PDF ERROR: $e");
+    }
+  }
+
+  String _formatPdfDate(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return "";
+    }
+
+    try {
+      final date = DateTime.parse(value.toString());
+
+      final day = date.day.toString().padLeft(2, '0');
+
+      final month = date.month.toString().padLeft(2, '0');
+
+      final year = date.year.toString();
+
+      return "$day-$month-$year";
+    } catch (e) {
+      return value.toString();
+    }
+  }
+
+  pw.Widget _pdfHeaderCell(String value) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      alignment: pw.Alignment.center,
+      child: pw.Text(
+        value,
+        textAlign: pw.TextAlign.center,
+        style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
+      ),
+    );
+  }
+
+  pw.Widget _pdfCell2(String value, {bool bold = true, bool center = false}) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      alignment: center ? pw.Alignment.center : pw.Alignment.centerLeft,
+      child: pw.Text(
+        value,
+        textAlign: center ? pw.TextAlign.center : pw.TextAlign.left,
+        style: pw.TextStyle(
+          fontSize: 9,
+          fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _generateClaimPdf() async {
+    try {
+      final pdf = pw.Document();
+
+      final owner = report["owner"] ?? {};
+
+      final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+
+      final leadData = claimData;
+
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(25),
+          build: (context) {
+            return pw.Column(
+              children: [
+                // =========================
+                // TITLE
+                // =========================
+                pw.Container(
+                  height: 55,
+                  alignment: pw.Alignment.center,
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.black, width: 1),
+                  ),
+                  child: pw.Text(
+                    "CLAIM REPORT",
+                    style: pw.TextStyle(
+                      color: PdfColor.fromInt(0xff93256d),
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                // =========================
+                // PERA-WET
+                // =========================
+                _pdfSingleRow(
+                  "PERA-WET",
+                  (appController.userName.value ?? "").toString().toUpperCase(),
+                ),
+
+                // =========================
+                // OWNER NAME
+                // =========================
+                _pdfSingleRow(
+                  "OWNER NAME",
+                  (leadData["ownerName"] ?? owner["name"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // =========================
+                // VILLAGE + TALUKA
+                // =========================
+                _pdfDoubleRow(
+                  "VILLAGE",
+                  (leadData["village"] ?? owner["village"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                  "TALUKA",
+                  (leadData["taluko"] ?? owner["taluka"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // =========================
+                // DISTRICT + STATE
+                // =========================
+                _pdfDoubleRow(
+                  "DISTRICT",
+                  (leadData["district"] ?? owner["district"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                  "STATE",
+                  (leadData["state"] ?? owner["state"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // =========================
+                // MOBILE
+                // =========================
+                _pdfSingleRow(
+                  "MOBILE NO.",
+                  (leadData["mobileNo"] ?? owner["mobile"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // =========================
+                // BANK
+                // =========================
+                _pdfSingleRow(
+                  "BANK",
+                  (leadData["bankName"] ?? "").toString().toUpperCase(),
+                ),
+
+                // =========================
+                // BRANCH
+                // =========================
+                _pdfSingleRow(
+                  "BRANCH",
+                  (leadData["branchOfBank"] ?? "").toString().toUpperCase(),
+                ),
+
+                // =========================
+                // INSURANCE
+                // =========================
+                _pdfSingleRow(
+                  "INSURANCE CO.",
+                  (leadData["insuranceCompanyName"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // =========================
+                // LAN
+                // =========================
+                _pdfSingleRow(
+                  "LAN NO.",
+                  (leadData["loanAccountNo"] ?? owner["lanNumber"] ?? "")
+                      .toString()
+                      .toUpperCase(),
+                ),
+
+                // =========================
+                // DEATH DATE + TIME
+                // createdAt
+                // =========================
+                _pdfDoubleRow(
+                  "DEATH DATE",
+                  _formatPdfDate(dateOfDeath),
+                  "DEATH TIME",
+                  timeOfDeath,
+                ),
+
+                // =========================
+                // ATTEND DATE + TIME
+                // Cattle page data
+                // =========================
+                _pdfDoubleRow(
+                  "ATTEND DATE",
+                  _formatPdfDate(reportCreatedAt),
+                  "ATTEND TIME",
+                  _formatPdfTime(reportCreatedAt),
+                ),
+
+                pw.SizedBox(height: 15),
+
+                // =========================
+                // CLAIM TABLE
+                // =========================
+                pw.Table(
+                  border: pw.TableBorder.all(color: PdfColors.black, width: 1),
+                  columnWidths: {
+                    0: const pw.FlexColumnWidth(3),
+                    1: const pw.FlexColumnWidth(2),
+                    2: const pw.FlexColumnWidth(2),
+                  },
+                  children: [
+                    pw.TableRow(
+                      children: [
+                        _pdfHeaderCell("TAG NO."),
+                        _pdfHeaderCell("SPECIES"),
+                        _pdfHeaderCell("SUM INSURED"),
+                      ],
+                    ),
+
+                    ...List.generate(cattle.length, (index) {
+                      final item = cattle[index];
+
+                      return pw.TableRow(
+                        children: [
+                          _pdfCell2(
+                            "${item["tagNo"] ?? ""}",
+                            bold: false,
+                            center: true,
+                          ),
+                          _pdfCell2(
+                            "${item["species"] ?? ""}",
+                            bold: false,
+                            center: true,
+                          ),
+                          _pdfCell2(
+                            "${item["sumInsured"] ?? ""}",
+                            bold: false,
+                            center: true,
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      // =========================
+      // SAVE PDF
+      // =========================
+      final directory = await getTemporaryDirectory();
+
+      final file = File(
+        "${directory.path}/Claim Report - PERA-WET - ${appController.userName.value}.pdf",
+      );
+
+      await file.writeAsBytes(await pdf.save());
+
+      debugPrint("CLAIM PDF SAVED : ${file.path}");
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: "Claim Report - ${appController.userName.value}",
+        ),
+      );
+
+      debugPrint("CLAIM PDF CREATED SUCCESSFULLY");
+    } catch (e) {
+      debugPrint("CLAIM PDF ERROR: $e");
+    }
+  }
+
+  String _formatPdfTime(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return "";
+    }
+
+    try {
+      final date = DateTime.parse(value.toString()).toLocal();
+
+      int hour = date.hour;
+
+      final minute = date.minute.toString().padLeft(2, '0');
+
+      final period = hour >= 12 ? "PM" : "AM";
+
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour > 12) {
+        hour -= 12;
+      }
+
+      return "${hour.toString().padLeft(2, '0')}:$minute $period";
+    } catch (e) {
+      return value.toString();
+    }
   }
 }

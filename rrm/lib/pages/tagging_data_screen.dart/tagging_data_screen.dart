@@ -700,13 +700,57 @@ class TaggingDataScreen extends StatelessWidget {
                             return;
                           }
 
+                          // Get.toNamed(
+                          //   routekycpage,
+                          //   arguments: {
+                          //     "tagging": controller.data,
+                          //     "ischangepage": controller.ischangepage,
+                          //     "retagging": controller.retagging,
+                          //     "manualtagging": controller.manualtagging,
+                          //   },
+                          // );
+
+                          print("========== TAGGING DATA → KYC ==========");
+                          print("taggingData: ${controller.data}");
+                          print("retaggingData: ${controller.retagging}");
+                          print("claimData: ${controller.claimData}");
+                          print(
+                            "manualTaggingData: ${controller.manualtagging}",
+                          );
+                          print("ischangepage: ${controller.ischangepage}");
+                          print("=========================================");
+
+                          final leadType = controller.data["leadType"]
+                              ?.toString()
+                              .toLowerCase();
+
                           Get.toNamed(
                             routekycpage,
                             arguments: {
+                              // Existing data
                               "tagging": controller.data,
+
+                              // Flow flags
                               "ischangepage": controller.ischangepage,
                               "retagging": controller.retagging,
                               "manualtagging": controller.manualtagging,
+
+                              // Report data
+                              "taggingData": leadType == "tagging"
+                                  ? Map<String, dynamic>.from(controller.data)
+                                  : {},
+
+                              "retaggingData": leadType == "retagging"
+                                  ? Map<String, dynamic>.from(controller.data)
+                                  : {},
+
+                              "claimData": leadType == "claim"
+                                  ? Map<String, dynamic>.from(controller.data)
+                                  : {},
+
+                              "manualTaggingData": leadType == "manualtagging"
+                                  ? Map<String, dynamic>.from(controller.data)
+                                  : {},
                             },
                           );
                         },

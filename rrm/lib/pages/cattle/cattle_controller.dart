@@ -40,6 +40,10 @@ class CattleController extends GetxController {
 
   List<Map<String, dynamic>> cattleSequence = [];
   String customerName = "";
+  Map<String, dynamic> taggingData = {};
+  Map<String, dynamic> retaggingData = {};
+  Map<String, dynamic> claimData = {};
+  Map<String, dynamic> manualTaggingData = {};
 
   @override
   void onInit() {
@@ -52,6 +56,15 @@ class CattleController extends GetxController {
         ""
             "";
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
+    taggingData = Map<String, dynamic>.from(args["taggingData"] ?? {});
+
+    retaggingData = Map<String, dynamic>.from(args["retaggingData"] ?? {});
+
+    claimData = Map<String, dynamic>.from(args["claimData"] ?? {});
+
+    manualTaggingData = Map<String, dynamic>.from(
+      args["manualTaggingData"] ?? {},
+    );
     super.onInit();
   }
 
@@ -1109,21 +1122,74 @@ class CattleController extends GetxController {
       } else {
         showSnackBar("All cattle completed.", SNACK.SUCCESS);
         final responseJson = jsonDecode(responseBody);
+        // Get.offNamed(
+        //   routesignaturepage,
+        //   arguments: {
+        //     "tagging": data,
+        //     "ischangepage": ischangepage,
+        //     "retagging": retagging,
+
+        //     "leadId": taggingId,
+        //     "leadType": leadType,
+
+        //     "folderId": responseJson["data"]["googleDriveFolderId"],
+
+        //     "customerName": customerName,
+
+        //     "tagNo": tagnumbercontroller.text.trim(),
+        //   },
+        // );
+
+        print("========== CATTLE → SIGNATURE ==========");
+        print("taggingData: $taggingData");
+        print("retaggingData: $retaggingData");
+        print("claimData: $claimData");
+        print("manualTaggingData: $manualTaggingData");
+        print("leadId: $taggingId");
+        print("leadType: $leadType");
+        print("customerName: $customerName");
+        print("tagNo: ${tagnumbercontroller.text.trim()}");
+        print("=========================================");
         Get.offNamed(
           routesignaturepage,
           arguments: {
-            "tagging": data,
+            // =========================
+            // FLOW DATA
+            // =========================
+            "taggingData": leadType == "tagging" ? data : {},
+            "retaggingData": leadType == "retagging" ? data : {},
+            "claimData": leadType == "claim" ? data : {},
+            "manualTaggingData": leadType == "manualtagging" ? data : {},
+
+            // =========================
+            // EXISTING
+            // =========================
             "ischangepage": ischangepage,
             "retagging": retagging,
 
+            // =========================
+            // LEAD INFORMATION
+            // =========================
             "leadId": taggingId,
             "leadType": leadType,
 
+            // =========================
+            // OTHER
+            // =========================
             "folderId": responseJson["data"]["googleDriveFolderId"],
-
             "customerName": customerName,
-
             "tagNo": tagnumbercontroller.text.trim(),
+
+            // =========================
+            // CLAIM DATE / TIME
+            // =========================
+            "dateOfDeath": leadType == "claim"
+                ? selectedDate.value?.toString().split(" ")[0] ?? ""
+                : "",
+
+            "timeOfDeath": leadType == "claim"
+                ? TimeOfDay.now().format(Get.context!)
+                : "",
           },
         );
       }

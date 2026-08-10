@@ -43,6 +43,10 @@ class KycController extends GetxController {
   Rx<File?> selectedOther4 = Rx<File?>(null);
   Rx<File?> selectedOther5 = Rx<File?>(null);
   final ImagePicker picker = ImagePicker();
+  Map<String, dynamic> taggingData = {};
+  Map<String, dynamic> retaggingData = {};
+  Map<String, dynamic> claimData = {};
+  Map<String, dynamic> manualTaggingData = {};
 
   @override
   void onInit() {
@@ -53,6 +57,16 @@ class KycController extends GetxController {
     data = args["tagging"];
     ischangepage = args["ischangepage"];
     retagging = args["retagging"];
+
+    taggingData = Map<String, dynamic>.from(args["taggingData"] ?? {});
+
+    retaggingData = Map<String, dynamic>.from(args["retaggingData"] ?? {});
+
+    claimData = Map<String, dynamic>.from(args["claimData"] ?? {});
+
+    manualTaggingData = Map<String, dynamic>.from(
+      args["manualTaggingData"] ?? {},
+    );
 
     final tagging = data as Map<String, dynamic>?;
 
@@ -393,9 +407,30 @@ class KycController extends GetxController {
         Get.back();
       }
 
+      // Get.toNamed(
+      //   routecattlepage,
+      //   arguments: {
+      //     "tagging": data,
+      //     "ischangepage": ischangepage,
+      //     "retagging": retagging,
+      //     "customerName": namecontroller.text.trim(),
+      //   },
+      // );
+      print("========== KYC → CATTLE ==========");
+      print("taggingData: $taggingData");
+      print("retaggingData: $retaggingData");
+      print("claimData: $claimData");
+      print("manualTaggingData: $manualTaggingData");
+      print("ischangepage: $ischangepage");
+      print("=================================");
       Get.toNamed(
         routecattlepage,
         arguments: {
+          "taggingData": taggingData,
+          "retaggingData": retaggingData,
+          "claimData": claimData,
+          "manualTaggingData": manualTaggingData,
+
           "tagging": data,
           "ischangepage": ischangepage,
           "retagging": retagging,
@@ -411,13 +446,30 @@ class KycController extends GetxController {
         Get.back();
       }
 
-      showSnackBar("Something went wrong", SNACK.FAILED);
+      showSnackBar("Kyc All ready Uploaded", SNACK.FAILED);
+      // Get.toNamed(
+      //   routecattlepage,
+      //   arguments: {
+      //     "tagging": data,
+      //     "ischangepage": ischangepage,
+      //     "retagging": retagging,
+      //   },
+      // );
+
       Get.toNamed(
         routecattlepage,
         arguments: {
+          // Existing data
           "tagging": data,
           "ischangepage": ischangepage,
           "retagging": retagging,
+          "customerName": namecontroller.text.trim(),
+
+          // Report data forwarded from Tagging Data Screen
+          "taggingData": Get.arguments?["taggingData"] ?? {},
+          "retaggingData": Get.arguments?["retaggingData"] ?? {},
+          "claimData": Get.arguments?["claimData"] ?? {},
+          "manualTaggingData": Get.arguments?["manualTaggingData"] ?? {},
         },
       );
     } finally {

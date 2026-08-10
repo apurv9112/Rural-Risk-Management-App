@@ -15,7 +15,10 @@ class TaggingReportWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final owner = report["owner"] ?? {};
+
     final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+
+    final leadData = controller.taggingData;
 
     return Container(
       width: wp(129),
@@ -28,43 +31,63 @@ class TaggingReportWidget extends StatelessWidget {
 
           _row(
             "PERA-WET",
-            controller.appController.userName.value,
+            (controller.appController.userName.value ?? "")
+                .toString()
+                .toUpperCase(),
             "TAGGING DATE",
-            "2026-08-01",
+            _formatDate(leadData["createdAt"]),
             context,
           ),
 
-          _singleRow("OWNER NAME", owner["name"] ?? "", context),
+          _singleRow(
+            "OWNER NAME",
+            (leadData["ownerName"] ?? owner["name"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
+          ),
 
           _row(
             "VILLAGE",
-            owner["village"] ?? "",
+            (leadData["village"] ?? owner["village"] ?? "")
+                .toString()
+                .toUpperCase(),
             "TALUKA",
-            owner["taluka"] ?? "",
+            (leadData["taluko"] ?? "").toString().toUpperCase(),
             context,
           ),
 
           _row(
             "DISTRICT",
-            owner["district"] ?? "",
+            (leadData["district"] ?? "").toString().toUpperCase(),
             "STATE",
-            owner["state"] ?? "",
+            (leadData["state"] ?? "").toString().toUpperCase(),
             context,
           ),
 
-          _row("BANK", "HDFC ERGO", "BRANCH", "BAYAD", context),
+          _row(
+            "BANK",
+            (leadData["bankName"] ?? "").toString().toUpperCase(),
+            "BRANCH",
+            (leadData["branchOfBank"] ?? "").toString().toUpperCase(),
+            context,
+          ),
 
           _row(
             "LAN NO.",
-            owner["lanNumber"] ?? "",
+            (leadData["loanAccountNo"] ?? owner["lanNumber"] ?? "")
+                .toString()
+                .toUpperCase(),
             "INSURANCE CO.",
-            "ICICI LOMBARD LTD",
+            (leadData["insuranceCompanyName"] ?? "").toString().toUpperCase(),
             context,
           ),
 
           _row(
             "MOBILE NO.",
-            owner["mobile"] ?? "",
+            (leadData["mobileNo"] ?? owner["mobile"] ?? "")
+                .toString()
+                .toUpperCase(),
             "TOTAL CATTLE",
             "${report["totalCattle"] ?? 0}",
             context,
@@ -212,5 +235,23 @@ class TaggingReportWidget extends StatelessWidget {
               ),
             ),
     );
+  }
+
+  String _formatDate(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return "";
+    }
+
+    try {
+      final date = DateTime.parse(value.toString());
+
+      final day = date.day.toString().padLeft(2, "0");
+      final month = date.month.toString().padLeft(2, "0");
+      final year = date.year.toString();
+
+      return "$day-$month-$year";
+    } catch (e) {
+      return value.toString();
+    }
   }
 }

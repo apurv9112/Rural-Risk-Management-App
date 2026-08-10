@@ -18,10 +18,136 @@ class SignatureControllerX extends GetxController {
   final SignatureService _signatureService = SignatureService();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   Rx<Uint8List?> customerSignatureBytes = Rx<Uint8List?>(null);
+  Map<String, dynamic> taggingData = {};
+  Map<String, dynamic> retaggingData = {};
+  Map<String, dynamic> claimData = {};
+  Map<String, dynamic> manualTaggingData = {};
+  String dateOfDeath = "";
+  String timeOfDeath = "";
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   final args = Get.arguments ?? {};
+  //   taggingData = Map<String, dynamic>.from(args["taggingData"] ?? {});
+
+  //   retaggingData = Map<String, dynamic>.from(args["retaggingData"] ?? {});
+
+  //   claimData = Map<String, dynamic>.from(args["claimData"] ?? {});
+
+  //   manualTaggingData = Map<String, dynamic>.from(
+  //     args["manualTaggingData"] ?? {},
+  //   );
+
+  //   dateOfDeath = args["dateOfDeath"] ?? "";
+  //   timeOfDeath = args["timeOfDeath"] ?? "";
+
+  //   appController.loadUserData();
+
+  //   loadWorkerSignature();
+  // }
 
   @override
   void onInit() {
     super.onInit();
+
+    final args = Get.arguments ?? {};
+
+    final currentLeadType = (args["leadType"] ?? "").toString().toLowerCase();
+
+    debugPrint("========== SIGNATURE INIT ==========");
+    debugPrint("leadType: $currentLeadType");
+    debugPrint("ALL ARGUMENTS: $args");
+    debugPrint("====================================");
+
+    // =========================
+    // TAGGING
+    // =========================
+    if (currentLeadType == "tagging") {
+      final data = args["taggingData"];
+
+      if (data is Map && data.isNotEmpty) {
+        taggingData = Map<String, dynamic>.from(data);
+      } else if (args["tagging"] is Map &&
+          (args["tagging"] as Map).isNotEmpty) {
+        taggingData = Map<String, dynamic>.from(args["tagging"]);
+      } else {
+        taggingData = {};
+      }
+    } else {
+      taggingData = {};
+    }
+
+    // =========================
+    // RETAGGING
+    // =========================
+    if (currentLeadType == "retagging") {
+      final data = args["retaggingData"];
+
+      if (data is Map && data.isNotEmpty) {
+        retaggingData = Map<String, dynamic>.from(data);
+      } else if (args["retagging"] is Map &&
+          (args["retagging"] as Map).isNotEmpty) {
+        retaggingData = Map<String, dynamic>.from(args["retagging"]);
+      } else {
+        retaggingData = {};
+      }
+    } else {
+      retaggingData = {};
+    }
+
+    // =========================
+    // CLAIM
+    // =========================
+    if (currentLeadType == "claim") {
+      final data = args["claimData"];
+
+      if (data is Map && data.isNotEmpty) {
+        claimData = Map<String, dynamic>.from(data);
+      } else {
+        claimData = {};
+      }
+    } else {
+      claimData = {};
+    }
+
+    // =========================
+    // MANUAL TAGGING
+    // =========================
+    if (currentLeadType == "manualtagging") {
+      final data = args["manualTaggingData"];
+
+      if (data is Map && data.isNotEmpty) {
+        manualTaggingData = Map<String, dynamic>.from(data);
+      } else if (args["manualtagging"] is Map &&
+          (args["manualtagging"] as Map).isNotEmpty) {
+        manualTaggingData = Map<String, dynamic>.from(args["manualtagging"]);
+      } else {
+        manualTaggingData = {};
+      }
+    } else {
+      manualTaggingData = {};
+    }
+
+    // =========================
+    // CLAIM DATE / TIME
+    // =========================
+    dateOfDeath = args["dateOfDeath"]?.toString() ?? "";
+
+    timeOfDeath = args["timeOfDeath"]?.toString() ?? "";
+
+    // =========================
+    // DEBUG
+    // =========================
+    debugPrint("========== SIGNATURE DATA ==========");
+    debugPrint("leadType: $currentLeadType");
+    debugPrint("taggingData: $taggingData");
+    debugPrint("retaggingData: $retaggingData");
+    debugPrint("claimData: $claimData");
+    debugPrint("manualTaggingData: $manualTaggingData");
+    debugPrint("dateOfDeath: $dateOfDeath");
+    debugPrint("timeOfDeath: $timeOfDeath");
+    debugPrint("====================================");
 
     appController.loadUserData();
 
@@ -129,14 +255,51 @@ class SignatureControllerX extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint("SIGNATURE UPLOAD SUCCESS");
 
+        // Get.offNamed(
+        //   routefarmerdetailspage,
+        //   arguments: {
+        //     "leadId": leadId,
+        //     "leadType": leadType, // tagging / retagging / claim
+        //   },
+        // );
+
+        print("========== SIGNATURE → FARMER DETAILS ==========");
+        print("taggingData: $taggingData");
+        print("retaggingData: $retaggingData");
+        print("claimData: $claimData");
+        print("manualTaggingData: $manualTaggingData");
+        print("leadId: $leadId");
+        print("leadType: $leadType");
+        print("=================================================");
         Get.offNamed(
           routefarmerdetailspage,
           arguments: {
+            // =========================
+            // LEAD INFORMATION
+            // =========================
             "leadId": leadId,
-            "leadType": leadType, // tagging / retagging / claim
+            "leadType": leadType,
+
+            // =========================
+            // REPORT DATA
+            // =========================
+            "taggingData": taggingData,
+            "retaggingData": retaggingData,
+            "claimData": claimData,
+            "manualTaggingData": manualTaggingData,
+
+            // =========================
+            // CLAIM DATE / TIME
+            // =========================
+            "dateOfDeath": dateOfDeath,
+            "timeOfDeath": timeOfDeath,
+
+            // =========================
+            // EXISTING
+            // =========================
+            "ischangepage": Get.arguments?["ischangepage"],
           },
         );
-
         return;
       }
 

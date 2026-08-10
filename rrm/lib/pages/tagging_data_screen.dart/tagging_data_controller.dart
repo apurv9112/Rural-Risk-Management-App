@@ -52,6 +52,7 @@ class TaggingdataController extends GetxController {
   bool _fieldsInitialized = false;
   List<Uint8List> imageBytesList = [];
   final ScrollController imageScrollController = ScrollController();
+  Map<String, dynamic> claimData = {};
 
   @override
   void onInit() {
@@ -86,6 +87,9 @@ class TaggingdataController extends GetxController {
       });
     } else {
       data = args["tagging"] ?? args["retagging"] ?? args["claim"];
+    }
+    if (data["leadType"] == "claim") {
+      claimData = Map<String, dynamic>.from(data);
     }
     if (manualtagging == true) {
       loadInsuranceCompanies();

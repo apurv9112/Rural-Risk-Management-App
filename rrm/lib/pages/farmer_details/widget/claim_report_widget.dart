@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rrm/pages/farmer_details/farmer_details_controller.dart';
-import 'package:rrm/pages/farmer_details/widget/report/report_cell.dart';
-import 'package:rrm/pages/farmer_details/widget/report/report_row.dart';
-import 'package:rrm/pages/farmer_details/widget/report/report_title.dart';
 
 class ClaimReportWidget extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -16,6 +13,13 @@ class ClaimReportWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final owner = report["owner"] ?? {};
+
+    final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+
+    // CLAIM FLOW DATA
+    final leadData = controller.claimData;
+
     return Container(
       width: 794,
       constraints: const BoxConstraints(minHeight: 1123),
@@ -23,117 +27,267 @@ class ClaimReportWidget extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          const ReportTitle(title: "CLAIM REPORT"),
+          _title(),
 
-          const ReportRow(title1: "PERA-WET", value1: "DHARMESH PATEL"),
-
-          const ReportRow(
-            title1: "OWNER NAME",
-            value1: "PATEL APURVKUMAR ANANTKUMAR",
+          _singleRow(
+            "PERA-WET",
+            (controller.appController.userName.value ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
           ),
 
-          const ReportRow(
-            title1: "VILLAGE",
-            value1: "GABAT",
-            title2: "TALUKA",
-            value2: "GABAT",
+          _singleRow(
+            "OWNER NAME",
+            (leadData["ownerName"] ?? owner["name"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
           ),
 
-          const ReportRow(
-            title1: "DISTRICT",
-            value1: "ARVALLI",
-            title2: "STATE",
-            value2: "GUJARAT",
+          _doubleRow(
+            "VILLAGE",
+            (leadData["village"] ?? owner["village"] ?? "")
+                .toString()
+                .toUpperCase(),
+            "TALUKA",
+            (leadData["taluko"] ?? owner["taluka"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
           ),
 
-          const ReportRow(title1: "MOBILE NO.", value1: "7568964521"),
-
-          const ReportRow(title1: "BANK", value1: "HDFC ERGO"),
-
-          const ReportRow(title1: "BRANCH", value1: "BAYAD"),
-
-          const ReportRow(title1: "INSURANCE CO.", value1: "ICICI LOMBARD LTD"),
-
-          const ReportRow(title1: "LAN NO.", value1: "123456"),
-
-          const ReportRow(
-            title1: "DEATH DATE",
-            value1: "06-03-2026",
-            title2: "DEATH TIME",
-            value2: "06:50 PM",
+          _doubleRow(
+            "DISTRICT",
+            (leadData["district"] ?? owner["district"] ?? "")
+                .toString()
+                .toUpperCase(),
+            "STATE",
+            (leadData["state"] ?? owner["state"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
           ),
 
-          const ReportRow(
-            title1: "ATTEND DATE",
-            value1: "04-06-2026",
-            title2: "ATTEND TIME",
-            value2: "09:00 AM",
+          _singleRow(
+            "MOBILE NO.",
+            (leadData["mobileNo"] ?? owner["mobile"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
           ),
 
-          const SizedBox(height: 24),
-
-          Row(
-            children: const [
-              Expanded(
-                flex: 3,
-                child: ReportCell(
-                  text: "TAG NO.",
-                  width: 0,
-                  bold: true,
-                  align: TextAlign.center,
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: ReportCell(
-                  text: "SPECIES",
-                  width: 0,
-                  bold: true,
-                  align: TextAlign.center,
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: ReportCell(
-                  text: "SUM INSURED",
-                  width: 0,
-                  bold: true,
-                  align: TextAlign.center,
-                ),
-              ),
-            ],
+          _singleRow(
+            "BANK",
+            (leadData["bankName"] ?? "").toString().toUpperCase(),
+            context,
           ),
 
-          Row(
-            children: const [
-              Expanded(
-                flex: 3,
-                child: ReportCell(
-                  text: "3500012350",
-                  width: 0,
-                  align: TextAlign.center,
-                ),
+          _singleRow(
+            "BRANCH",
+            (leadData["branchOfBank"] ?? "").toString().toUpperCase(),
+            context,
+          ),
+
+          _singleRow(
+            "INSURANCE CO.",
+            (leadData["insuranceCompanyName"] ?? "").toString().toUpperCase(),
+            context,
+          ),
+
+          _singleRow(
+            "LAN NO.",
+            (leadData["loanAccountNo"] ?? owner["lanNumber"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
+          ),
+
+          _doubleRow(
+            "DEATH DATE",
+            _formatDate(controller.dateOfDeath),
+            "DEATH TIME",
+            controller.timeOfDeath,
+            context,
+          ),
+
+          _doubleRow(
+            "ATTEND DATE",
+            _formatDate(controller.reportCreatedAt),
+            "ATTEND TIME",
+            _formatTime(controller.reportCreatedAt),
+            context,
+          ),
+
+          const SizedBox(height: 30),
+
+          Table(
+            border: TableBorder.all(color: Colors.black),
+            columnWidths: const {
+              0: FlexColumnWidth(3),
+              1: FlexColumnWidth(2),
+              2: FlexColumnWidth(2),
+            },
+            children: [
+              TableRow(
+                children: [
+                  _headerCell("TAG NO.", context),
+                  _headerCell("SPECIES", context),
+                  _headerCell("SUM INSURED", context),
+                ],
               ),
-              Expanded(
-                flex: 2,
-                child: ReportCell(
-                  text: "BUFFALO",
-                  width: 0,
-                  align: TextAlign.center,
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: ReportCell(
-                  text: "60,000",
-                  width: 0,
-                  align: TextAlign.center,
-                ),
-              ),
+
+              ...List.generate(cattle.length, (index) {
+                final item = cattle[index];
+
+                return TableRow(
+                  children: [
+                    _cell(item["tagNo"] ?? "", context),
+                    _cell(item["species"] ?? "", context),
+                    _cell("${item["sumInsured"] ?? ""}", context),
+                  ],
+                );
+              }),
             ],
           ),
         ],
       ),
     );
+  }
+
+  Widget _title() {
+    return Container(
+      height: 70,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(border: Border.all()),
+      child: const Text(
+        "CLAIM REPORT",
+        style: TextStyle(
+          color: Color(0xff93256d),
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _singleRow(String label, String value, BuildContext context) {
+    return Table(
+      border: TableBorder.all(),
+      children: [
+        TableRow(
+          children: [
+            _cell(label, context, isBold: false, isLeft: true),
+            _cell(value, context, isLeft: true, isBold: true),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _doubleRow(
+    String label1,
+    String value1,
+    String label2,
+    String value2,
+    BuildContext context,
+  ) {
+    return Table(
+      border: TableBorder.all(),
+      columnWidths: const {
+        0: FlexColumnWidth(2),
+        1: FlexColumnWidth(3),
+        2: FlexColumnWidth(2),
+        3: FlexColumnWidth(3),
+      },
+      children: [
+        TableRow(
+          children: [
+            _cell(label1, context, isBold: false, isLeft: true),
+            _cell(value1, context, isLeft: true, isBold: true),
+            _cell(label2, context, isBold: false, isLeft: true),
+            _cell(value2, context, isLeft: true, isBold: true),
+          ],
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return "";
+    }
+
+    try {
+      final date = DateTime.parse(value.toString());
+
+      final day = date.day.toString().padLeft(2, '0');
+      final month = date.month.toString().padLeft(2, '0');
+      final year = date.year.toString();
+
+      return "$day-$month-$year";
+    } catch (e) {
+      return value.toString();
+    }
+  }
+
+  Widget _headerCell(String value, BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      alignment: Alignment.center,
+      constraints: const BoxConstraints(minHeight: 55),
+      child: Text(
+        value,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+      ),
+    );
+  }
+
+  Widget _cell(
+    String value,
+    BuildContext context, {
+    bool isBold = false,
+    bool isLeft = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      alignment: isLeft ? Alignment.centerLeft : Alignment.center,
+      constraints: const BoxConstraints(minHeight: 50),
+      child: Text(
+        value,
+        textAlign: isLeft ? TextAlign.left : TextAlign.center,
+        softWrap: true,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  String _formatTime(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return "";
+    }
+
+    try {
+      final date = DateTime.parse(value.toString()).toLocal();
+
+      int hour = date.hour;
+      final minute = date.minute.toString().padLeft(2, '0');
+
+      final period = hour >= 12 ? "PM" : "AM";
+
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour > 12) {
+        hour -= 12;
+      }
+
+      return "${hour.toString().padLeft(2, '0')}:$minute $period";
+    } catch (e) {
+      return "";
+    }
   }
 }

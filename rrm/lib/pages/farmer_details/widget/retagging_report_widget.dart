@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rrm/pages/farmer_details/farmer_details_controller.dart';
+import 'package:rrm/utils/responsive.dart';
 
 class RetaggingReportWidget extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -14,80 +15,125 @@ class RetaggingReportWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final owner = report["owner"] ?? {};
-    final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+
+    // final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+    final leadData = controller.retaggingData;
+    final retagging = leadData;
+
+    debugPrint("========== RETAGGING UI DATA ==========");
+    debugPrint("LEAD DATA : ${controller.taggingData}");
+    debugPrint("REPORT DATA : ${controller.report}");
+    debugPrint("========================================");
 
     return Container(
-      width: 794,
-      constraints: const BoxConstraints(minHeight: 1123),
+      width: wp(129),
+      constraints: BoxConstraints(minHeight: hp(100)),
       color: Colors.white,
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          _title(),
+          _title(context),
 
-          _singleRow("PERA-WET", controller.appController.userName.value),
+          _singleRow(
+            "PERA-WET",
+            (controller.appController.userName.value ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
+          ),
 
-          _singleRow("OWNER NAME", owner["name"] ?? ""),
+          _singleRow(
+            "OWNER NAME",
+            (leadData["ownerName"] ?? owner["name"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
+          ),
 
           _doubleRow(
             "VILLAGE",
-            owner["village"] ?? "",
+            (leadData["village"] ?? owner["village"] ?? "")
+                .toString()
+                .toUpperCase(),
             "TALUKA",
-            owner["village"] ?? "",
+            (leadData["taluko"] ?? "").toString().toUpperCase(),
+            context,
           ),
 
           _doubleRow(
             "DISTRICT",
-            owner["district"] ?? "",
+            (leadData["district"] ?? "").toString().toUpperCase(),
             "STATE",
-            owner["state"] ?? "",
+            (leadData["state"] ?? "").toString().toUpperCase(),
+            context,
           ),
 
-          _singleRow("BANK", "HDFC ERGO"),
+          _singleRow(
+            "BANK",
+            (leadData["bankName"] ?? "").toString().toUpperCase(),
+            context,
+          ),
 
-          _singleRow("BRANCH", "BAYAD"),
+          _singleRow(
+            "BRANCH",
+            (leadData["branchOfBank"] ?? "").toString().toUpperCase(),
+            context,
+          ),
 
-          _singleRow("INSURANCE CO.", "ICICI LOMBARD LTD"),
+          _singleRow(
+            "INSURANCE CO.",
+            (leadData["insuranceCompanyName"] ?? "").toString().toUpperCase(),
+            context,
+          ),
 
-          _singleRow("LAN NO.", owner["lanNumber"] ?? ""),
+          _singleRow(
+            "LAN NO.",
+            (leadData["loanAccountNo"] ?? owner["lanNumber"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
+          ),
 
-          _singleRow("MOBILE NO.", owner["mobile"] ?? ""),
+          _singleRow(
+            "MOBILE NO.",
+            (leadData["mobileNo"] ?? owner["mobile"] ?? "")
+                .toString()
+                .toUpperCase(),
+            context,
+          ),
 
-          const SizedBox(height: 30),
+          SizedBox(height: hp(2)),
 
           Table(
-            border: TableBorder.all(),
+            border: TableBorder.all(color: Colors.black),
+
             columnWidths: const {
               0: FlexColumnWidth(2),
               1: FlexColumnWidth(3),
-              2: FlexColumnWidth(2),
+              2: FlexColumnWidth(3),
               3: FlexColumnWidth(3),
-              4: FlexColumnWidth(3),
+              4: FlexColumnWidth(2),
             },
             children: [
               TableRow(
                 children: [
-                  _header("TAGGING DATE"),
-                  _header("OLD TAG NO."),
-                  _header("RE-TAGGING DATE"),
-                  _header("NEW TAG NO."),
-                  _header("SPECIES"),
+                  _headerCell("TAGGING DATE", context),
+                  _headerCell("OLD TAG NO.", context),
+                  _headerCell("RE-TAGGING DATE", context),
+                  _headerCell("NEW TAG NO.", context),
+                  _headerCell("SPECIES", context),
                 ],
               ),
 
-              ...List.generate(cattle.length, (index) {
-                final item = cattle[index];
-
-                return TableRow(
-                  children: [
-                    _cell("10-08-2025"),
-                    _cell(item["tagNo"] ?? ""),
-                    _cell("01-08-2026"),
-                    _cell(item["tagNo"] ?? ""),
-                    _cell(item["species"] ?? ""),
-                  ],
-                );
-              }),
+              TableRow(
+                children: [
+                  _cell(_formatDate(retagging["createdAt"]), context),
+                  _cell(retagging["oldTagNumber"] ?? "", context),
+                  _cell(_formatDate(retagging["dateOfReTagging"]), context),
+                  _cell(retagging["newTagNumber"] ?? "", context),
+                  _cell(retagging["species"] ?? "", context),
+                ],
+              ),
             ],
           ),
         ],
@@ -95,27 +141,32 @@ class RetaggingReportWidget extends StatelessWidget {
     );
   }
 
-  Widget _title() {
+  Widget _title(BuildContext context) {
     return Container(
-      height: 70,
+      height: hp(5),
       alignment: Alignment.center,
       decoration: BoxDecoration(border: Border.all()),
-      child: const Text(
+      child: Text(
         "RE-TAGGING REPORT",
         style: TextStyle(
           color: Color(0xff93256d),
-          fontSize: 30,
+          fontSize: dp(context, 24),
           fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
-  Widget _singleRow(String label, String value) {
+  Widget _singleRow(String label, String value, BuildContext context) {
     return Table(
       border: TableBorder.all(),
       children: [
-        TableRow(children: [_cell(label, isBold: false), _cell(value)]),
+        TableRow(
+          children: [
+            _cell(label, context, isBold: false, isLeft: true),
+            _cell(value, context, isLeft: true),
+          ],
+        ),
       ],
     );
   }
@@ -125,40 +176,87 @@ class RetaggingReportWidget extends StatelessWidget {
     String value1,
     String label2,
     String value2,
+    BuildContext context,
   ) {
     return Table(
       border: TableBorder.all(),
       children: [
         TableRow(
           children: [
-            _cell(label1, isBold: false),
-            _cell(value1),
-            _cell(label2, isBold: false),
-            _cell(value2),
+            _cell(label1, context, isBold: false, isLeft: true),
+            _cell(value1, context, isLeft: true),
+            _cell(label2, context, isBold: false, isLeft: true),
+            _cell(value2, context, isLeft: true),
           ],
         ),
       ],
     );
   }
 
-  Widget _header(String value) {
+  String _formatDate(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return "";
+    }
+
+    try {
+      final date = DateTime.parse(value.toString());
+
+      final day = date.day.toString().padLeft(2, '0');
+      final month = date.month.toString().padLeft(2, '0');
+      final year = date.year.toString();
+
+      return "$day-$month-$year";
+    } catch (e) {
+      return value.toString();
+    }
+  }
+
+  Widget _headerCell(String value, BuildContext context) {
     return Container(
-      height: 60,
+      height: hp(5),
+      padding: const EdgeInsets.all(8),
       alignment: Alignment.center,
-      child: Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+      constraints: BoxConstraints(minHeight: hp(5)),
+      child: Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: dp(context, 12),
+        ),
+      ),
     );
   }
 
-  Widget _cell(String value, {bool isBold = true}) {
+  Widget _cell(
+    String value,
+    BuildContext context, {
+    bool isBold = false,
+    bool isLeft = false,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(10),
-      constraints: const BoxConstraints(minHeight: 50),
-      child: Text(
-        value,
-        style: TextStyle(
-          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
+      padding: const EdgeInsets.all(8),
+      // alignment: Alignment.center,
+      constraints: BoxConstraints(minHeight: hp(5)),
+      child: isLeft
+          ? Text(
+              value,
+              softWrap: true,
+              style: TextStyle(
+                fontSize: dp(context, 10),
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              ),
+            )
+          : Center(
+              child: Text(
+                value,
+                softWrap: true,
+                style: TextStyle(
+                  fontSize: dp(context, 10),
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
     );
   }
 }
