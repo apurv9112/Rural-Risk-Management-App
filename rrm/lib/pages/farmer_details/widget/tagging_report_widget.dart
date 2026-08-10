@@ -30,7 +30,7 @@ class TaggingReportWidget extends StatelessWidget {
           _title(context),
 
           _row(
-            "PERA-WET",
+            "PARA-VET",
             (controller.appController.userName.value ?? "")
                 .toString()
                 .toUpperCase(),

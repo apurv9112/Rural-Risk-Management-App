@@ -30,7 +30,7 @@ class ClaimReportWidget extends StatelessWidget {
           _title(),
 
           _singleRow(
-            "PERA-WET",
+            "PARA-VET",
             (controller.appController.userName.value ?? "")
                 .toString()
                 .toUpperCase(),

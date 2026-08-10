@@ -142,10 +142,13 @@ class FarmerDetailsController extends GetxController {
               ),
 
               _pdfDoubleRow(
-                "PERA-WET",
+                "PARA-VET",
                 (appController.userName.value ?? "").toString().toUpperCase(),
                 type.toLowerCase() == "tagging" ? "TAGGING DATE" : "DATE",
-                leadData["createdAt"]?.toString().split("T").first ?? "",
+                _formatPdfDate(
+                      leadData["createdAt"],
+                    )?.toString().split("T").first ??
+                    "",
               ),
 
               _pdfSingleRow(
@@ -245,7 +248,7 @@ class FarmerDetailsController extends GetxController {
       final directory = await getTemporaryDirectory();
 
       final file = File(
-        "${directory.path}/Tagging Report - PERA-WET - ${appController.userName.value}.pdf",
+        "${directory.path}/Tagging Report - PARA-VET - ${appController.userName.value}.pdf",
       );
 
       final pdfBytes = await pdf.save();
@@ -367,9 +370,9 @@ class FarmerDetailsController extends GetxController {
                   ),
                 ),
 
-                // PERA-WET
+                // PARA-VET
                 _pdfSingleRow(
-                  "PERA-WET",
+                  "PARA-VET",
                   (appController.userName.value ?? "").toString().toUpperCase(),
                 ),
 
@@ -484,7 +487,7 @@ class FarmerDetailsController extends GetxController {
       final directory = await getTemporaryDirectory();
 
       final file = File(
-        "${directory.path}/Re-Tagging Report - PERA-WET - ${appController.userName.value}.pdf",
+        "${directory.path}/Re-Tagging Report - PARA-VET - ${appController.userName.value}.pdf",
       );
 
       await file.writeAsBytes(await pdf.save());
@@ -591,7 +594,7 @@ class FarmerDetailsController extends GetxController {
                 // PERA-WET
                 // =========================
                 _pdfSingleRow(
-                  "PERA-WET",
+                  "PARA-VET",
                   (appController.userName.value ?? "").toString().toUpperCase(),
                 ),
 
@@ -759,7 +762,7 @@ class FarmerDetailsController extends GetxController {
       final directory = await getTemporaryDirectory();
 
       final file = File(
-        "${directory.path}/Claim Report - PERA-WET - ${appController.userName.value}.pdf",
+        "${directory.path}/Claim Report - PARA-VET - ${appController.userName.value}.pdf",
       );
 
       await file.writeAsBytes(await pdf.save());

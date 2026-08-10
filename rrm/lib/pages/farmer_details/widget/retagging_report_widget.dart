@@ -35,7 +35,7 @@ class RetaggingReportWidget extends StatelessWidget {
           _title(context),
 
           _singleRow(
-            "PERA-WET",
+            "PARA-VET",
             (controller.appController.userName.value ?? "")
                 .toString()
                 .toUpperCase(),
