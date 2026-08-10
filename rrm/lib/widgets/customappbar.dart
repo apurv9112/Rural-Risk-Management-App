@@ -8,6 +8,7 @@ class CustomAppBarAction extends StatelessWidget
   final IconData? iconright;
   final String title;
   final Function()? lefticononTap;
+  final Function()? righticononTap;
   final bool? istexttitle = false;
 
   const CustomAppBarAction({
@@ -16,6 +17,7 @@ class CustomAppBarAction extends StatelessWidget
     required this.title,
     this.iconright,
     this.lefticononTap,
+    this.righticononTap,
   });
 
   @override
@@ -52,7 +54,10 @@ class CustomAppBarAction extends StatelessWidget
             ),
           ),
           if (iconright != null)
-            Icon(iconright, color: AppColors.WHITE, size: dp(context, 30))
+            InkWell(
+              onTap: righticononTap,
+              child: Icon(iconright, color: AppColors.WHITE, size: dp(context, 30)),
+            )
           else
             SizedBox(width: wp(5)),
         ],

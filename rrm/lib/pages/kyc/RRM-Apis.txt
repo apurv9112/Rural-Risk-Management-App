@@ -1,0 +1,87 @@
+RRM Apis 
+
+1. Loging and genrate device id/ or check device id /only ID should be have the with creds
+    1. POST /auth/login
+    2. POST /auth/refresh
+    3. POST /devices/register
+    4. GET /devices/{deviceId}
+
+
+2. tagging >  fieldworker see the assigned leads and cattel data / leads see only after search 
+   5. POST /tagging/search?
+   6. POST /tagging/manually/
+
+3. After clicking the any leds
+   7. GET /tagging/:taggingID
+   8. PATCH /tagging/cancellead/:taggingID   // update status
+
+   
+4. After clicking next
+    step -1 Kyc update api
+        9.  POST /owner/kyc/documents/:ownerId 
+    step -2 updatelead api
+        10. PATCH /tagging/{taggingId} //update lead data
+
+
+6. retagging >  fieldworker see the assigned leads and cattel data 
+    11. GET /leads?type=retagging
+7. After clicking the any leds
+   12. GET /retagging/:retaggingID
+   13. PATCH /retagging/cancellead/:retaggingID   // update status
+   
+8. After clicking next
+    step -1 Kyc update api
+        14.  POST /owner/kyc/documents/:ownerId 
+    step -2 updatelead api
+        15. PATCH /retagging/{retaggingId} //update lead data
+
+
+9. claim >  fieldworker see the assigned leads and cattel data / leads see only after search 
+    16. POST /leads?type=claim
+
+9. After clicking the any leds
+    17. GET /claim/:claimID
+    18. PATCH /claim/cancellead/:claimID   // update status
+   
+10. After clicking next
+    step -1 Kyc update api
+        19.  POST /owner/kyc/documents/:ownerId 
+    step -2 updatelead api
+        20. PATCH /claim/{claimId} //update lead data
+----------------------------------------------------------------------
+
+New APIs
+
+==>sidebar menu 
+
+11. Tagging Data > get all completed taggings leads by fieldworker 
+    21. GET /taggings/?status=attended
+    22. search tagging leads
+        GET /tagging/search?searchString=value
+12. clicking on any lead 
+    23. GET /tagging/:taggingID
+13. download helth certificate
+    24. GET /tagging/health-certificate/:taggingID
+14. download all helth certificate
+    25. GET /tagging/health-certificate/all
+15. Retagging Data > get all completed retaggings leads by fieldworker
+    26. GET /retagging/?status=attended
+    27. search retagging leads
+        GET /retagging/search?searchString=value
+16. clicking on any lead 
+    28. GET /retagging/:retaggingID
+17. download retagging certificate
+    29. GET /retagging/retagging-certificate/:retag gingID
+18. download all retagging certificate
+    30. GET /retagging/retagging-certificate/all
+
+19. Claim Data > get all completed claim leads by fieldworker
+    31. GET /claim/?status=attended
+    32. search claim leads
+        GET /claim/search?searchString=value
+20. clicking on any lead 
+    33. GET /claim/:claimID
+21. download claim certificate
+    34. GET /claim/claim-certificate/:claimID
+22. download all claim certificate
+    35. GET /claim/claim-certificate/all

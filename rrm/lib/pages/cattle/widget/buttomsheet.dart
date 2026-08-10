@@ -20,43 +20,45 @@ buttomsheet({
     ),
     context: context,
     builder: (BuildContext context) {
-      return Padding(
-        padding: EdgeInsets.only(top: hp(2)),
-        child: SizedBox(
-          height: hp(15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Customcontainer(
-                onTap: () {
-                  isvideo != null
-                      ? controller.pickVideoFromCamera()
-                      : controller.pickFromCamera();
-                  isvideo != null
-                      ? controller.isvideo = isvideo
-                      : controller.isimage = isimage;
-                  Get.back();
-                },
-                context: context,
-                text: "Camera",
-                icon: Icons.camera,
-              ),
-              SizedBox(width: wp(5)),
-              Customcontainer(
-                onTap: () {
-                  isvideo != null
-                      ? controller.pickVideoFromGallery()
-                      : controller.picFromGallery();
-                  isvideo != null
-                      ? controller.isvideo = isvideo
-                      : controller.isimage = isimage;
-                  Get.back();
-                },
-                context: context,
-                text: "Gallery",
-                icon: Icons.image,
-              ),
-            ],
+      return SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(top: hp(2)),
+          child: SizedBox(
+            height: hp(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Customcontainer(
+                  onTap: () {
+                    isvideo != null
+                        ? controller.pickVideoFromCamera()
+                        : controller.pickFromCamera();
+                    isvideo != null
+                        ? controller.isvideo = isvideo
+                        : controller.isimage = isimage;
+                    Get.back();
+                  },
+                  context: context,
+                  text: "Camera",
+                  icon: Icons.camera,
+                ),
+                SizedBox(width: wp(5)),
+                Customcontainer(
+                  onTap: () {
+                    isvideo != null
+                        ? controller.pickVideoFromGallery()
+                        : controller.picFromGallery();
+                    isvideo != null
+                        ? controller.isvideo = isvideo
+                        : controller.isimage = isimage;
+                    Get.back();
+                  },
+                  context: context,
+                  text: "Gallery",
+                  icon: Icons.image,
+                ),
+              ],
+            ),
           ),
         ),
       );

@@ -12,6 +12,8 @@ import 'package:rrm/pages/home/home_page.dart';
 import 'package:rrm/pages/kyc/kyc_binding.dart';
 import 'package:rrm/pages/login/login_binding.dart';
 import 'package:rrm/pages/login/login_page.dart';
+import 'package:rrm/pages/signature/signature_binding.dart';
+import 'package:rrm/pages/signature/signature_page.dart';
 import 'package:rrm/pages/splash/splash_binding.dart';
 import 'package:rrm/pages/splash/splash_page.dart';
 import 'package:rrm/pages/kyc/kyc_screen.dart';
@@ -75,6 +77,11 @@ class CommonRoutes {
       name: routefarmerdetailspage,
       page: () => const FarmerDetailsScreen(),
       binding: FarmerDetailsBinding(),
+    ),
+    GetPage(
+      name: routesignaturepage,
+      page: () => SignaturePage(),
+      binding: SignatureBinding(),
     ),
   ];
 }

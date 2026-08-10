@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:rrm/utils/colors.dart';
 import 'package:rrm/utils/responsive.dart';
 import 'package:rrm/widgets/customcontainer.dart';
@@ -33,20 +34,32 @@ iscattlevalue({required BuildContext context, required controller}) {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  flex: 2,
+                SizedBox(
+                  width: wp(44.5),
                   child: CustomTextField(
+                    cursorColor: AppColors.PRIMARY_COLOR,
+                    inputtextcolor: AppColors.PRIMARY_COLOR,
+                    keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
-                    controller: controller.buffalocountcontroller,
+                    controller: controller.sumInsuredController,
                     backgroundColor: AppColors.WHITE,
                   ),
                 ),
                 SizedBox(width: wp(3)),
-                Expanded(
-                  flex: 2,
+                SizedBox(
+                  width: wp(44.5),
                   child: CustomTextField(
+                    cursorColor: AppColors.PRIMARY_COLOR,
+                    inputtextcolor: AppColors.PRIMARY_COLOR,
+                    keyboardType: TextInputType.number,
                     readOnly: controller.buffaloreadOnly,
-                    controller: controller.buffalomoneycontroller,
+                    controller: controller.marketValueController,
+                    focusNode: controller.marketValueFocusNode,
+                    validator: controller.isSuccessfullyTagging
+                        ? MultiValidator([
+                            RequiredValidator(errorText: "Required"),
+                          ])
+                        : null,
                     backgroundColor: AppColors.WHITE,
                   ),
                 ),

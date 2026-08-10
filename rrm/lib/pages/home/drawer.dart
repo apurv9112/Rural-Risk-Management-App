@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rrm/controller.dart';
 import 'package:rrm/pages/home/home_page.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
 import 'package:rrm/utils/colors.dart';
@@ -94,6 +95,7 @@ customdrawer({required BuildContext context}) {
 }
 
 void showDialoglogout({required BuildContext context}) {
+  final AppController appController = Get.find();
   showDialog(
     context: context,
     builder: (_) {
@@ -118,6 +120,7 @@ void showDialoglogout({required BuildContext context}) {
             children: [
               Customcontainer(
                 onTap: () {
+                  appController.clearToken();
                   Get.offAllNamed('/loginpage');
                 },
                 context: context,

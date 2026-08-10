@@ -19,35 +19,37 @@ custombuttomsheet({
     ),
     context: context,
     builder: (BuildContext context) {
-      return Padding(
-        padding: EdgeInsets.only(top: hp(2)),
-        child: SizedBox(
-          height: hp(15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Customcontainer(
-                onTap: () {
-                  controller.pickFromCamera();
-                  controller.isimage = isimage;
-                  Get.back();
-                },
-                context: context,
-                text: "Camera",
-                icon: Icons.camera,
-              ),
-              SizedBox(width: wp(5)),
-              Customcontainer(
-                onTap: () {
-                  controller.pickMultipleFromGallery();
-                  controller.isimage = isimage;
-                  Get.back();
-                },
-                context: context,
-                text: "Gallery",
-                icon: Icons.image,
-              ),
-            ],
+      return SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(top: hp(2)),
+          child: SizedBox(
+            height: hp(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Customcontainer(
+                  onTap: () {
+                    controller.pickFromCamera();
+                    controller.isimage = isimage;
+                    Get.back();
+                  },
+                  context: context,
+                  text: "Camera",
+                  icon: Icons.camera,
+                ),
+                SizedBox(width: wp(5)),
+                Customcontainer(
+                  onTap: () {
+                    controller.pickFromGallery();
+                    controller.isimage = isimage;
+                    Get.back();
+                  },
+                  context: context,
+                  text: "Gallery",
+                  icon: Icons.image,
+                ),
+              ],
+            ),
           ),
         ),
       );

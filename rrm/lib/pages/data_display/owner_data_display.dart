@@ -49,47 +49,56 @@ class OwnerDatadisplaypage extends StatelessWidget {
                     datarow(
                       context: context,
                       staticdata: "Name - ",
-                      listdata: dataList["name"]!,
+                      listdata: (dataList["nameOfBeneficiary"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Mobile - ",
-                      listdata: dataList["mobile"]!,
+                      listdata: (dataList["phoneNo"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Village - ",
-                      listdata: dataList["village"]!,
+                      listdata: (dataList["village"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Taluko - ",
-                      listdata: dataList["taluko"]!,
+                      listdata: (dataList["taluka"] ?? "").toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Dist - ",
-                      listdata: dataList["dist"]!,
+                      listdata: (dataList["district"] ?? dataList["dist"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Bank - ",
-                      listdata: dataList["bank"]!,
+                      listdata: (dataList["insuredNameFinancingBank"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Branch - ",
-                      listdata: dataList["branch"]!,
+                      listdata: (dataList["proposalLoanAccountNo"] ?? "")
+                          .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Loan A/C No - ",
-                      listdata: dataList["loan_a/c_no"]!,
+                      listdata:
+                          (dataList["loanAccountNo"] ??
+                                  dataList["loan_a/c_no"] ??
+                                  "")
+                              .toString(),
                     ),
                     datarow(
                       context: context,
                       staticdata: "Insurance - ",
-                      listdata: dataList["Insurance"]!,
+                      listdata: (dataList["insuranceCompanyNameAddress"] ?? "")
+                          .toString(),
                     ),
 
                     Row(
@@ -106,7 +115,7 @@ class OwnerDatadisplaypage extends StatelessWidget {
                         SizedBox(
                           width: wp(60),
                           child: Text(
-                            dataList["address"]!,
+                            (dataList["address"] ?? "").toString(),
                             style: TextStyle(
                               fontSize: dp(context, 18),
                               fontWeight: FontWeight.w300,
@@ -154,133 +163,83 @@ class OwnerDatadisplaypage extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: hp(1)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(width: wp(1)),
-                        SizedBox(
-                          width: wp(5),
-                          child: Text(
-                            "1",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(19),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: (dataList["cattle"] ?? []).length,
+                      itemBuilder: (context, index) {
+                        final cattle = dataList["cattle"][index];
 
-                          child: Text(
-                            "986521\n478945",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: hp(1)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(width: wp(1)),
+                              SizedBox(
+                                width: wp(5),
+                                child: Text(
+                                  "${index + 1}",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(5)),
+                              SizedBox(
+                                width: wp(19),
+                                child: Text(
+                                  (cattle["tagNo"] ?? "").toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(5)),
+                              SizedBox(
+                                width: wp(15),
+                                child: Text(
+                                  (cattle["animalSpecies"] ?? "").toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(4)),
+                              SizedBox(
+                                width: wp(18),
+                                child: Text(
+                                  (cattle["sumInsured"] ?? "").toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(width: wp(5)),
+                              GestureDetector(
+                                onTap: () {
+                                  controller.downloadHealthCertificate(
+                                    (cattle["tagNo"] ?? "").toString(),
+                                  );
+                                },
+                                child: Image.asset(
+                                  "assets/images/download.png",
+                                  scale: dp(context, 16),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(15),
-                          child: Text(
-                            "Cow",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(4)),
-                        SizedBox(
-                          width: wp(18),
-                          child: Text(
-                            "45000",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        Image.asset(
-                          "assets/images/download.png",
-                          scale: dp(context, 16),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: hp(1)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(width: wp(1)),
-                        SizedBox(
-                          width: wp(5),
-                          child: Text(
-                            "2",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(19),
-                          child: Text(
-                            "412587\n986325",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        SizedBox(
-                          width: wp(15),
-                          child: Text(
-                            "Buffalo",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(4)),
-                        SizedBox(
-                          width: wp(18),
-                          child: Text(
-                            "50000",
-                            style: TextStyle(
-                              fontSize: dp(context, 18),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(width: wp(5)),
-                        Image.asset(
-                          "assets/images/download.png",
-                          scale: dp(context, 16),
-                        ),
-                      ],
+                        );
+                      },
                     ),
 
-                    SizedBox(height: hp(15)),
                     customcontainer(
                       padding: EdgeInsets.symmetric(
                         horizontal: wp(0),
                         vertical: hp(1),
                       ),
                       margin: EdgeInsets.symmetric(horizontal: wp(0)),
-                      onTap: () {},
+                      onTap: () {
+                        controller.downloadAllCertificates(
+                          (dataList["id"] ??
+                                  dataList["_id"] ??
+                                  dataList["taggingId"] ??
+                                  "")
+                              .toString(),
+                        );
+                      },
                       logo: 'assets/images/download.png',
                       imgheight: hp(5),
 
@@ -307,6 +266,7 @@ datarow({
 }) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
         staticdata,
@@ -315,15 +275,15 @@ datarow({
           fontWeight: FontWeight.w500,
         ),
       ),
-      Text(
-        listdata,
-        style: TextStyle(
-          fontSize: dp(context, 18),
-          fontWeight: FontWeight.w300,
+      Expanded(
+        child: Text(
+          listdata,
+          style: TextStyle(
+            fontSize: dp(context, 18),
+            fontWeight: FontWeight.w300,
+          ),
         ),
       ),
     ],
   );
 }
-
-// https://chatgpt.com/share/69241d76-b204-8002-93a8-18072ecf9c9d for line divide code

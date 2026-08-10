@@ -32,6 +32,7 @@ class CustomTextField extends StatelessWidget {
   final Color? inputtextcolor;
   final Widget? suffixIcon;
   final TextStyle? hintStyle;
+  final Color? cursorColor;
 
   const CustomTextField({
     super.key,
@@ -62,6 +63,7 @@ class CustomTextField extends StatelessWidget {
     this.inputtextcolor,
     this.suffixIcon,
     this.hintStyle, // <-- NEW
+    this.cursorColor,
   });
 
   @override
@@ -69,7 +71,7 @@ class CustomTextField extends StatelessWidget {
     return TextFormField(
       textAlignVertical: TextAlignVertical.center,
       textInputAction: textInputAction,
-      cursorColor: AppColors.WHITE,
+      cursorColor: cursorColor ?? AppColors.WHITE,
       keyboardType: keyboardType ?? TextInputType.text,
       obscureText: obscureText ?? false,
       textCapitalization: textCapitalization ?? TextCapitalization.none,

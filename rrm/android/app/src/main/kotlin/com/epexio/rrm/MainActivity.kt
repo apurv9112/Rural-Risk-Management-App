@@ -1,4 +1,4 @@
-package com.example.rrm
+package com.epexio.rrm
 
 import io.flutter.embedding.android.FlutterActivity
 

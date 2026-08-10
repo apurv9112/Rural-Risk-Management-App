@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:rrm/controller.dart';
 import 'package:rrm/dependency_injection.dart';
 import 'package:rrm/device_controller.dart';
 import 'package:rrm/routes/app_routes.dart';
 import 'package:rrm/routes/common/common_app_pages.dart';
-import 'package:rrm/utils/validation_utils.dart';
-import 'package:rrm/widgets/snackbar_widget.dart';
-import 'controller.dart';
-import 'utils/colors.dart';
-// ignore: depend_on_referenced_packages
-import 'package:path_provider/path_provider.dart';
+import 'package:rrm/utils/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await getTemporaryDirectory();
-  getIt.registerLazySingleton<FormValidations>(() => FormValidations());
-  getIt.registerLazySingleton<SnackbarHelper>(() => SnackbarHelper());
-  Get.put(DeviceController());
-  runApp(MyApp());
+  await GetStorage.init();
+
+  initDependencies();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -26,26 +23,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(AppController());
-
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+
+      initialBinding: BindingsBuilder(() {
+        Get.put(AppController());
+        Get.put(DeviceController());
+      }),
+
       builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(1.0), // 👈 App text size fixed
-          ),
+          data: mediaQuery.copyWith(textScaler: const TextScaler.linear(1.0)),
           child: child!,
         );
       },
+
       theme: ThemeData(
         primarySwatch: AppColors.WHITE,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+
       initialRoute: routeRootpage,
-      // initialRoute: routehomepage,
-      // initialRoute: routefarmerdetailspage,
-      // initialRoute: routecattlepage,
       getPages: AppRoutes.routes,
     );
   }
