@@ -16,7 +16,14 @@ class TaggingReportWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final owner = report["owner"] ?? {};
 
-    final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+    // All cattle from API/report
+    final allCattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
+
+    // Only cattle having valid Tag Number
+    final cattle = allCattle.where((item) {
+      final tagNo = item["tagNo"]?.toString().trim() ?? "";
+      return tagNo.isNotEmpty;
+    }).toList();
 
     final leadData = controller.taggingData;
 
@@ -31,9 +38,7 @@ class TaggingReportWidget extends StatelessWidget {
 
           _row(
             "PARA-VET",
-            (controller.appController.userName.value ?? "")
-                .toString()
-                .toUpperCase(),
+            controller.appController.userName.value.toString().toUpperCase(),
             "TAGGING DATE",
             _formatDate(leadData["createdAt"]),
             context,
@@ -89,7 +94,7 @@ class TaggingReportWidget extends StatelessWidget {
                 .toString()
                 .toUpperCase(),
             "TOTAL CATTLE",
-            "${report["totalCattle"] ?? 0}",
+            "${cattle.length}",
             context,
           ),
 
@@ -119,8 +124,8 @@ class TaggingReportWidget extends StatelessWidget {
                 return TableRow(
                   children: [
                     _cell("${index + 1}", context),
-                    _cell(item["tagNo"] ?? "", context),
-                    _cell(item["species"] ?? "", context),
+                    _cell(item["tagNo"]?.toString() ?? "", context),
+                    _cell(item["species"]?.toString() ?? "", context),
                     _cell("${item["sumInsured"] ?? ""}", context),
                   ],
                 );
@@ -140,7 +145,7 @@ class TaggingReportWidget extends StatelessWidget {
       child: Text(
         "TAGGING REPORT",
         style: TextStyle(
-          color: Color(0xff93256d),
+          color: const Color(0xff93256d),
           fontSize: dp(context, 24),
           fontWeight: FontWeight.bold,
         ),
@@ -212,7 +217,7 @@ class TaggingReportWidget extends StatelessWidget {
     bool isLeft = false,
   }) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       alignment: Alignment.centerLeft,
       constraints: BoxConstraints(minHeight: hp(5)),
       child: isLeft

@@ -37,7 +37,6 @@ class CattleController extends GetxController {
   int totalCattleCount = 1;
   int completedCattleCount = 0;
   int currentCattleIndex = 1;
-
   List<Map<String, dynamic>> cattleSequence = [];
   String customerName = "";
   Map<String, dynamic> taggingData = {};
@@ -1036,6 +1035,8 @@ class CattleController extends GetxController {
 
         "fullCattleVideo": videopath2 != null ? File(videopath2!) : "",
 
+        "cancelReason": selectedspeciesnotavailable ?? "",
+
         // ================= PDF =================
         "conversionPdf": "",
         // ================= OTHER IMAGES =================
@@ -1049,11 +1050,6 @@ class CattleController extends GetxController {
         "other-4": selectedOther3.value ?? "",
 
         // ================= GALLERY =================
-        // "extra": [
-        //   ...extraPhotos,
-        //   if (extraVideo1 != null) extraVideo1!,
-        //   if (extraVideo2 != null) extraVideo2!,
-        // ],
         "extraPhotos": extraPhotos.toList(),
 
         "extraVideos": [
@@ -1122,23 +1118,6 @@ class CattleController extends GetxController {
       } else {
         showSnackBar("All cattle completed.", SNACK.SUCCESS);
         final responseJson = jsonDecode(responseBody);
-        // Get.offNamed(
-        //   routesignaturepage,
-        //   arguments: {
-        //     "tagging": data,
-        //     "ischangepage": ischangepage,
-        //     "retagging": retagging,
-
-        //     "leadId": taggingId,
-        //     "leadType": leadType,
-
-        //     "folderId": responseJson["data"]["googleDriveFolderId"],
-
-        //     "customerName": customerName,
-
-        //     "tagNo": tagnumbercontroller.text.trim(),
-        //   },
-        // );
 
         print("========== CATTLE → SIGNATURE ==========");
         print("taggingData: $taggingData");

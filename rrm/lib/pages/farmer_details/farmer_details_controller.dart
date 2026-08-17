@@ -110,10 +110,14 @@ class FarmerDetailsController extends GetxController {
       final pdf = pw.Document();
 
       final owner = report["owner"] ?? {};
+      final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? [])
+          .where((item) {
+            final tagNo = item["tagNo"]?.toString().trim() ?? "";
+            return tagNo.isNotEmpty;
+          })
+          .toList();
 
-      final cattle = List<Map<String, dynamic>>.from(report["cattle"] ?? []);
       final leadData = taggingData;
-
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
@@ -204,7 +208,7 @@ class FarmerDetailsController extends GetxController {
                     .toString()
                     .toUpperCase(),
                 "TOTAL CATTLE",
-                "${report["totalCattle"] ?? 0}",
+                "${cattle.length}",
               ),
 
               pw.SizedBox(height: 15),
