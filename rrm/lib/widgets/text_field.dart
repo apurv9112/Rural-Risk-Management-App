@@ -62,7 +62,7 @@ class CustomTextField extends StatelessWidget {
     this.enabledBorder,
     this.inputtextcolor,
     this.suffixIcon,
-    this.hintStyle, // <-- NEW
+    this.hintStyle,
     this.cursorColor,
   });
 
@@ -74,38 +74,53 @@ class CustomTextField extends StatelessWidget {
       cursorColor: cursorColor ?? AppColors.WHITE,
       keyboardType: keyboardType ?? TextInputType.text,
       obscureText: obscureText ?? false,
+
       textCapitalization: textCapitalization ?? TextCapitalization.none,
+
       inputFormatters:
           inputFormatters ?? [FilteringTextInputFormatter.deny(RegExp(r'^\s'))],
+
       textAlign: textAlign ?? TextAlign.start,
+
       autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
+
       onFieldSubmitted: onFieldSubmitted,
       onEditingComplete: onEditingComplete,
       focusNode: focusNode,
       onChanged: onchange,
+
       validator: (validator ?? MultiValidator([])).call,
+
       readOnly: readOnly ?? false,
       controller: controller,
+
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
+
         labelText: labeltext,
-        labelStyle: TextStyle(color: Colors.white54),
+
+        labelStyle: const TextStyle(color: Colors.white54),
+
         hintText: hint ?? "",
+
         hintStyle:
             hintStyle ??
             TextStyle(color: Colors.white54, fontSize: dp(context, 16)),
+
         filled: true,
-        fillColor:
-            backgroundColor ?? AppColors.PRIMARY_COLOR, // <-- Default color
+
+        fillColor: backgroundColor ?? AppColors.PRIMARY_COLOR,
+
         enabledBorder:
             enabledBorder ??
             OutlineInputBorder(
               borderRadius: BorderRadius.circular(dp(context, 10)),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: Colors.white,
                 style: BorderStyle.solid,
               ),
             ),
+
         border:
             border ??
             OutlineInputBorder(
@@ -116,28 +131,35 @@ class CustomTextField extends StatelessWidget {
                 width: wp(2),
               ),
             ),
+
         focusedBorder:
             focusedBorder ??
             OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: Colors.white),
               borderRadius: BorderRadius.circular(dp(context, 10)),
             ),
+
         focusedErrorBorder:
             focusedErrorBorder ??
             OutlineInputBorder(
               borderRadius: BorderRadius.circular(dp(context, 10)),
-              borderSide: BorderSide(color: Colors.red, width: 2),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
 
         errorBorder:
             errorBorder ??
             OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.red),
+              borderSide: const BorderSide(color: Colors.red),
               borderRadius: BorderRadius.circular(dp(context, 10)),
             ),
+
         errorText: errorText,
-        errorStyle: TextStyle(color: Colors.red),
+
+        // IMPORTANT:
+        // Hide error text AND remove its occupied height.
+        errorStyle: const TextStyle(fontSize: 0, height: 0),
       ),
+
       style: TextStyle(color: inputtextcolor ?? Colors.white),
     );
   }

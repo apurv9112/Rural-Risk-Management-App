@@ -56,9 +56,7 @@ iscattlevalue({required BuildContext context, required controller}) {
                     controller: controller.marketValueController,
                     focusNode: controller.marketValueFocusNode,
                     validator: controller.isSuccessfullyTagging
-                        ? MultiValidator([
-                            RequiredValidator(errorText: "Required"),
-                          ])
+                        ? MultiValidator([RequiredValidator(errorText: "")])
                         : null,
                     backgroundColor: AppColors.WHITE,
                   ),

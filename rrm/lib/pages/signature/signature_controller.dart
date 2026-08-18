@@ -25,28 +25,6 @@ class SignatureControllerX extends GetxController {
   String dateOfDeath = "";
   String timeOfDeath = "";
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   final args = Get.arguments ?? {};
-  //   taggingData = Map<String, dynamic>.from(args["taggingData"] ?? {});
-
-  //   retaggingData = Map<String, dynamic>.from(args["retaggingData"] ?? {});
-
-  //   claimData = Map<String, dynamic>.from(args["claimData"] ?? {});
-
-  //   manualTaggingData = Map<String, dynamic>.from(
-  //     args["manualTaggingData"] ?? {},
-  //   );
-
-  //   dateOfDeath = args["dateOfDeath"] ?? "";
-  //   timeOfDeath = args["timeOfDeath"] ?? "";
-
-  //   appController.loadUserData();
-
-  //   loadWorkerSignature();
-  // }
-
   @override
   void onInit() {
     super.onInit();

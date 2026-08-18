@@ -561,7 +561,7 @@ class TaggingDataScreen extends StatelessWidget {
                               flex: 2,
                               child: CustomTextField(
                                 cursorColor: AppColors.PRIMARY_COLOR,
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.text,
                                 controller: controller.timeofdeathcontroller,
                                 focusNode: controller.timeOfDeathFocusNode,
                                 inputtextcolor: AppColors.PRIMARY_COLOR,
@@ -700,16 +700,6 @@ class TaggingDataScreen extends StatelessWidget {
                             return;
                           }
 
-                          // Get.toNamed(
-                          //   routekycpage,
-                          //   arguments: {
-                          //     "tagging": controller.data,
-                          //     "ischangepage": controller.ischangepage,
-                          //     "retagging": controller.retagging,
-                          //     "manualtagging": controller.manualtagging,
-                          //   },
-                          // );
-
                           print("========== TAGGING DATA → KYC ==========");
                           print("taggingData: ${controller.data}");
                           print("retaggingData: ${controller.retagging}");
@@ -734,6 +724,10 @@ class TaggingDataScreen extends StatelessWidget {
                               "ischangepage": controller.ischangepage,
                               "retagging": controller.retagging,
                               "manualtagging": controller.manualtagging,
+                              "dateofdeath":
+                                  controller.dateofdeathcontroller.text,
+                              "timeofdeath":
+                                  controller.timeofdeathcontroller.text,
 
                               // Report data
                               "taggingData": leadType == "tagging"

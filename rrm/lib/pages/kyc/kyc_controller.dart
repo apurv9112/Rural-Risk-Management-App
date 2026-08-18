@@ -25,6 +25,8 @@ class KycController extends GetxController {
 
   String ownerName = '';
   String mobileNo = '';
+  String? dateofdeath = "";
+  String? timeofdeath = "";
 
   bool isSubmitting = false;
 
@@ -57,6 +59,8 @@ class KycController extends GetxController {
     data = args["tagging"];
     ischangepage = args["ischangepage"];
     retagging = args["retagging"];
+    dateofdeath = args["dateofdeath"] ?? "";
+    timeofdeath = args["timeofdeath"] ?? "";
 
     taggingData = Map<String, dynamic>.from(args["taggingData"] ?? {});
 
@@ -407,15 +411,6 @@ class KycController extends GetxController {
         Get.back();
       }
 
-      // Get.toNamed(
-      //   routecattlepage,
-      //   arguments: {
-      //     "tagging": data,
-      //     "ischangepage": ischangepage,
-      //     "retagging": retagging,
-      //     "customerName": namecontroller.text.trim(),
-      //   },
-      // );
       print("========== KYC → CATTLE ==========");
       print("taggingData: $taggingData");
       print("retaggingData: $retaggingData");
@@ -430,6 +425,8 @@ class KycController extends GetxController {
           "retaggingData": retaggingData,
           "claimData": claimData,
           "manualTaggingData": manualTaggingData,
+          "dateofdeath": dateofdeath,
+          "timeofdeath": timeofdeath,
 
           "tagging": data,
           "ischangepage": ischangepage,
@@ -447,29 +444,21 @@ class KycController extends GetxController {
       }
 
       showSnackBar("Kyc All ready Uploaded", SNACK.FAILED);
-      // Get.toNamed(
-      //   routecattlepage,
-      //   arguments: {
-      //     "tagging": data,
-      //     "ischangepage": ischangepage,
-      //     "retagging": retagging,
-      //   },
-      // );
 
       Get.toNamed(
         routecattlepage,
         arguments: {
-          // Existing data
+          "taggingData": taggingData,
+          "retaggingData": retaggingData,
+          "claimData": claimData,
+          "manualTaggingData": manualTaggingData,
+          "dateofdeath": dateofdeath,
+          "timeofdeath": timeofdeath,
+
           "tagging": data,
           "ischangepage": ischangepage,
           "retagging": retagging,
           "customerName": namecontroller.text.trim(),
-
-          // Report data forwarded from Tagging Data Screen
-          "taggingData": Get.arguments?["taggingData"] ?? {},
-          "retaggingData": Get.arguments?["retaggingData"] ?? {},
-          "claimData": Get.arguments?["claimData"] ?? {},
-          "manualTaggingData": Get.arguments?["manualTaggingData"] ?? {},
         },
       );
     } finally {

@@ -91,14 +91,12 @@ class Cattlescreen extends StatelessWidget {
                           flex: 2,
                           child: CustomTextField(
                             cursorColor: AppColors.PRIMARY_COLOR,
-                            keyboardType: TextInputType.number,
+                            keyboardType: TextInputType.text,
                             controller: controller.tagnumbercontroller,
                             focusNode: controller.tagNumberFocusNode,
                             validator: controller.isSuccessfullyTagging
                                 ? MultiValidator([
-                                    RequiredValidator(
-                                      errorText: "Tag Number is required",
-                                    ),
+                                    RequiredValidator(errorText: ""),
                                   ])
                                 : null,
                             backgroundColor: AppColors.WHITE,

@@ -44,6 +44,9 @@ class CattleController extends GetxController {
   Map<String, dynamic> claimData = {};
   Map<String, dynamic> manualTaggingData = {};
 
+  String? dateofdeath = "";
+  String? timeofdeath = "";
+
   @override
   void onInit() {
     final Map<String, dynamic> args =
@@ -54,6 +57,9 @@ class CattleController extends GetxController {
         data["ownerName"] ??
         ""
             "";
+
+    dateofdeath = args["dateofdeath"] ?? "";
+    timeofdeath = args["timeofdeath"] ?? "";
     selectedSpeciesValue ??= speciesItems.first; // Set default to first item
     taggingData = Map<String, dynamic>.from(args["taggingData"] ?? {});
 
@@ -378,7 +384,7 @@ class CattleController extends GetxController {
     'Sideward',
     'Scurs',
   ];
-  final List<String> tailcolorItems = ['Black', 'Gray', 'White', 'brown'];
+  final List<String> tailcolorItems = ['Black', 'Gray', 'White', 'Brown'];
   final List<String> idmarkItems = ['Star', 'Nil'];
   final List<String> milkdayItems = [
     '1',
@@ -1162,13 +1168,9 @@ class CattleController extends GetxController {
             // =========================
             // CLAIM DATE / TIME
             // =========================
-            "dateOfDeath": leadType == "claim"
-                ? selectedDate.value?.toString().split(" ")[0] ?? ""
-                : "",
+            "dateOfDeath": leadType == "claim" ? dateofdeath : "",
 
-            "timeOfDeath": leadType == "claim"
-                ? TimeOfDay.now().format(Get.context!)
-                : "",
+            "timeOfDeath": leadType == "claim" ? timeofdeath : "",
           },
         );
       }

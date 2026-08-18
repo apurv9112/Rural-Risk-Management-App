@@ -1,7 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:rrm/utils/colors.dart';
-
 import 'package:rrm/utils/responsive.dart';
 
 customdropdown({
@@ -19,6 +18,7 @@ customdropdown({
       .map((e) => e.value)
       .whereType<String>()
       .toSet();
+
   final safeValue = (value != null && availableValues.contains(value))
       ? value
       : null;
@@ -28,12 +28,19 @@ customdropdown({
     validator: validator,
     focusNode: focusNode,
     isExpanded: true,
+
     decoration: InputDecoration(
       filled: true,
       fillColor: AppColors.WHITE,
       contentPadding: EdgeInsets.symmetric(vertical: dp(context, 10)),
+
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+
+      // Error message completely hide,
+      // but validation/red border will remain.
+      errorStyle: const TextStyle(fontSize: 0, height: 1),
     ),
+
     hint: Text(
       title,
       style: TextStyle(fontSize: dp(context, 12), color: AppColors.DARK),
@@ -43,7 +50,9 @@ customdropdown({
 
     onChanged: onChanged,
     onSaved: onSaved,
+
     buttonStyleData: const ButtonStyleData(padding: EdgeInsets.only(right: 8)),
+
     iconStyleData: IconStyleData(
       icon: Icon(
         Icons.arrow_circle_down_outlined,
@@ -51,12 +60,14 @@ customdropdown({
       ),
       iconSize: dp(context, 24),
     ),
+
     dropdownStyleData: DropdownStyleData(
       decoration: BoxDecoration(
         color: AppColors.WHITE,
         borderRadius: BorderRadius.circular(15),
       ),
     ),
+
     menuItemStyleData: MenuItemStyleData(
       padding: EdgeInsets.symmetric(horizontal: dp(context, 16)),
     ),

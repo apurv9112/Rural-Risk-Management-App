@@ -169,46 +169,6 @@ iscattleimage({required BuildContext context, required controller}) {
       ),
 
       SizedBox(height: hp(1)),
-      customRow(
-        videoicon: true,
-        isvideoimag: true,
-        context: context,
-        controller: controller,
-        textdata: controller.ischangepage == null
-            ? "Tagging Video"
-            : controller.retagging != null
-            ? "Retagging Video"
-            : "Ear Cutting Video",
-        childimage: controller.videopath1 != null || controller.isvideo == 1
-            ? Icon(
-                Icons.video_library,
-                color: AppColors.PRIMARY_COLOR,
-                size: dp(context, 30),
-              )
-            : SizedBox(),
-        onTap: () {
-          buttomsheet(context: context, controller: controller, isvideo: 1);
-        },
-      ),
-      SizedBox(height: hp(1)),
-      customRow(
-        videoicon: true,
-        isvideoimag: true,
-        context: context,
-        controller: controller,
-        textdata: "Full Cattle Video",
-        childimage: controller.videopath2 != null || controller.isvideo == 2
-            ? Icon(
-                Icons.video_library,
-                color: AppColors.PRIMARY_COLOR,
-                size: dp(context, 30),
-              )
-            : SizedBox(),
-        onTap: () {
-          buttomsheet(context: context, controller: controller, isvideo: 2);
-        },
-      ),
-      SizedBox(height: hp(1)),
       controller.ischangepage == null || controller.retagging != null
           ? SizedBox()
           : customRow(
@@ -291,6 +251,47 @@ iscattleimage({required BuildContext context, required controller}) {
       controller.ischangepage == null || controller.retagging != null
           ? SizedBox()
           : SizedBox(height: hp(1)),
+
+      customRow(
+        videoicon: true,
+        isvideoimag: true,
+        context: context,
+        controller: controller,
+        textdata: controller.ischangepage == null
+            ? "Tagging Video"
+            : controller.retagging != null
+            ? "Retagging Video"
+            : "Ear Cutting Video",
+        childimage: controller.videopath1 != null || controller.isvideo == 1
+            ? Icon(
+                Icons.video_library,
+                color: AppColors.PRIMARY_COLOR,
+                size: dp(context, 30),
+              )
+            : SizedBox(),
+        onTap: () {
+          buttomsheet(context: context, controller: controller, isvideo: 1);
+        },
+      ),
+      SizedBox(height: hp(1)),
+      customRow(
+        videoicon: true,
+        isvideoimag: true,
+        context: context,
+        controller: controller,
+        textdata: "Full Cattle Video",
+        childimage: controller.videopath2 != null || controller.isvideo == 2
+            ? Icon(
+                Icons.video_library,
+                color: AppColors.PRIMARY_COLOR,
+                size: dp(context, 30),
+              )
+            : SizedBox(),
+        onTap: () {
+          buttomsheet(context: context, controller: controller, isvideo: 2);
+        },
+      ),
+      SizedBox(height: hp(1)),
       customRow(
         videoicon: false,
         isvideoimag: true,
