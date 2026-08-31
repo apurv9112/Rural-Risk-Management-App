@@ -183,7 +183,7 @@ class CattleController extends GetxController {
 
     String formatDate(dynamic value) {
       if (value == null || value.toString().isEmpty) return "";
-      return DateFormat('yyyy-MM-dd').format(DateTime.parse(value.toString()));
+      return DateFormat('dd-MM-yyyy').format(DateTime.parse(value.toString()));
     }
 
     if (ischangepage == null && retagging == null) {
@@ -193,7 +193,7 @@ class CattleController extends GetxController {
 
       if (taggingdatecontroller.text.isEmpty) {
         taggingdatecontroller.text = DateFormat(
-          'yyyy-MM-dd',
+          'dd-MM-yyyy',
         ).format(DateTime.now());
       }
     } else {
@@ -483,10 +483,10 @@ class CattleController extends GetxController {
     if (picked != null) {
       if (taggingdate == true) {
         selectedDate.value = picked;
-        taggingdatecontroller.text = DateFormat('yyyy-MM-dd').format(picked);
+        taggingdatecontroller.text = DateFormat('dd-MM-yyyy').format(picked);
       } else {
         selectedDatenew.value = picked;
-        newtaggingdatecontroller.text = DateFormat('yyyy-MM-dd').format(picked);
+        newtaggingdatecontroller.text = DateFormat('dd-MM-yyyy').format(picked);
       }
 
       update();
@@ -870,6 +870,20 @@ class CattleController extends GetxController {
       }
     }
 
+    String formatDateForApi(String? value) {
+      if (value == null || value.trim().isEmpty) {
+        return "";
+      }
+
+      try {
+        final parsedDate = DateFormat('dd-MM-yyyy').parseStrict(value.trim());
+        return DateFormat('yyyy-MM-dd').format(parsedDate);
+      } catch (e) {
+        debugPrint("Invalid date format: $value");
+        return "";
+      }
+    }
+
     // ================= LEAD TYPE =================
 
     String leadType = "tagging";
@@ -1026,13 +1040,9 @@ class CattleController extends GetxController {
             : selectedsideposeright.value ?? "",
 
         // ================= CLAIM =================
-        "dateOfDeath": leadType == "claim"
-            ? selectedDate.value?.toString().split(" ")[0] ?? ""
-            : "",
+        "dateOfDeath": leadType == "claim" ? formatDateForApi(dateofdeath) : "",
 
-        "timeOfDeath": leadType == "claim"
-            ? TimeOfDay.now().format(Get.context!)
-            : "",
+        "timeOfDeath": leadType == "claim" ? timeofdeath.toString() : "",
 
         "causeOfDeath": leadType == "claim" ? "ILLNESS" : "",
 

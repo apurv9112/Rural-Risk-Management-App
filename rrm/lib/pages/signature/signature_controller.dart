@@ -233,14 +233,6 @@ class SignatureControllerX extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint("SIGNATURE UPLOAD SUCCESS");
 
-        // Get.offNamed(
-        //   routefarmerdetailspage,
-        //   arguments: {
-        //     "leadId": leadId,
-        //     "leadType": leadType, // tagging / retagging / claim
-        //   },
-        // );
-
         print("========== SIGNATURE → FARMER DETAILS ==========");
         print("taggingData: $taggingData");
         print("retaggingData: $retaggingData");

@@ -279,7 +279,7 @@ class TaggingdataController extends GetxController {
     if (picked != null) {
       controller.selectedDate.value = picked;
       controller.dateofdeathcontroller.text = DateFormat(
-        'yyyy-MM-dd',
+        'dd-MM-yyyy',
       ).format(picked);
       controller.showDateError = false;
       controller.update();
