@@ -182,8 +182,24 @@ class CattleController extends GetxController {
     final lead = data as Map<String, dynamic>;
 
     String formatDate(dynamic value) {
-      if (value == null || value.toString().isEmpty) return "";
-      return DateFormat('dd-MM-yyyy').format(DateTime.parse(value.toString()));
+      if (value == null || value.toString().trim().isEmpty) {
+        return "";
+      }
+
+      final dateString = value.toString().trim();
+
+      try {
+        if (RegExp(r'^\d{2}-\d{2}-\d{4}$').hasMatch(dateString)) {
+          final date = DateFormat('dd-MM-yyyy').parseStrict(dateString);
+          return DateFormat('dd-MM-yyyy').format(date);
+        }
+
+        final date = DateTime.parse(dateString);
+        return DateFormat('dd-MM-yyyy').format(date);
+      } catch (e) {
+        debugPrint("Date parsing failed: $dateString");
+        return "";
+      }
     }
 
     if (ischangepage == null && retagging == null) {

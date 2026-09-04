@@ -28,6 +28,7 @@ class FarmerDetailsController extends GetxController {
   final reportCreatedAt = DateTime.now();
 
   bool isLoading = true;
+  bool isReportShared = false;
 
   String type = "";
 
@@ -260,12 +261,18 @@ class FarmerDetailsController extends GetxController {
       await file.writeAsBytes(pdfBytes);
 
       debugPrint("PDF SAVED : ${file.path}");
-      await SharePlus.instance.share(
+      final result = await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
           text: "Pera-Wet - ${appController.userName.value}",
         ),
       );
+
+      isReportShared = true;
+      update();
+
+      debugPrint("PDF SHARE COMPLETED");
+      debugPrint("Share status: $isReportShared");
 
       debugPrint("PDF CREATED SUCCESSFULLY");
     } catch (e) {
@@ -498,12 +505,18 @@ class FarmerDetailsController extends GetxController {
 
       debugPrint("RETAGGING PDF SAVED : ${file.path}");
 
-      await SharePlus.instance.share(
+      final result = await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          text: "Re-Tagging Report - ${appController.userName.value}",
+          text: "Pera-Wet - ${appController.userName.value}",
         ),
       );
+
+      isReportShared = true;
+      update();
+
+      debugPrint("PDF SHARE COMPLETED");
+      debugPrint("Share status: $isReportShared");
 
       debugPrint("RETAGGING PDF CREATED SUCCESSFULLY");
     } catch (e) {
@@ -773,12 +786,18 @@ class FarmerDetailsController extends GetxController {
 
       debugPrint("CLAIM PDF SAVED : ${file.path}");
 
-      await SharePlus.instance.share(
+      final result = await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          text: "Claim Report - ${appController.userName.value}",
+          text: "Pera-Wet - ${appController.userName.value}",
         ),
       );
+
+      isReportShared = true;
+      update();
+
+      debugPrint("PDF SHARE COMPLETED");
+      debugPrint("Share status: $isReportShared");
 
       debugPrint("CLAIM PDF CREATED SUCCESSFULLY");
     } catch (e) {

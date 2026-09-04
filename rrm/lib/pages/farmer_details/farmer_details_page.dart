@@ -16,62 +16,67 @@ class FarmerDetailsScreen extends StatelessWidget {
     return GetBuilder<FarmerDetailsController>(
       init: FarmerDetailsController(),
       builder: (controller) {
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-          backgroundColor: AppColors.PRIMARY_COLOR,
-          appBar: CustomAppBarAction(
-            title: 'Report',
-            iconleft: Icons.arrow_back_outlined,
-            lefticononTap: () {
-              Get.back();
-            },
-            iconright: Icons.share,
-            righticononTap: () async {
-              await controller.generatePdf(); // Handle share icon tap
-            },
-          ),
-          body: Padding(
-            padding: EdgeInsets.only(
-              top: hp(0.5),
-              right: wp(2),
-              left: wp(2),
-              bottom: hp(2),
+        return PopScope(
+          canPop: controller.isReportShared,
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            backgroundColor: AppColors.PRIMARY_COLOR,
+            appBar: CustomAppBarAction(
+              title: 'Report',
+              iconleft: Icons.article,
+              // lefticononTap: () {
+              //   Get.back();
+              // },
+              iconright: Icons.share,
+              righticononTap: () async {
+                await controller.generatePdf(); // Handle share icon tap
+              },
             ),
-            child: RepaintBoundary(
-              key: controller.reportKey,
-              child: Material(
-                color: Colors.white,
-                child: InteractiveViewer(
-                  minScale: 0.5,
-                  maxScale: 5,
-                  constrained: false,
-                  child: SingleChildScrollView(
-                    // scrollDirection: Axis.horizontal,
+            body: Padding(
+              padding: EdgeInsets.only(
+                top: hp(0.5),
+                right: wp(2),
+                left: wp(2),
+                bottom: hp(2),
+              ),
+              child: RepaintBoundary(
+                key: controller.reportKey,
+                child: Material(
+                  color: Colors.white,
+                  child: InteractiveViewer(
+                    minScale: 0.5,
+                    maxScale: 5,
+                    constrained: false,
                     child: SingleChildScrollView(
-                      child: buildReport(controller),
+                      // scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        child: buildReport(controller),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          floatingActionButton: FloatingActionButton.extended(
-            icon: Icon(Icons.home, color: AppColors.PRIMARY_COLOR),
-            backgroundColor: AppColors.WHITE,
+            floatingActionButton: FloatingActionButton.extended(
+              icon: Icon(Icons.home, color: AppColors.PRIMARY_COLOR),
+              backgroundColor: AppColors.WHITE,
 
-            shape: Border.all(
-              strokeAlign: BorderSide.strokeAlignCenter,
+              shape: Border.all(
+                strokeAlign: BorderSide.strokeAlignCenter,
 
-              color: AppColors.PRIMARY_COLOR,
-              width: wp(1),
-            ),
+                color: AppColors.PRIMARY_COLOR,
+                width: wp(1),
+              ),
 
-            onPressed: () {
-              Get.offAllNamed("routehomepage");
-            },
-            label: Text(
-              "Home",
-              style: TextStyle(color: AppColors.PRIMARY_COLOR),
+              onPressed: controller.isReportShared
+                  ? () {
+                      Get.offAllNamed("routehomepage");
+                    }
+                  : null,
+              label: Text(
+                "Home",
+                style: TextStyle(color: AppColors.PRIMARY_COLOR),
+              ),
             ),
           ),
         );

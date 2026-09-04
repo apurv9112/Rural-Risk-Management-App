@@ -113,132 +113,142 @@ class SignaturePage extends StatelessWidget {
       "leadId:$leadId, leadType:$leadType, folderId:$folderId, ownerName:$ownerName",
     );
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: AppColors.PRIMARY_COLOR,
-      appBar: CustomAppBarAction(
-        title: "SIGNATURE",
-        iconleft: Icons.arrow_back_outlined,
-        lefticononTap: () {
-          Get.back();
-        },
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Form(
-            key: controller.formKey,
-            child: Padding(
-              padding: EdgeInsets.only(top: hp(4), right: wp(4), left: wp(4)),
-              child: Column(
-                children: [
-                  /// CUSTOMER DETAILS
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: wp(5),
-                      vertical: hp(1),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(dp(context, 15)),
-                      border: Border.all(color: AppColors.DARK),
-                      color: AppColors.WHITE,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.person, color: AppColors.PRIMARY_COLOR),
-                            const SizedBox(width: 8),
-                            Text(
-                              "Customer Details",
-                              style: TextStyle(
-                                fontSize: dp(context, 20),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppColors.PRIMARY_COLOR,
+        appBar: CustomAppBarAction(
+          title: "SIGNATURE",
+          iconleft: Icons.arrow_back_outlined,
+          // lefticononTap: () {
+          //   Get.back();
+          // },
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Form(
+              key: controller.formKey,
+              child: Padding(
+                padding: EdgeInsets.only(top: hp(4), right: wp(4), left: wp(4)),
+                child: Column(
+                  children: [
+                    /// CUSTOMER DETAILS
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: wp(5),
+                        vertical: hp(1),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(dp(context, 15)),
+                        border: Border.all(color: AppColors.DARK),
+                        color: AppColors.WHITE,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.person,
                                 color: AppColors.PRIMARY_COLOR,
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: hp(2)),
-
-                        buildDetailRow("Owner Name", ownerName, context),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: hp(2)),
-
-                  /// CUSTOMER SIGNATURE
-                  buildSignatureCard(
-                    context: context,
-                    title: "1. Customer Signature",
-                    subtitle:
-                        "I hereby declare that the information given above is true and correct to the best of my knowledge and belief.",
-                    signatureController: controller.customerSignatureController,
-                    onClear: () {
-                      controller.customerSignatureController.clear();
-                    },
-                  ),
-
-                  SizedBox(height: hp(2)),
-
-                  /// WORKER SIGNATURE
-                  buildWorkerSignatureCard(
-                    context: context,
-                    controller: controller,
-                  ),
-
-                  SizedBox(height: hp(2)),
-
-                  /// SAVE BUTTON
-                  Obx(
-                    () => SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.WHITE,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: controller.isSaving.value
-                            ? null
-                            : () {
-                                controller.saveSignatures(
-                                  tagNo: tagNo,
-                                  leadId: leadId,
-                                  leadType: leadType,
-                                  folderId: folderId,
-                                );
-                              },
-                        icon: controller.isSaving.value
-                            ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
+                              const SizedBox(width: 8),
+                              Text(
+                                "Customer Details",
+                                style: TextStyle(
+                                  fontSize: dp(context, 20),
                                   color: AppColors.PRIMARY_COLOR,
-                                  strokeWidth: 2,
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              )
-                            : Icon(Icons.save, color: AppColors.PRIMARY_COLOR),
-                        label: Text(
-                          controller.isSaving.value ? "Saving..." : "Save",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: AppColors.PRIMARY_COLOR,
-                            fontWeight: FontWeight.bold,
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: hp(2)),
+
+                          buildDetailRow("Owner Name", ownerName, context),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: hp(2)),
+
+                    /// CUSTOMER SIGNATURE
+                    buildSignatureCard(
+                      context: context,
+                      title: "1. Customer Signature",
+                      subtitle:
+                          "I hereby declare that the information given above is true and correct to the best of my knowledge and belief.",
+                      signatureController:
+                          controller.customerSignatureController,
+                      onClear: () {
+                        controller.customerSignatureController.clear();
+                      },
+                    ),
+
+                    SizedBox(height: hp(2)),
+
+                    /// WORKER SIGNATURE
+                    buildWorkerSignatureCard(
+                      context: context,
+                      controller: controller,
+                    ),
+
+                    SizedBox(height: hp(2)),
+
+                    /// SAVE BUTTON
+                    Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.WHITE,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          onPressed: controller.isSaving.value
+                              ? null
+                              : () {
+                                  controller.saveSignatures(
+                                    tagNo: tagNo,
+                                    leadId: leadId,
+                                    leadType: leadType,
+                                    folderId: folderId,
+                                  );
+                                },
+                          icon: controller.isSaving.value
+                              ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.PRIMARY_COLOR,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.save,
+                                  color: AppColors.PRIMARY_COLOR,
+                                ),
+                          label: Text(
+                            controller.isSaving.value ? "Saving..." : "Save",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.PRIMARY_COLOR,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: hp(2)),
-                ],
+                    SizedBox(height: hp(2)),
+                  ],
+                ),
               ),
             ),
           ),

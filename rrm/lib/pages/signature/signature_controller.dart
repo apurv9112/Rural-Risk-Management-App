@@ -153,6 +153,7 @@ class SignatureControllerX extends GetxController {
   final ImagePicker imagePicker = ImagePicker();
 
   RxBool isSaving = false.obs;
+  RxBool isReportShared = false.obs;
 
   Future<void> saveSignatures({
     required String tagNo,
